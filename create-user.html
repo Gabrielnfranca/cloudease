@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Criar Conta</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="content-side">
+            <div class="brand">
+                <i class="fas fa-cloud"></i>
+                <h1>CloudEase</h1>
+            </div>
+            <div class="description">
+                <h2>Comece sua jornada na nuvem</h2>
+                <p>Crie sua conta hoje e descubra como é fácil gerenciar seus servidores de forma intuitiva e eficiente. Tenha controle total sobre sua infraestrutura em nuvem.</p>
+            </div>
+        </div>
+        <div class="login-container">
+            <div class="login-box">
+                <h2>Criar Conta</h2>
+                <p class="login-subtitle">Preencha os dados para criar sua conta</p>
+                <form action="/register" method="POST">
+                    <div class="form-group">
+                        <label for="name">Nome Completo:</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail:</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha:</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirmar Senha:</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirm-password" name="confirm-password" required>
+                        </div>
+                    </div>
+                    <button type="submit">
+                        <i class="fas fa-user-plus"></i>
+                        Criar Conta
+                    </button>
+                    <div class="links">
+                        <a href="index.html">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar para Login
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

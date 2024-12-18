@@ -1,0 +1,343 @@
+/* Reset e estilos globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: #f5f6fa;
+}
+
+/* Layout da página de login */
+.page-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.content-side {
+    flex: 1;
+    padding: 40px;
+    background: white;
+    color: #1e3c72;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+}
+
+/* Estilos da marca */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand i {
+    font-size: 48px;
+    color: #1e3c72;
+}
+
+.brand h1 {
+    font-size: 42px;
+    margin: 0;
+    color: #1e3c72;
+}
+
+/* Descrição */
+.description {
+    max-width: 600px;
+}
+
+.description h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    color: #1e3c72;
+}
+
+.description p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #666;
+}
+
+/* Container de login */
+.login-container {
+    width: 450px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h2 {
+    color: #1e3c72;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+}
+
+.login-subtitle {
+    color: #666;
+    margin: 0 0 30px 0;
+}
+
+/* Formulários */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #444;
+    font-weight: 500;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #1e3c72;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+}
+
+/* Botões */
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 60, 114, 0.2);
+}
+
+/* Links */
+.links {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.links a {
+    color: #1e3c72;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.links a:hover {
+    color: #2a5298;
+    transform: translateY(-1px);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .page-container {
+        flex-direction: column;
+    }
+    
+    .content-side {
+        padding: 40px 20px;
+        text-align: center;
+        align-items: center;
+    }
+    
+    .login-container {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .login-box {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand h1 {
+        font-size: 32px;
+    }
+    
+    .description h2 {
+        font-size: 24px;
+    }
+    
+    .description p {
+        font-size: 16px;
+    }
+    
+    .login-box {
+        padding: 20px;
+    }
+    
+    .links {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+}
+
+/* Estilos específicos para páginas internas */
+.dashboard-body {
+    background: #f5f6fa;
+}
+
+/* Tabelas */
+.table-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 12px;
+    color: #1e3c72;
+    font-weight: 600;
+    border-bottom: 2px solid #eee;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.status-badge.inactive {
+    background: #ffebee;
+    color: #e74c3c;
+}
+
+/* Botões de ação */
+.action-button {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    background: #f8f9fa;
+    color: #1e3c72;
+    border-color: #1e3c72;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    color: #1e3c72;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Cores vibrantes para os cards do dashboard */
+.card:nth-child(1) {
+    border-left: 4px solid #27ae60;
+}
+
+.card:nth-child(2) {
+    border-left: 4px solid #2980b9;
+}
+
+.card:nth-child(3) {
+    border-left: 4px solid #8e44ad;
+}
+
+.card:nth-child(4) {
+    border-left: 4px solid #f39c12;
+}

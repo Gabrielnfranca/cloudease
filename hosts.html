@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Hosts</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/hosts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li class="active">
+                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li>
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li>
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+            <li>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Hosts Conectados</h1>
+            </div>
+            <div class="header-actions">
+                <button class="new-server-btn">
+                    <i class="fas fa-plus"></i> Novo Host
+                </button>
+            </div>
+        </header>
+
+        <div class="table-controls">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar hosts...">
+            </div>
+            <div class="filter-dropdown">
+                <button class="filter-btn">
+                    <i class="fas fa-filter"></i>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+
+        <div class="hosts-list active-view">
+            <table class="hosts-table">
+                <thead>
+                    <tr>
+                        <th>Host</th>
+                        <th>Nome</th>
+                        <th>IP</th>
+                        <th>Servidores</th>
+                        <th>Criado em</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="https://www.vultr.com/favicon.ico" alt="Vultr" class="provider-logo">
+                        </td>
+                        <td>Servidor Principal</td>
+                        <td>192.168.1.100</td>
+                        <td>3 servidores</td>
+                        <td>15/03/2024</td>
+                        <td><span class="status-badge active">Online</span></td>
+                        <td class="actions">
+                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                            <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
+                            <button class="action-btn" title="Desligar"><i class="fas fa-power-off"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="https://assets.digitalocean.com/favicon.ico" alt="DigitalOcean" class="provider-logo">
+                        </td>
+                        <td>Servidor de Backup</td>
+                        <td>192.168.1.101</td>
+                        <td>5 servidores</td>
+                        <td>20/03/2024</td>
+                        <td><span class="status-badge active">Online</span></td>
+                        <td class="actions">
+                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                            <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
+                            <button class="action-btn" title="Desligar"><i class="fas fa-power-off"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal para adicionar novo host -->
+    <div class="modal" id="newHostModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Host</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="newHostForm">
+                    <div class="form-group">
+                        <label for="hostName">Nome do Host</label>
+                        <input type="text" id="hostName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hostIP">Endereço IP</label>
+                        <input type="text" id="hostIP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="provider">Provedor</label>
+                        <select id="provider" required>
+                            <option value="">Selecione um provedor</option>
+                            <option value="vultr">Vultr</option>
+                            <option value="digitalocean">DigitalOcean</option>
+                            <option value="aws">AWS</option>
+                            <option value="gcp">Google Cloud</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn">Cancelar</button>
+                        <button type="submit" class="submit-btn">Adicionar Host</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/hosts.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Sites</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/sites.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li class="active">
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li>
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+            <li>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Sites</h1>
+            </div>
+            <div class="header-actions">
+                <button class="new-site-btn">
+                    <i class="fas fa-plus"></i> Novo Site
+                </button>
+            </div>
+        </header>
+
+        <div class="table-controls">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar sites...">
+            </div>
+            <div class="filter-dropdown">
+                <button class="filter-btn">
+                    <i class="fas fa-filter"></i>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+
+        <div class="sites-list active-view">
+            <table class="sites-table">
+                <thead>
+                    <tr>
+                        <th>Plataforma</th>
+                        <th>Domínio</th>
+                        <th>SSL</th>
+                        <th>Servidor</th>
+                        <th>IP</th>
+                        <th>Criado em</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="https://wordpress.org/favicon.ico" alt="WordPress" class="platform-logo">
+                            WordPress
+                        </td>
+                        <td>exemplo1.com.br</td>
+                        <td><span class="ssl-badge active">Ativo</span></td>
+                        <td>Servidor Principal</td>
+                        <td>192.168.1.100</td>
+                        <td>15/03/2024</td>
+                        <td class="actions">
+                            <button class="action-btn" title="Acessar"><i class="fas fa-external-link-alt"></i></button>
+                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                            <button class="action-btn" title="Renovar SSL"><i class="fas fa-shield-alt"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="https://www.drupal.org/favicon.ico" alt="Drupal" class="platform-logo">
+                            Drupal
+                        </td>
+                        <td>exemplo2.com.br</td>
+                        <td><span class="ssl-badge warning">Expirando</span></td>
+                        <td>Servidor de Backup</td>
+                        <td>192.168.1.101</td>
+                        <td>20/03/2024</td>
+                        <td class="actions">
+                            <button class="action-btn" title="Acessar"><i class="fas fa-external-link-alt"></i></button>
+                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                            <button class="action-btn" title="Renovar SSL"><i class="fas fa-shield-alt"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal para adicionar novo site -->
+    <div class="modal" id="newSiteModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Site</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="newSiteForm">
+                    <div class="form-group">
+                        <label for="siteDomain">Domínio</label>
+                        <input type="text" id="siteDomain" required placeholder="exemplo.com.br">
+                    </div>
+                    <div class="form-group">
+                        <label for="platform">Plataforma</label>
+                        <select id="platform" required>
+                            <option value="">Selecione a plataforma</option>
+                            <option value="wordpress">WordPress</option>
+                            <option value="drupal">Drupal</option>
+                            <option value="joomla">Joomla</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serverSelect">Servidor</label>
+                        <select id="serverSelect" required>
+                            <option value="">Selecione o servidor</option>
+                            <option value="main">Servidor Principal (192.168.1.100)</option>
+                            <option value="backup">Servidor de Backup (192.168.1.101)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sslType">Certificado SSL</label>
+                        <select id="sslType" required>
+                            <option value="">Selecione o tipo de SSL</option>
+                            <option value="letsencrypt">Let's Encrypt (Gratuito)</option>
+                            <option value="comodo">Comodo SSL</option>
+                            <option value="symantec">Symantec SSL</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn">Cancelar</button>
+                        <button type="submit" class="submit-btn">Adicionar Site</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sites.js"></script>
+</body>
+</html>

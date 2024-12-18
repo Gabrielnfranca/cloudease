@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Suporte</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/support.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li>
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li>
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-database"></i> Banco de Dados</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-shield-alt"></i> Segurança</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-chart-line"></i> Monitoramento</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+            <li class="active">
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Suporte</h1>
+            </div>
+            <div class="header-actions">
+                <button class="new-ticket-btn">
+                    <i class="fas fa-plus"></i> Novo Ticket
+                </button>
+            </div>
+        </header>
+
+        <div class="tickets-section">
+            <div class="tickets-list">
+                <h2>Meus Tickets</h2>
+                <div class="table-controls">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar tickets...">
+                    </div>
+                    <div class="filter-dropdown">
+                        <button class="filter-btn">
+                            <i class="fas fa-filter"></i>
+                            Filtrar
+                        </button>
+                    </div>
+                </div>
+
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Assunto</th>
+                            <th>Status</th>
+                            <th>Última Atualização</th>
+                            <th>Prioridade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1234</td>
+                            <td>Problema com SSL</td>
+                            <td><span class="status-badge pending">Pendente</span></td>
+                            <td>15/03/2024 14:30</td>
+                            <td><span class="priority-badge high">Alta</span></td>
+                            <td class="actions">
+                                <button class="action-btn" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn" title="Responder"><i class="fas fa-reply"></i></button>
+                                <button class="action-btn" title="Fechar Ticket"><i class="fas fa-check"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1233</td>
+                            <td>Dúvida sobre backup</td>
+                            <td><span class="status-badge resolved">Resolvido</span></td>
+                            <td>14/03/2024 09:15</td>
+                            <td><span class="priority-badge normal">Normal</span></td>
+                            <td class="actions">
+                                <button class="action-btn" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn" title="Responder"><i class="fas fa-reply"></i></button>
+                                <button class="action-btn" title="Reabrir Ticket"><i class="fas fa-redo"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para novo ticket -->
+    <div class="modal" id="newTicketModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Abrir Novo Ticket</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="newTicketForm">
+                    <div class="form-group">
+                        <label for="ticketSubject">Assunto</label>
+                        <input type="text" id="ticketSubject" required placeholder="Digite o assunto do ticket">
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketCategory">Categoria</label>
+                        <select id="ticketCategory" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="technical">Problema Técnico</option>
+                            <option value="billing">Faturamento</option>
+                            <option value="question">Dúvida</option>
+                            <option value="suggestion">Sugestão</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketPriority">Prioridade</label>
+                        <select id="ticketPriority" required>
+                            <option value="">Selecione a prioridade</option>
+                            <option value="low">Baixa</option>
+                            <option value="normal">Normal</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketMessage">Mensagem</label>
+                        <textarea id="ticketMessage" rows="6" required placeholder="Descreva seu problema ou dúvida em detalhes"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketAttachment">Anexos (opcional)</label>
+                        <input type="file" id="ticketAttachment" multiple>
+                        <small>Você pode anexar até 3 arquivos (máx. 5MB cada)</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn">Cancelar</button>
+                        <button type="submit" class="submit-btn">Abrir Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/support.js"></script>
+</body>
+</html>

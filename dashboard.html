@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li class="active">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li>
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li>
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+            <li>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Bem-vindo ao CloudEase</h1>
+            </div>
+            <button class="new-server-btn">
+                <i class="fas fa-plus"></i>
+                Novo Servidor
+            </button>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-network-wired"></i> Hosts Ativos</h3>
+                </div>
+                <div class="card-content">
+                    <span class="number">5</span>
+                    <span class="label">Total de Hosts</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-cloud"></i> Provedores Cloud</h3>
+                </div>
+                <div class="card-content">
+                    <span class="number">3</span>
+                    <span class="label">Conectados</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-globe"></i> Sites Ativos</h3>
+                </div>
+                <div class="card-content">
+                    <span class="number">12</span>
+                    <span class="label">Total de Sites</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-shield-alt"></i> Certificados SSL</h3>
+                </div>
+                <div class="card-content">
+                    <span class="number">8</span>
+                    <span class="label">Certificados Ativos</span>
+                </div>
+            </div>
+        </div>
+
+        <section class="tutorials-section">
+            <h2 class="section-title">Guia Rápido</h2>
+            <div class="tutorials-grid">
+                <div class="tutorial-card">
+                    <div class="video-thumbnail">
+                        <img src="https://via.placeholder.com/300x169" alt="Tutorial">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="tutorial-content">
+                        <h3>Configuração Inicial</h3>
+                        <p>Aprenda a configurar seu primeiro servidor em minutos.</p>
+                        <span class="duration"><i class="far fa-clock"></i> 5 min</span>
+                    </div>
+                </div>
+
+                <div class="tutorial-card">
+                    <div class="video-thumbnail">
+                        <img src="https://via.placeholder.com/300x169" alt="Tutorial">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="tutorial-content">
+                        <h3>Gerenciamento de SSL</h3>
+                        <p>Configure certificados SSL para seus domínios.</p>
+                        <span class="duration"><i class="far fa-clock"></i> 3 min</span>
+                    </div>
+                </div>
+
+                <div class="tutorial-card">
+                    <div class="video-thumbnail">
+                        <img src="https://via.placeholder.com/300x169" alt="Tutorial">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="tutorial-content">
+                        <h3>Backup Automático</h3>
+                        <p>Configure backups automáticos para seus servidores.</p>
+                        <span class="duration"><i class="far fa-clock"></i> 4 min</span>
+                    </div>
+                </div>
+            </div>
+            <button class="view-all-btn">
+                <i class="fas fa-play"></i>
+                Ver todos os tutoriais
+            </button>
+        </section>
+
+        <section class="tutorials-section">
+            <h2 class="section-title">Planos Disponíveis</h2>
+            
+            <!-- Tabs de Planos -->
+            <div class="plan-tabs">
+                <button class="plan-tab active">Mensal</button>
+                <button class="plan-tab">Anual</button>
+            </div>
+
+            <!-- Conteúdo dos Planos Mensais -->
+            <div class="plan-content active">
+                <div class="plans-grid">
+                    <!-- Plano Básico -->
+                    <div class="plan-card">
+                        <h3 class="plan-name">Básico</h3>
+                        <div class="plan-price">R$29<span>/mês</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i>1 Servidor</li>
+                            <li><i class="fas fa-check"></i>5GB de Armazenamento</li>
+                            <li><i class="fas fa-check"></i>Backup Diário</li>
+                            <li class="inactive"><i class="fas fa-times"></i>Suporte 24/7</li>
+                        </ul>
+                        <a href="#" class="plan-button">Começar Agora</a>
+                    </div>
+
+                    <!-- Plano Pro -->
+                    <div class="plan-card popular">
+                        <h3 class="plan-name">Pro</h3>
+                        <div class="plan-price">R$59<span>/mês</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i>3 Servidores</li>
+                            <li><i class="fas fa-check"></i>15GB de Armazenamento</li>
+                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
+                            <li><i class="fas fa-check"></i>Suporte 24/7</li>
+                        </ul>
+                        <a href="#" class="plan-button">Começar Agora</a>
+                    </div>
+
+                    <!-- Plano Enterprise -->
+                    <div class="plan-card">
+                        <h3 class="plan-name">Enterprise</h3>
+                        <div class="plan-price">R$99<span>/mês</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i>Servidores Ilimitados</li>
+                            <li><i class="fas fa-check"></i>50GB de Armazenamento</li>
+                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
+                            <li><i class="fas fa-check"></i>Suporte 24/7 Prioritário</li>
+                        </ul>
+                        <a href="#" class="plan-button">Começar Agora</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo dos Planos Anuais -->
+            <div class="plan-content">
+                <div class="plans-grid">
+                    <!-- Plano Básico Anual -->
+                    <div class="plan-card">
+                        <h3 class="plan-name">Básico</h3>
+                        <div class="plan-price">R$290<span>/ano</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i>1 Servidor</li>
+                            <li><i class="fas fa-check"></i>5GB de Armazenamento</li>
+                            <li><i class="fas fa-check"></i>Backup Diário</li>
+                            <li class="inactive"><i class="fas fa-times"></i>Suporte 24/7</li>
+                        </ul>
+                        <a href="#" class="plan-button">Começar Agora</a>
+                    </div>
+
+                    <!-- Plano Pro Anual -->
+                    <div class="plan-card popular">
+                        <h3 class="plan-name">Pro</h3>
+                        <div class="plan-price">R$590<span>/ano</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i>3 Servidores</li>
+                            <li><i class="fas fa-check"></i>15GB de Armazenamento</li>
+                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
+                            <li><i class="fas fa-check"></i>Suporte 24/7</li>
+                        </ul>
+                        <a href="#" class="plan-button">Começar Agora</a>
+                    </div>
+
+                    <!-- Plano Enterprise Anual -->
+                    <div class="plan-card">
+                        <h3 class="plan-name">Enterprise</h3>
+                        <div class="plan-price">R$990<span>/ano</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i>Servidores Ilimitados</li>
+                            <li><i class="fas fa-check"></i>50GB de Armazenamento</li>
+                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
+                            <li><i class="fas fa-check"></i>Suporte 24/7 Prioritário</li>
+                        </ul>
+                        <a href="#" class="plan-button">Começar Agora</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="js/plans.js"></script>
+</body>

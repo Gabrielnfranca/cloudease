@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Domínios</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/domains.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li>
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li class="active">
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+            <li>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Domínios</h1>
+            </div>
+            <div class="header-actions">
+                <button class="new-domain-btn">
+                    <i class="fas fa-plus"></i> Novo Domínio
+                </button>
+            </div>
+        </header>
+
+        <div class="table-controls">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar domínios...">
+            </div>
+            <div class="filter-dropdown">
+                <button class="filter-btn">
+                    <i class="fas fa-filter"></i>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+
+        <div class="domains-list active-view">
+            <table class="domains-table">
+                <thead>
+                    <tr>
+                        <th>Domínio</th>
+                        <th>Registrador</th>
+                        <th>DNS</th>
+                        <th>Expira em</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>exemplo1.com.br</td>
+                        <td>Registro.br</td>
+                        <td>Cloudflare</td>
+                        <td>15/03/2025</td>
+                        <td><span class="status-badge active">Ativo</span></td>
+                        <td class="actions">
+                            <button class="action-btn" title="DNS"><i class="fas fa-network-wired"></i></button>
+                            <button class="action-btn" title="Renovar"><i class="fas fa-sync"></i></button>
+                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>exemplo2.com.br</td>
+                        <td>GoDaddy</td>
+                        <td>Route53</td>
+                        <td>20/06/2024</td>
+                        <td><span class="status-badge warning">Expirando</span></td>
+                        <td class="actions">
+                            <button class="action-btn" title="DNS"><i class="fas fa-network-wired"></i></button>
+                            <button class="action-btn" title="Renovar"><i class="fas fa-sync"></i></button>
+                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal para adicionar novo domínio -->
+    <div class="modal" id="newDomainModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Domínio</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="newDomainForm">
+                    <div class="form-group">
+                        <label for="domainName">Nome do Domínio</label>
+                        <input type="text" id="domainName" required placeholder="exemplo.com.br">
+                    </div>
+                    <div class="form-group">
+                        <label for="registrar">Registrador</label>
+                        <select id="registrar" required>
+                            <option value="">Selecione o registrador</option>
+                            <option value="registro.br">Registro.br</option>
+                            <option value="godaddy">GoDaddy</option>
+                            <option value="namecheap">Namecheap</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dnsProvider">Provedor DNS</label>
+                        <select id="dnsProvider" required>
+                            <option value="">Selecione o provedor DNS</option>
+                            <option value="cloudflare">Cloudflare</option>
+                            <option value="route53">Amazon Route53</option>
+                            <option value="digitalocean">DigitalOcean</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate">Data de Expiração</label>
+                        <input type="date" id="expiryDate" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn">Cancelar</button>
+                        <button type="submit" class="submit-btn">Adicionar Domínio</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/domains.js"></script>
+</body>
+</html>
