@@ -169,7 +169,7 @@
     font-weight: 600;
 }
 
-.new-server-btn {
+.new-site-btn {
     background: #2196f3;
     color: white;
     border: none;
@@ -186,12 +186,12 @@
     box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
 }
 
-.new-server-btn i {
+.new-site-btn i {
     font-size: 12px;
     color: white;
 }
 
-.new-server-btn:hover {
+.new-site-btn:hover {
     background: #1976d2;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
@@ -823,7 +823,7 @@
         margin-bottom: 16px;
     }
 
-    .new-server-btn {
+    .new-site-btn {
         position: static;
         transform: none;
         align-self: stretch;

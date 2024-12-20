@@ -1,5 +1,5 @@
-/* Estilização da tabela de servidores */
-.servers-table {
+/* Estilização da tabela de conexões */
+.connections-table {
     width: 100%;
     border-collapse: collapse;
     background: white;
@@ -8,7 +8,7 @@
     margin-top: 20px;
 }
 
-.servers-table thead th {
+.connections-table thead th {
     background: #f8f9fa;
     padding: 15px;
     text-align: left;
@@ -17,14 +17,14 @@
     border-bottom: 2px solid #edf2f7;
 }
 
-.servers-table tbody td {
+.connections-table tbody td {
     padding: 15px;
     border-bottom: 1px solid #edf2f7;
     color: #4a5568;
     vertical-align: middle;
 }
 
-.servers-table tbody tr:hover {
+.connections-table tbody tr:hover {
     background-color: #f8fafc;
 }
 
@@ -74,7 +74,7 @@
     color: #2d3748;
 }
 
-/* Botão Novo Servidor */
+/* Botão Nova Conexão */
 .new-site-btn {
     background-color: #4299e1;
     color: white;

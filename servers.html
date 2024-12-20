@@ -20,7 +20,7 @@
                 <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
             </li>
             <li>
-                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+                <a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a>
             </li>
             <li class="active">
                 <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
@@ -53,7 +53,7 @@
                 <h1>Servidores</h1>
             </div>
             <div class="header-actions">
-                <button class="new-server-btn">
+                <button class="new-site-btn">
                     <i class="fas fa-plus"></i> Novo Servidor
                 </button>
             </div>
@@ -76,7 +76,7 @@
             <table class="servers-table">
                 <thead>
                     <tr>
-                        <th>Host</th>
+                        <th>Conexão</th>
                         <th>Nome</th>
                         <th>IP</th>
                         <th>Sites</th>
@@ -139,9 +139,9 @@
                         <input type="text" id="serverIP" required>
                     </div>
                     <div class="form-group">
-                        <label for="hostSelect">Host</label>
+                        <label for="hostSelect">Conexão</label>
                         <select id="hostSelect" required>
-                            <option value="">Selecione um host</option>
+                            <option value="">Selecione uma conexão</option>
                             <option value="vultr">Vultr - Servidor Principal</option>
                             <option value="digitalocean">DigitalOcean - Servidor de Backup</option>
                         </select>

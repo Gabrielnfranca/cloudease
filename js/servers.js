@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM
     const searchInput = document.querySelector('.search-bar input');
     const filterBtn = document.querySelector('.filter-btn');
-    const newServerBtn = document.querySelector('.new-server-btn');
+    const newServerBtn = document.querySelector('.new-site-btn');
     const modal = document.getElementById('newServerModal');
     const closeModalBtn = document.querySelector('.close-modal');
     const cancelBtn = document.querySelector('.cancel-btn');

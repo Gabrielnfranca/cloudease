@@ -106,7 +106,7 @@
 }
 
 /* Botão Novo Ticket */
-.new-ticket-btn {
+.new-site-btn {
     background-color: #4299e1;
     color: white;
     border: none;
@@ -120,7 +120,7 @@
     transition: background-color 0.2s;
 }
 
-.new-ticket-btn:hover {
+.new-site-btn:hover {
     background-color: #3182ce;
 }
 
