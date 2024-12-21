@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Conectar Host</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/connect-host.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li class="active">
+                <a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li>
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li>
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Conectar Host</h1>
+            </div>
+        </header>
+
+        <div class="providers-grid">
+            <div class="provider-card">
+                <img src="assets/images/DigitalOcean_logo2.svg.png" alt="DigitalOcean" class="provider-logo digitalocean-logo">
+                <h3>DigitalOcean</h3>
+                <p>Conecte-se aos seus servidores DigitalOcean</p>
+                <button class="connect-btn">Conectar</button>
+            </div>
+
+            <div class="provider-card">
+                <img src="https://www.vultr.com/media/logo_onwhite.png" alt="Vultr" class="provider-logo">
+                <h3>Vultr</h3>
+                <p>Conecte-se aos seus servidores Vultr</p>
+                <button class="connect-btn">Conectar</button>
+            </div>
+
+            <div class="provider-card">
+                <img src="https://www.linode.com/wp-content/uploads/2021/01/Linode-Logo-Black.svg" alt="Linode" class="provider-logo">
+                <h3>Linode</h3>
+                <p>Conecte-se aos seus servidores Linode</p>
+                <button class="connect-btn">Conectar</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/connect-host.js"></script>
+</body>
+</html>
