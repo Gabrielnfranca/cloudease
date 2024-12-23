@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statusClass = 'active';
         } else if (daysUntilExpiry > 0) {
             status = 'Expirando';
-            statusClass = 'warning';
+statusClass = 'warning';  // Mantido como 'warning' para indicar estado de alerta
         } else {
             status = 'Expirado';
             statusClass = 'expired';
