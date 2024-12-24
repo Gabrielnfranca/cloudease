@@ -23,6 +23,65 @@
         .new-site-btn.active {
             background: #1976d2;
         }
+
+        /* Estilos para a seção de detalhes */
+        .server-details {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .provider-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .provider-logo {
+            width: 150px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .server-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .spec-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .spec-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .spec-value {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #e1f5ea;
+            color: #0d8a47;
+        }
     </style>
 </head>
 <body class="dashboard-body">
@@ -91,9 +150,49 @@
         </header>
 
         <section id="detalhes-section" class="content-section">
-            <h2>Detalhes do Servidor</h2>
             <div class="server-details">
-                <p>Informações detalhadas sobre o servidor...</p>
+                <div class="provider-info">
+                    <img src="assets/images/DigitalOcean_logo2.svg.png" alt="DigitalOcean" class="provider-logo">
+                    <div>
+                        <h2>Servidor Web Principal</h2>
+                        <span class="status-badge status-active">Online</span>
+                    </div>
+                </div>
+                
+                <div class="server-specs">
+                    <div class="spec-item">
+                        <div class="spec-label">CPU</div>
+                        <div class="spec-value">2 vCPUs</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Memória RAM</div>
+                        <div class="spec-value">4 GB</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Armazenamento SSD</div>
+                        <div class="spec-value">80 GB</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Transferência</div>
+                        <div class="spec-value">4 TB</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Sistema Operacional</div>
+                        <div class="spec-value">Ubuntu 22.04 LTS</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Região</div>
+                        <div class="spec-value">NYC1 (Nova York)</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Plano</div>
+                        <div class="spec-value">Basic</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Endereço IP</div>
+                        <div class="spec-value">123.456.789.0</div>
+                    </div>
+                </div>
             </div>
         </section>
 
