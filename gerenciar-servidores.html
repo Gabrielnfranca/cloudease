@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
 </head>
 <body class="dashboard-body">
     <nav class="sidebar">
@@ -51,9 +58,26 @@
             <div class="header-title">
                 <h1>Gerenciar Servidores</h1>
             </div>
-            <button class="new-site-btn">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </button>
+            <div class="header-actions">
+                <button class="new-site-btn">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                <button class="new-site-btn">
+                    <i class="fas fa-info-circle"></i> Detalhes
+                </button>
+                <button class="new-site-btn">
+                    <i class="fas fa-key"></i> Acesso
+                </button>
+                <button class="new-site-btn">
+                    <i class="fas fa-cogs"></i> Serviços
+                </button>
+                <button class="new-site-btn">
+                    <i class="fab fa-php"></i> PHP
+                </button>
+                <button class="new-site-btn">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+            </div>
         </header>
 
         <section class="servers-section">
@@ -64,4 +88,3 @@
     <script src="js/servers.js"></script>
 </body>
 </html>
-</create_file>
