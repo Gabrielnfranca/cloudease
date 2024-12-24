@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="css/access.css">
+    <link rel="stylesheet" href="css/services.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .header-actions {
@@ -413,7 +414,181 @@
         <section id="servicos-section" class="content-section">
             <h2>Gerenciamento de Serviços</h2>
             <div class="services-management">
-                <p>Lista e controle de serviços do servidor...</p>
+                <table class="services-table">
+                    <thead>
+                        <tr>
+                            <th>Serviços</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="service-name">
+                                    <i class="fas fa-server"></i>
+                                    Nginx
+                                </div>
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn start" data-tooltip="Iniciar serviço">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="action-btn stop" data-tooltip="Parar serviço">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <button class="action-btn restart" data-tooltip="Reiniciar serviço">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="service-name">
+                                    <i class="fas fa-database"></i>
+                                    MySQL
+                                </div>
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn start" data-tooltip="Iniciar serviço">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="action-btn stop" data-tooltip="Parar serviço">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <button class="action-btn restart" data-tooltip="Reiniciar serviço">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="service-name">
+                                    <i class="fab fa-php"></i>
+                                    PHP 5.6
+                                    <span class="version-badge">5.6</span>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn start" data-tooltip="Iniciar serviço">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="action-btn stop" data-tooltip="Parar serviço">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <button class="action-btn restart" data-tooltip="Reiniciar serviço">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="service-name">
+                                    <i class="fab fa-php"></i>
+                                    PHP 7.3
+                                    <span class="version-badge">7.3</span>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn start" data-tooltip="Iniciar serviço">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="action-btn stop" data-tooltip="Parar serviço">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <button class="action-btn restart" data-tooltip="Reiniciar serviço">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="service-name">
+                                    <i class="fas fa-cube"></i>
+                                    Redis
+                                </div>
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn start" data-tooltip="Iniciar serviço">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="action-btn stop" data-tooltip="Parar serviço">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <button class="action-btn restart" data-tooltip="Reiniciar serviço">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="service-name">
+                                    <i class="fas fa-mail-bulk"></i>
+                                    Postfix
+                                </div>
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn start" data-tooltip="Iniciar serviço">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="action-btn stop" data-tooltip="Parar serviço">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <button class="action-btn restart" data-tooltip="Reiniciar serviço">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
@@ -434,5 +609,6 @@
     <script src="js/servers.js"></script>
     <script src="js/gerenciar-servidores.js"></script>
     <script src="js/access.js"></script>
+    <script src="js/services.js"></script>
 </body>
 </html>
