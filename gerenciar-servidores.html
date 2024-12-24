@@ -13,6 +13,16 @@
             gap: 10px;
             align-items: center;
         }
+        .content-section {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .new-site-btn.active {
+            background: #1976d2;
+        }
     </style>
 </head>
 <body class="dashboard-body">
@@ -59,32 +69,63 @@
                 <h1>Gerenciar Servidores</h1>
             </div>
             <div class="header-actions">
-                <button class="new-site-btn">
+                <button class="new-site-btn" data-section="voltar">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
-                <button class="new-site-btn">
+                <button class="new-site-btn" data-section="detalhes-section">
                     <i class="fas fa-info-circle"></i> Detalhes
                 </button>
-                <button class="new-site-btn">
+                <button class="new-site-btn" data-section="acesso-section">
                     <i class="fas fa-key"></i> Acesso
                 </button>
-                <button class="new-site-btn">
+                <button class="new-site-btn" data-section="servicos-section">
                     <i class="fas fa-cogs"></i> Serviços
                 </button>
-                <button class="new-site-btn">
+                <button class="new-site-btn" data-section="php-section">
                     <i class="fab fa-php"></i> PHP
                 </button>
-                <button class="new-site-btn">
+                <button class="new-site-btn" data-section="excluir-section">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
         </header>
 
-        <section class="servers-section">
-            <h2 class="section-title">Lista de Servidores</h2>
-            <!-- Aqui você pode adicionar a lista de servidores -->
+        <section id="detalhes-section" class="content-section">
+            <h2>Detalhes do Servidor</h2>
+            <div class="server-details">
+                <p>Informações detalhadas sobre o servidor...</p>
+            </div>
+        </section>
+
+        <section id="acesso-section" class="content-section">
+            <h2>Controle de Acesso</h2>
+            <div class="access-controls">
+                <p>Configurações de acesso ao servidor...</p>
+            </div>
+        </section>
+
+        <section id="servicos-section" class="content-section">
+            <h2>Gerenciamento de Serviços</h2>
+            <div class="services-management">
+                <p>Lista e controle de serviços do servidor...</p>
+            </div>
+        </section>
+
+        <section id="php-section" class="content-section">
+            <h2>Configurações PHP</h2>
+            <div class="php-settings">
+                <p>Configurações e versões do PHP...</p>
+            </div>
+        </section>
+
+        <section id="excluir-section" class="content-section">
+            <h2>Excluir Servidor</h2>
+            <div class="delete-confirmation">
+                <p>Confirmação para excluir o servidor...</p>
+            </div>
         </section>
     </main>
     <script src="js/servers.js"></script>
+    <script src="js/gerenciar-servidores.js"></script>
 </body>
 </html>
