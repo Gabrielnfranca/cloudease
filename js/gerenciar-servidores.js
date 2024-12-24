@@ -5,9 +5,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para mostrar uma seção específica
     function showSection(sectionId) {
+        // Se for o botão voltar, retorna à página anterior
+        if (sectionId === 'voltar') {
+            window.history.back();
+            return;
+        }
+
         // Esconde todas as seções
         sections.forEach(section => {
             section.style.display = 'none';
+        });
+
+        // Remove a classe active de todos os botões
+        buttons.forEach(button => {
+            button.classList.remove('active');
         });
 
         // Mostra a seção selecionada
@@ -16,13 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
             activeSection.style.display = 'block';
         }
 
-        // Atualiza o estado ativo dos botões
-        buttons.forEach(button => {
-            button.classList.remove('active');
-            if (button.getAttribute('data-section') === sectionId) {
-                button.classList.add('active');
-            }
-        });
+        // Adiciona a classe active ao botão clicado
+        const activeButton = document.querySelector(`[data-section="${sectionId}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
     }
 
     // Adiciona evento de clique para cada botão

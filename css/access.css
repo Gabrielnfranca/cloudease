@@ -1,0 +1,251 @@
+.access-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.access-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.access-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.access-header {
+    padding: 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.access-header i {
+    font-size: 20px;
+    color: #2196f3;
+    width: 24px;
+    text-align: center;
+}
+
+.access-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #1e3c72;
+}
+
+.access-content {
+    padding: 16px;
+}
+
+.access-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.access-item:last-child {
+    border-bottom: none;
+}
+
+.access-label {
+    width: 80px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.access-value {
+    flex: 1;
+    font-family: monospace;
+    color: #334155;
+    padding: 6px 12px;
+    background: #f8fafc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.button-group {
+    display: flex;
+    gap: 4px;
+}
+
+.copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #64748b;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+}
+
+.copy-btn.copied {
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.copy-btn.copied i {
+    animation: pop 0.3s ease;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    color: #64748b;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+    transform: translateY(-1px);
+}
+
+/* Tools Section */
+.tools-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.tool-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.tool-item:hover {
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tool-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.tool-label i {
+    color: #2196f3;
+    width: 16px;
+    text-align: center;
+}
+
+.tool-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tool-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    transition: background-color 0.3s ease;
+}
+
+.usage-bar {
+    width: 100px;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.usage-progress {
+    height: 100%;
+    background: #2196f3;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.usage-text {
+    min-width: 40px;
+    text-align: right;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Tooltips */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    padding: 6px 10px;
+    background: #334155;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .access-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .access-grid {
+        grid-template-columns: 1fr;
+    }
+}
