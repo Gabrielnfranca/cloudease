@@ -14,7 +14,7 @@
             align-items: flex-start; /* Alinha o conteúdo do formulário à esquerda */
             padding-left: 0; /* Remove o padding à esquerda do formulário */
             padding-right: 0; /* Remove o padding à direita do formulário */
-            width: 70%; /* Define a largura do formulário para 70% */
+            width: 100%; /* Define a largura do formulário para 100% para seguir o padrão do cabeçalho */
         }
         #connectHostForm {
             margin-right: 0; /* Remove a margem à direita do formulário */
@@ -24,6 +24,11 @@
         }
         .form-section {
             margin-right: 160px; /* Adiciona margem à direita da seção do formulário */
+        }
+        .back-button {
+            width: 150px; /* Define a largura do botão */
+            padding: 10px; /* Adiciona padding para aumentar a área clicável */
+            margin-bottom: 20px; /* Margem inferior */
         }
     </style>
 </head>
@@ -37,7 +42,7 @@
             <li>
                 <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
             </li>
-            <li>
+            <li class="active">
                 <a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a>
             </li>
             <li>
@@ -70,6 +75,9 @@
             <div class="header-title">
                 <h1>Conectar Host - Vultr</h1>
             </div>
+            <div class="header-back">
+                <button class="back-button" onclick="window.location.href='file:///C:/Users/gabri/OneDrive/Documentos/SISTEMAS/teste%20git/cloudease/connect-host.html'">Voltar</button>
+            </div>
         </header>
 
         <div class="logo-container">
@@ -79,7 +87,7 @@
         <section class="form-section" style="margin-top: 40px;">
             <h2>Configurações de Conexão</h2>
             <div class="form-container" style="margin-top: 20px;">
-                <form id="connectHostForm">
+                <form id="connectHostForm" action="cloudease/connect-host-vultr.html" method="GET">
                     <label for="hostName">Nome do Host:</label>
                     <input type="text" id="hostName" required>
                     
