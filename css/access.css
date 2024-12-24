@@ -1,6 +1,6 @@
 .access-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     padding: 20px;
 }
@@ -10,12 +10,10 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.access-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .access-header {
@@ -42,6 +40,9 @@
 
 .access-content {
     padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .access-item {
@@ -53,6 +54,8 @@
 
 .access-item:last-child {
     border-bottom: none;
+    margin-top: auto;
+    padding-top: 16px;
 }
 
 .access-label {
@@ -63,6 +66,7 @@
 
 .access-value {
     flex: 1;
+    margin: 0 12px;
     font-family: monospace;
     color: #334155;
     padding: 6px 12px;
@@ -74,64 +78,63 @@
 .button-group {
     display: flex;
     gap: 4px;
+    margin-left: auto;
 }
 
 .copy-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: none;
-    border: none;
-    color: #64748b;
-    padding: 6px;
     width: 32px;
     height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    color: #64748b;
     cursor: pointer;
-    border-radius: 4px;
     transition: all 0.2s ease;
 }
 
 .copy-btn:hover {
-    background: rgba(33, 150, 243, 0.1);
+    background: #f8fafc;
+    border-color: #2196f3;
     color: #2196f3;
-}
-
-.copy-btn.copied {
-    color: #22c55e;
-    background: rgba(34, 197, 94, 0.1);
-}
-
-.copy-btn.copied i {
-    animation: pop 0.3s ease;
 }
 
 .action-buttons {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
+    justify-content: center;
+    width: 100%;
 }
 
 .action-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 8px 12px;
-    background: #f8fafc;
+    padding: 8px 16px;
     border: 1px solid #e2e8f0;
-    border-radius: 4px;
+    border-radius: 6px;
+    background: white;
     color: #64748b;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
+    flex: 1;
+}
+
+.action-btn i {
+    font-size: 16px;
 }
 
 .action-btn:hover {
-    background: rgba(33, 150, 243, 0.1);
+    background: #f8fafc;
+    border-color: #2196f3;
     color: #2196f3;
-    transform: translateY(-1px);
 }
 
-/* Tools Section */
+/* Tools Card */
 .tools-grid {
     display: grid;
     gap: 12px;
@@ -145,12 +148,6 @@
     background: #f8fafc;
     border-radius: 6px;
     border: 1px solid #e2e8f0;
-    transition: all 0.2s ease;
-}
-
-.tool-item:hover {
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .tool-label {
@@ -178,7 +175,6 @@
     height: 8px;
     border-radius: 50%;
     background: #22c55e;
-    transition: background-color 0.3s ease;
 }
 
 .usage-bar {
@@ -193,7 +189,6 @@
     height: 100%;
     background: #2196f3;
     border-radius: 3px;
-    transition: width 0.3s ease;
 }
 
 .usage-text {
@@ -223,6 +218,7 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
+    z-index: 1000;
 }
 
 [data-tooltip]:hover:before {
@@ -231,21 +227,18 @@
     transform: translateX(-50%) translateY(0);
 }
 
-@keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
 /* Responsividade */
-@media (max-width: 1200px) {
-    .access-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
 @media (max-width: 768px) {
     .access-grid {
         grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
     }
 }

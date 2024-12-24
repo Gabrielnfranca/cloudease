@@ -1,116 +1,103 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos do DOM
-    const searchInput = document.querySelector('.search-bar input');
-    const filterBtn = document.querySelector('.filter-btn');
-    const newServerBtn = document.querySelector('.new-site-btn');
-    const modal = document.getElementById('newServerModal');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const serverForm = document.getElementById('newServerForm');
-    const serversTable = document.querySelector('.servers-table tbody');
+    // Dados de exemplo dos servidores
+    const servers = [
+        {
+            provider: 'DigitalOcean',
+            name: 'Servidor Web Principal',
+            logo: 'assets/images/DigitalOcean_logo2.svg.png',
+            cpu: '2 vCPUs',
+            ram: '4 GB',
+            storage: '80 GB',
+            transfer: '4 TB',
+            os: 'Ubuntu 22.04 LTS',
+            region: 'NYC1 (Nova York)',
+            plan: 'Basic',
+            ipv4: '123.456.789.0',
+            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+            services: {
+                nginx: true,
+                mysql: true,
+                php56: false,
+                php70: false,
+                php71: false,
+                php72: false,
+                php73: true,
+                redis: true,
+                postfix: true
+            }
+        },
+        {
+            provider: 'Vultr',
+            name: 'Servidor de Desenvolvimento',
+            logo: 'assets/images/Logo Vultr.webp',
+            cpu: '1 vCPU',
+            ram: '2 GB',
+            storage: '40 GB',
+            transfer: '2 TB',
+            os: 'Ubuntu 20.04 LTS',
+            region: 'MIA (Miami)',
+            plan: 'Starter',
+            ipv4: '987.654.321.0',
+            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7335',
+            services: {
+                nginx: true,
+                mysql: true,
+                php56: true,
+                php70: true,
+                php71: false,
+                php72: false,
+                php73: false,
+                redis: false,
+                postfix: true
+            }
+        },
+        {
+            provider: 'Linode',
+            name: 'Servidor de Produção',
+            logo: 'assets/images/Linode-Logo-Black.svg',
+            cpu: '4 vCPUs',
+            ram: '8 GB',
+            storage: '160 GB',
+            transfer: '5 TB',
+            os: 'Ubuntu 22.04 LTS',
+            region: 'FRA (Frankfurt)',
+            plan: 'Professional',
+            ipv4: '456.789.123.0',
+            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7336',
+            services: {
+                nginx: true,
+                mysql: true,
+                php56: false,
+                php70: true,
+                php71: true,
+                php72: true,
+                php73: true,
+                redis: true,
+                postfix: true
+            }
+        }
+    ];
 
-    // Funções de busca
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const rows = serversTable.querySelectorAll('tr');
+    // Função para selecionar um servidor e redirecionar
+    function selectServer(server) {
+        // Armazena os dados do servidor selecionado
+        localStorage.setItem('selectedServer', JSON.stringify(server));
+        // Redireciona para a página de gerenciamento
+        window.location.href = 'gerenciar-servidores.html';
+    }
 
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
+    // Adiciona eventos de clique aos cards de servidores
+    document.querySelectorAll('.server-card').forEach((card, index) => {
+        card.addEventListener('click', () => {
+            selectServer(servers[index]);
         });
     });
 
-    // Funções do modal
-    function openModal() {
-        modal.style.display = 'block';
-    }
-
-    function closeModal() {
-        modal.style.display = 'none';
-        serverForm.reset();
-    }
-
-    newServerBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-
-    // Fechar modal ao clicar fora dele
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Manipulação do formulário
-    serverForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const newServer = {
-            name: document.getElementById('serverName').value,
-            ip: document.getElementById('serverIP').value,
-            host: document.getElementById('hostSelect').value,
-            type: document.getElementById('serverType').value
-        };
-
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
-        console.log('Novo servidor:', newServer);
-
-        // Obter informações do host selecionado
-        const hostOption = document.getElementById('hostSelect').selectedOptions[0];
-        const hostName = hostOption.text;
-        const hostLogo = newServer.host === 'vultr' ? 
-            'https://www.vultr.com/favicon.ico' : 
-            'https://assets.digitalocean.com/favicon.ico';
-
-        // Adicionar nova linha na tabela
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>
-                <img src="${hostLogo}" alt="${hostName}" class="provider-logo">
-            </td>
-            <td>${newServer.name}</td>
-            <td>${newServer.ip}</td>
-            <td>0 ativos</td>
-            <td>${new Date().toLocaleDateString()}</td>
-            <td><span class="status-badge active">Online</span></td>
-            <td class="actions">
-                <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
-                <button class="action-btn" title="Desligar"><i class="fas fa-power-off"></i></button>
-            </td>
-        `;
-
-        serversTable.appendChild(newRow);
-        closeModal();
-    });
-
-    // Ações dos servidores
-    serversTable.addEventListener('click', function(e) {
-        const actionBtn = e.target.closest('.action-btn');
-        if (!actionBtn) return;
-
-        const action = actionBtn.title;
-        const row = actionBtn.closest('tr');
-        const serverName = row.querySelector('td:nth-child(2)').textContent;
-
-        switch(action) {
-            case 'Configurações':
-                console.log(`Abrindo configurações para ${serverName}`);
-                break;
-            case 'Reiniciar':
-                if (confirm(`Deseja reiniciar o servidor ${serverName}?`)) {
-                    console.log(`Reiniciando ${serverName}`);
-                }
-                break;
-            case 'Desligar':
-                if (confirm(`Deseja desligar o servidor ${serverName}?`)) {
-                    console.log(`Desligando ${serverName}`);
-                    const statusBadge = row.querySelector('.status-badge');
-                    statusBadge.textContent = 'Offline';
-                    statusBadge.classList.remove('active');
-                    statusBadge.classList.add('inactive');
-                }
-                break;
-        }
+    // Adiciona eventos de clique aos botões de gerenciar
+    document.querySelectorAll('.manage-server-btn').forEach((btn, index) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que o evento de clique do card seja acionado
+            selectServer(servers[index]);
+        });
     });
 });
