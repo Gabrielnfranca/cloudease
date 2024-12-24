@@ -25,10 +25,40 @@
         .form-section {
             margin-right: 160px; /* Adiciona margem à direita da seção do formulário */
         }
-        .back-button {
-            width: 150px; /* Define a largura do botão */
-            padding: 10px; /* Adiciona padding para aumentar a área clicável */
-            margin-bottom: 20px; /* Margem inferior */
+        .connect-btn {
+            --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands";
+            --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free";
+            --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Free";
+            margin: 0;
+            box-sizing: border-box;
+            width: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-size: 16px;
+            justify-content: center;
+            background-color: #4299e1; /* Cor do botão "Conectar" */
+            color: white; /* Cor do texto do botão "Conectar" */
+            border: none; /* Remove a borda padrão */
+            padding: 10px 20px; /* Define o padding do botão "Conectar" */
+            border-radius: 6px; /* Adiciona borda arredondada ao botão "Conectar" */
+            cursor: pointer; /* Muda o cursor para indicar que é clicável */
+            display: flex; /* Alinha o conteúdo do botão "Conectar" */
+            align-items: center; /* Alinha os itens do botão "Conectar" verticalmente */
+            gap: 8px; /* Espaçamento entre os itens do botão "Conectar" */
+            font-weight: 500; /* Define o peso da fonte do botão "Conectar" */
+            transition: background-color 0.2s; /* Transição suave para a cor de fundo do botão "Conectar" */
+        }
+        .new-site-btn {
+            background-color: #4299e1; /* Cor do botão "Voltar" */
+            color: white; /* Cor do texto do botão "Voltar" */
+            border: none; /* Remove a borda padrão do botão "Voltar" */
+            padding: 10px 20px; /* Define o padding do botão "Voltar" */
+            border-radius: 6px; /* Adiciona borda arredondada ao botão "Voltar" */
+            cursor: pointer; /* Muda o cursor para indicar que é clicável */
+            display: flex; /* Alinha o conteúdo do botão "Voltar" */
+            align-items: center; /* Alinha os itens do botão "Voltar" verticalmente */
+            gap: 8px; /* Espaçamento entre os itens do botão "Voltar" */
+            font-weight: 500; /* Define o peso da fonte do botão "Voltar" */
+            transition: background-color 0.2s; /* Transição suave para a cor de fundo do botão "Voltar" */
         }
     </style>
 </head>
@@ -76,7 +106,9 @@
                 <h1>Conectar Host - Vultr</h1>
             </div>
             <div class="header-back">
-                <button class="back-button" onclick="window.location.href='file:///C:/Users/gabri/OneDrive/Documentos/SISTEMAS/teste%20git/cloudease/connect-host.html'">Voltar</button>
+                <button class="new-site-btn" onclick="window.location.href='file:///C:/Users/gabri/OneDrive/Documentos/SISTEMAS/teste%20git/cloudease/connect-host.html'">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
             </div>
         </header>
 
@@ -94,7 +126,7 @@
                     <label for="token">Token:</label>
                     <input type="text" id="token" required>
                     
-                    <button type="submit">Conectar</button>
+                    <button type="submit" class="connect-btn"><i class="fas fa-plug"></i> Conectar</button>
                 </form>
             </div>
         </section>
@@ -102,3 +134,4 @@
     <script src="js/connect-host.js"></script>
 </body>
 </html>
+</edit_file>
