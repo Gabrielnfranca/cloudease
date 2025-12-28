@@ -1,4 +1,5 @@
 import db from '../lib/db';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
     try {
@@ -39,9 +40,35 @@ export default async function handler(req, res) {
             );
         `);
 
-        res.status(200).json({ message: 'Banco de dados configurado com sucesso!' });
+        // Criar usuário admin padrão
+        const email = 'admin@cloudease.com';
+        const password = 'admin123';
+        const name = 'Administrador';
+
+        const userCheck = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+        
+        let message = 'Banco de dados configurado com sucesso!';
+
+        if (userCheck.rows.length === 0) {
+             const salt = await bcrypt.genSalt(10);
+             const hashedPassword = await bcrypt.hash(password, salt);
+             
+             await db.query(
+                'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
+                [name, email, hashedPassword]
+            );
+            message += ' Usuário admin criado: admin@cloudease.com / admin123';
+        } else {
+            message += ' Usuário admin já existe.';
+        }
+
+        res.status(200).json({ success: true, message });
     } catch (error) {
         console.error('Erro ao configurar banco de dados:', error);
-        res.status(500).json({ error: 'Erro ao configurar banco de dados', details: error.message });
+        res.status(500).json({ 
+            error: 'Erro ao configurar banco de dados', 
+            details: error.message,
+            stack: error.stack 
+        });
     }
 }
