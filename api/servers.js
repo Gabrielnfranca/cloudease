@@ -5,26 +5,9 @@ export default async function handler(req, res) {
         // Busca servidores do banco de dados (tabela de cache)
         const { rows } = await db.query('SELECT * FROM servers_cache');
 
-        // Se não tiver nada no banco, retornamos um array vazio ou os dados de exemplo
+        // Se não tiver nada no banco, retornamos um array vazio
         if (rows.length === 0) {
-             const mockServers = [
-                {
-                    provider: 'Sistema',
-                    name: 'Nenhum servidor conectado',
-                    logo: 'assets/images/server-icon.png',
-                    cpu: '-',
-                    ram: '-',
-                    storage: '-',
-                    transfer: '-',
-                    os: '-',
-                    region: '-',
-                    plan: '-',
-                    ipv4: '-',
-                    ipv6: '-',
-                    services: {}
-                }
-            ];
-            return res.status(200).json(mockServers);
+            return res.status(200).json([]);
         }
 
         // Mapeia os dados do banco para o formato que o frontend espera

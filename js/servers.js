@@ -8,26 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const servers = await response.json();
             renderServers(servers);
         } catch (error) {
-            console.log('API não disponível, usando dados locais de fallback ou erro:', error);
-            // Fallback para dados locais se a API falhar
-            const localServers = [
-                {
-                    provider: 'Local',
-                    name: 'Servidor Demo (Sem API)',
-                    logo: 'assets/images/server-icon.png',
-                    cpu: '1 vCPU',
-                    ram: '1 GB',
-                    storage: '20 GB',
-                    transfer: '1 TB',
-                    os: 'Ubuntu',
-                    region: 'Local',
-                    plan: 'Demo',
-                    ipv4: '127.0.0.1',
-                    ipv6: '::1',
-                    services: { nginx: true }
-                }
-            ];
-            renderServers(localServers);
+            console.log('API não disponível ou erro:', error);
+            renderServers([]);
         }
     }
 
