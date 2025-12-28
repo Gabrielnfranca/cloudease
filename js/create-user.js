@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const registerForm = document.querySelector('form[action="/register"]');
+    const registerForm = document.getElementById('registerForm');
     
     if (registerForm) {
         registerForm.addEventListener('submit', async function(e) {
