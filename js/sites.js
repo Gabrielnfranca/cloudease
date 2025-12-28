@@ -1,137 +1,112 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos do DOM
+    loadSites();
+
+    // Elementos de busca
     const searchInput = document.querySelector('.search-bar input');
-    const filterBtn = document.querySelector('.filter-btn');
-    const newSiteBtn = document.querySelector('.new-site-btn');
-    const modal = document.getElementById('newSiteModal');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const siteForm = document.getElementById('newSiteForm');
-    const sitesTable = document.querySelector('.sites-table tbody');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.sites-table tbody tr');
 
-    // Funções de busca
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const rows = sitesTable.querySelectorAll('tr');
-
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
         });
-    });
-
-    // Funções do modal
-    function openModal() {
-        modal.style.display = 'block';
     }
 
-    function closeModal() {
-        modal.style.display = 'none';
-        siteForm.reset();
+    async function loadSites() {
+        const tbody = document.querySelector('.sites-table tbody');
+        if (!tbody) return;
+
+        try {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Carregando sites...</td></tr>';
+
+            const response = await fetch('/api/sites');
+            if (!response.ok) throw new Error('Falha na API');
+            
+            const sites = await response.json();
+            renderSites(sites);
+        } catch (error) {
+            console.error('Erro:', error);
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: red;">Erro ao carregar sites.</td></tr>';
+        }
     }
 
-    newSiteBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
+    function renderSites(sites) {
+        const tbody = document.querySelector('.sites-table tbody');
+        tbody.innerHTML = '';
 
-    // Fechar modal ao clicar fora dele
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
+        if (sites.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 40px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; color: #718096;">
+                            <i class="fas fa-globe" style="font-size: 48px; color: #cbd5e0;"></i>
+                            <p>Nenhum site criado ainda.</p>
+                            <button class="new-site-btn" onclick="window.location.href='create-site.html'" style="font-size: 14px; padding: 8px 16px; background-color: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                Criar meu primeiro site
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
         }
-    });
 
-    // Manipulação do formulário
-    siteForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const newSite = {
-            domain: document.getElementById('siteDomain').value,
-            platform: document.getElementById('platform').value,
-            server: document.getElementById('serverSelect').value,
-            ssl: document.getElementById('sslType').value
-        };
-
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
-        console.log('Novo site:', newSite);
-
-        // Obter informações do servidor selecionado
-        const serverOption = document.getElementById('serverSelect').selectedOptions[0];
-        const serverInfo = serverOption.text.match(/(.*?)\s*\((.*?)\)/);
-        const serverName = serverInfo[1];
-        const serverIP = serverInfo[2];
-
-        // Obter logo da plataforma
-        const platformLogos = {
-            wordpress: 'https://wordpress.org/favicon.ico',
-            drupal: 'https://www.drupal.org/favicon.ico',
-            joomla: 'https://www.joomla.org/favicon.ico',
-            custom: 'https://via.placeholder.com/20'
-        };
-
-        // Adicionar nova linha na tabela
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>
-                <img src="${platformLogos[newSite.platform]}" alt="${newSite.platform}" class="platform-logo">
-                ${newSite.platform.charAt(0).toUpperCase() + newSite.platform.slice(1)}
-            </td>
-            <td>${newSite.domain}</td>
-            <td><span class="ssl-badge active">Ativo</span></td>
-            <td>${serverName}</td>
-            <td>${serverIP}</td>
-            <td>${new Date().toLocaleDateString()}</td>
-            <td class="actions">
-                <button class="action-btn" title="Acessar"><i class="fas fa-external-link-alt"></i></button>
-                <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                <button class="action-btn" title="Renovar SSL"><i class="fas fa-shield-alt"></i></button>
-            </td>
-        `;
-
-        sitesTable.appendChild(newRow);
-        closeModal();
-    });
-
-    // Ações dos sites
-    sitesTable.addEventListener('click', function(e) {
-        const actionBtn = e.target.closest('.action-btn');
-        if (!actionBtn) return;
-
-        const action = actionBtn.title;
-        const row = actionBtn.closest('tr');
-        const domain = row.querySelector('td:nth-child(2)').textContent;
-
-        switch(action) {
-            case 'Acessar':
-                window.open(`https://${domain}`, '_blank');
-                break;
-            case 'Configurações':
-                console.log(`Abrindo configurações para ${domain}`);
-                break;
-            case 'Renovar SSL':
-                if (confirm(`Deseja renovar o certificado SSL para ${domain}?`)) {
-                    console.log(`Renovando SSL para ${domain}`);
-                    const sslBadge = row.querySelector('.ssl-badge');
-                    sslBadge.textContent = 'Ativo';
-                    sslBadge.className = 'ssl-badge active';
-                }
-                break;
-        }
-    });
-
-    // Verificar validade dos certificados SSL (simulação)
-    function checkSSLStatus() {
-        const sslBadges = document.querySelectorAll('.ssl-badge');
-        sslBadges.forEach(badge => {
-            // Simulação: 30% de chance de mostrar o SSL como expirando
-            if (Math.random() < 0.3) {
-                badge.textContent = 'Expirando';
-                badge.className = 'ssl-badge warning';
+        sites.forEach(site => {
+            const tr = document.createElement('tr');
+            
+            // Ícone da plataforma
+            let iconHtml = '';
+            if (site.platform === 'wordpress') {
+                iconHtml = `<i class="fab fa-wordpress" style="color: #21759b; font-size: 20px; margin-right: 8px;"></i>`;
+            } else if (site.platform === 'html') {
+                iconHtml = `<i class="fab fa-html5" style="color: #e34f26; font-size: 20px; margin-right: 8px;"></i>`;
+            } else {
+                iconHtml = `<i class="fab fa-php" style="color: #777bb3; font-size: 20px; margin-right: 8px;"></i>`;
             }
+
+            // Status Badge
+            let statusClass = 'active';
+            let statusText = 'Ativo';
+            let statusIcon = '<i class="fas fa-check-circle"></i>';
+            
+            if (site.status === 'provisioning') {
+                statusClass = 'warning';
+                statusText = 'Criando...';
+                statusIcon = '<i class="fas fa-spinner fa-spin"></i>';
+            } else if (site.status === 'error') {
+                statusClass = 'danger';
+                statusText = 'Erro';
+                statusIcon = '<i class="fas fa-exclamation-circle"></i>';
+            }
+
+            tr.innerHTML = `
+                <td>
+                    <div style="display: flex; align-items: center;">
+                        ${iconHtml}
+                        ${site.platformLabel}
+                    </div>
+                </td>
+                <td>
+                    <a href="http://${site.domain}" target="_blank" style="color: #4299e1; text-decoration: none; font-weight: 500;">
+                        ${site.domain} <i class="fas fa-external-link-alt" style="font-size: 12px;"></i>
+                    </a>
+                </td>
+                <td>
+                    <span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>
+                </td>
+                <td>${site.server}</td>
+                <td>${site.ip}</td>
+                <td>${site.created_at}</td>
+                <td class="actions">
+                    <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
+                    <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
+                    <button class="action-btn delete-btn" title="Excluir"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
     }
-
-    // Verificar status dos SSL a cada 5 minutos
-    checkSSLStatus();
-    setInterval(checkSSLStatus, 300000);
 });

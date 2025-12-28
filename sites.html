@@ -86,91 +86,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <img src="https://wordpress.org/favicon.ico" alt="WordPress" class="platform-logo">
-                            WordPress
-                        </td>
-                        <td>exemplo1.com.br</td>
-                        <td><span class="ssl-badge active">Ativo</span></td>
-                        <td>Servidor Principal</td>
-                        <td>192.168.1.100</td>
-                        <td>15/03/2024</td>
-                        <td class="actions">
-                            <button class="action-btn" title="Acessar"><i class="fas fa-external-link-alt"></i></button>
-                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                            <button class="action-btn" title="Renovar SSL"><i class="fas fa-shield-alt"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img src="https://www.drupal.org/favicon.ico" alt="Drupal" class="platform-logo">
-                            Drupal
-                        </td>
-                        <td>exemplo2.com.br</td>
-                        <td><span class="ssl-badge warning">Expirando</span></td>
-                        <td>Servidor de Backup</td>
-                        <td>192.168.1.101</td>
-                        <td>20/03/2024</td>
-                        <td class="actions">
-                            <button class="action-btn" title="Acessar"><i class="fas fa-external-link-alt"></i></button>
-                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                            <button class="action-btn" title="Renovar SSL"><i class="fas fa-shield-alt"></i></button>
-                        </td>
-                    </tr>
+                    <!-- Preenchido via JS -->
                 </tbody>
             </table>
         </div>
     </main>
 
-    <!-- Modal para adicionar novo site -->
-    <div class="modal" id="newSiteModal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Adicionar Novo Site</h2>
-                <button class="close-modal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="newSiteForm">
-                    <div class="form-group">
-                        <label for="siteDomain">Domínio</label>
-                        <input type="text" id="siteDomain" required placeholder="exemplo.com.br">
-                    </div>
-                    <div class="form-group">
-                        <label for="platform">Plataforma</label>
-                        <select id="platform" required>
-                            <option value="">Selecione a plataforma</option>
-                            <option value="wordpress">WordPress</option>
-                            <option value="drupal">Drupal</option>
-                            <option value="joomla">Joomla</option>
-                            <option value="custom">Personalizado</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="serverSelect">Servidor</label>
-                        <select id="serverSelect" required>
-                            <option value="">Selecione o servidor</option>
-                            <option value="main">Servidor Principal (192.168.1.100)</option>
-                            <option value="backup">Servidor de Backup (192.168.1.101)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="sslType">Certificado SSL</label>
-                        <select id="sslType" required>
-                            <option value="">Selecione o tipo de SSL</option>
-                            <option value="letsencrypt">Let's Encrypt (Gratuito)</option>
-                            <option value="comodo">Comodo SSL</option>
-                            <option value="symantec">Symantec SSL</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn">Cancelar</button>
-                        <button type="submit" class="submit-btn">Adicionar Site</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
 
     <script src="js/sites.js"></script>
 </body>
