@@ -106,7 +106,7 @@
                 <h1>Conectar Host - Vultr</h1>
             </div>
             <div class="header-back">
-                <button class="new-site-btn" onclick="window.location.href='file:///C:/Users/gabri/OneDrive/Documentos/SISTEMAS/teste%20git/cloudease/connect-host.html'">
+                <button class="new-site-btn" onclick="window.location.href='connect-host.html'">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
             </div>
@@ -119,19 +119,59 @@
         <section class="form-section" style="margin-top: 40px;">
             <h2>Configurações de Conexão</h2>
             <div class="form-container" style="margin-top: 20px;">
-                <form id="connectHostForm" action="cloudease/connect-host-vultr.html" method="GET">
+                <form id="connectHostForm">
                     <label for="hostName">Nome do Host:</label>
-                    <input type="text" id="hostName" required>
+                    <input type="text" id="hostName" name="name" required>
                     
                     <label for="token">Token:</label>
-                    <input type="text" id="token" required>
+                    <input type="text" id="token" name="token" required>
                     
                     <button type="submit" class="connect-btn"><i class="fas fa-plug"></i> Conectar</button>
                 </form>
             </div>
         </section>
     </main>
-    <script src="js/connect-host.js"></script>
+    <script>
+        document.getElementById('connectHostForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
+
+            const formData = {
+                provider: 'vultr',
+                name: document.getElementById('hostName').value,
+                token: document.getElementById('token').value
+            };
+
+            try {
+                const response = await fetch('/api/connect-provider', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Conectado com sucesso!');
+                    window.location.href = 'connections.html';
+                } else {
+                    alert('Erro: ' + (data.error || 'Falha na conexão'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão. Tente novamente.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    </script>
 </body>
 </html>
 </edit_file>
