@@ -1,56 +1,52 @@
-export default function handler(req, res) {
-    const servers = [
-        {
-            provider: 'Vultr',
-            name: 'Servidor Principal (Via Vercel API)',
-            logo: 'https://www.vultr.com/favicon.ico',
-            cpu: '2 vCPUs',
-            ram: '4 GB',
-            storage: '80 GB',
-            transfer: '4 TB',
-            os: 'Ubuntu 22.04 LTS',
-            region: 'NYC1 (Nova York)',
-            plan: 'Basic',
-            ipv4: '192.168.1.100',
-            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
-            services: {
-                nginx: true,
-                mysql: true,
-                php56: false,
-                php70: false,
-                php71: false,
-                php72: false,
-                php73: true,
-                redis: true,
-                postfix: true
-            }
-        },
-        {
-            provider: 'DigitalOcean',
-            name: 'Servidor de Backup (Via Vercel API)',
-            logo: 'https://assets.digitalocean.com/favicon.ico',
-            cpu: '1 vCPU',
-            ram: '2 GB',
-            storage: '40 GB',
-            transfer: '2 TB',
-            os: 'Ubuntu 20.04 LTS',
-            region: 'MIA (Miami)',
-            plan: 'Starter',
-            ipv4: '192.168.1.101',
-            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7335',
-            services: {
-                nginx: true,
-                mysql: true,
-                php56: true,
-                php70: true,
-                php71: false,
-                php72: false,
-                php73: false,
-                redis: false,
-                postfix: true
-            }
-        }
-    ];
+import db from '../lib/db';
 
-    res.status(200).json(servers);
+export default async function handler(req, res) {
+    try {
+        // Busca servidores do banco de dados (tabela de cache)
+        const { rows } = await db.query('SELECT * FROM servers_cache');
+
+        // Se não tiver nada no banco, retornamos um array vazio ou os dados de exemplo
+        if (rows.length === 0) {
+             const mockServers = [
+                {
+                    provider: 'Sistema',
+                    name: 'Nenhum servidor conectado',
+                    logo: 'assets/images/server-icon.png',
+                    cpu: '-',
+                    ram: '-',
+                    storage: '-',
+                    transfer: '-',
+                    os: '-',
+                    region: '-',
+                    plan: '-',
+                    ipv4: '-',
+                    ipv6: '-',
+                    services: {}
+                }
+            ];
+            return res.status(200).json(mockServers);
+        }
+
+        // Mapeia os dados do banco para o formato que o frontend espera
+        const servers = rows.map(row => ({
+            provider: 'Vultr', // Idealmente viria do join com providers
+            name: row.name,
+            logo: 'https://www.vultr.com/favicon.ico',
+            cpu: row.specs?.cpu || 'N/A',
+            ram: row.specs?.ram || 'N/A',
+            storage: row.specs?.storage || 'N/A',
+            transfer: 'N/A',
+            os: 'Linux',
+            region: 'Unknown',
+            plan: 'Standard',
+            ipv4: row.ip_address,
+            ipv6: '',
+            services: {}
+        }));
+
+        res.status(200).json(servers);
+    } catch (error) {
+        console.error('Erro ao buscar servidores:', error);
+        res.status(500).json({ error: 'Erro interno ao buscar servidores' });
+    }
 }
