@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Novo Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .form-control:focus {
+            border-color: #4299e1;
+            outline: none;
+        }
+        .helper-text {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a></li>
+            <li><a href="servers.html"><i class="fas fa-server"></i> Servidores</a></li>
+            <li class="active"><a href="sites.html"><i class="fas fa-globe"></i> Sites</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Novo Site</h1>
+            </div>
+            <div class="header-back">
+                <button class="new-site-btn" onclick="window.location.href='sites.html'">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </button>
+            </div>
+        </header>
+
+        <div class="form-container">
+            <form id="createSiteForm">
+                <div class="form-group">
+                    <label for="serverSelect">Servidor de Destino</label>
+                    <select id="serverSelect" class="form-control" required>
+                        <option value="">Carregando servidores...</option>
+                    </select>
+                    <p class="helper-text">Onde este site será hospedado.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="domain">Domínio</label>
+                    <input type="text" id="domain" class="form-control" placeholder="exemplo.com" required>
+                    <p class="helper-text">Não inclua http:// ou www.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="platform">Plataforma</label>
+                    <select id="platform" class="form-control">
+                        <option value="wordpress">WordPress (Recomendado)</option>
+                        <option value="php">PHP Puro</option>
+                        <option value="html">HTML Estático</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="phpVersion">Versão do PHP</label>
+                    <select id="phpVersion" class="form-control">
+                        <option value="8.1">PHP 8.1</option>
+                        <option value="8.2">PHP 8.2</option>
+                        <option value="8.0">PHP 8.0</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cache">Cache</label>
+                    <select id="cache" class="form-control">
+                        <option value="redis">Redis (Rápido)</option>
+                        <option value="fastcgi">Nginx FastCGI</option>
+                        <option value="none">Sem Cache</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="connect-btn" style="width: 100%; margin-top: 20px;">
+                    <i class="fas fa-plus-circle"></i> Criar Site
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/create-site.js"></script>
+</body>
+</html>

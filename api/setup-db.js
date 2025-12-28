@@ -40,6 +40,20 @@ export default async function handler(req, res) {
             );
         `);
 
+        // Criação da tabela de sites
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS sites (
+                id SERIAL PRIMARY KEY,
+                server_id INTEGER, -- Referência ao ID do servidor (pode ser o ID do cache ou externo)
+                domain VARCHAR(255) NOT NULL,
+                platform VARCHAR(50),
+                php_version VARCHAR(10),
+                cache_type VARCHAR(50),
+                status VARCHAR(50) DEFAULT 'active',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
         // Criar usuário admin padrão
         const email = 'admin@cloudease.com';
         const password = 'admin123';

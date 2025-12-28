@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             provider: document.getElementById('providerInput').value,
             region: document.getElementById('regionInput').value || 'nyc1',
             plan: document.getElementById('planInput').value || 'basic-1gb',
-            app: document.getElementById('appInput').value,
+            app: 'base-stack', // Sempre instala a base stack
             name: document.getElementById('serverName').value || 'Novo Servidor'
         };
 
