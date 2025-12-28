@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM
     const searchInput = document.querySelector('.search-bar input');
     const filterBtn = document.querySelector('.filter-btn');
-    const newDomainBtn = document.querySelector('.new-domain-btn');
+    const newDomainBtn = document.querySelector('.new-site-btn');
     const modal = document.getElementById('newDomainModal');
     const closeModalBtn = document.querySelector('.close-modal');
     const cancelBtn = document.querySelector('.cancel-btn');
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statusClass = 'active';
         } else if (daysUntilExpiry > 0) {
             status = 'Expirando';
-            statusClass = 'warning';
+statusClass = 'warning';  // Mantido como 'warning' para indicar estado de alerta
         } else {
             status = 'Expirado';
             statusClass = 'expired';

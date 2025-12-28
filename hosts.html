@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudEase - Hosts</title>
+    <title>CloudEase - Conexões</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="css/hosts.css">
+    <link rel="stylesheet" href="css/connections.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="dashboard-body">
@@ -20,7 +20,7 @@
                 <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
             </li>
             <li class="active">
-                <a href="hosts.html"><i class="fas fa-network-wired"></i> Hosts</a>
+                <a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a>
             </li>
             <li>
                 <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
@@ -32,10 +32,10 @@
                 <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
             </li>
             <li>
-                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
             </li>
             <li>
-                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
             </li>
         </ul>
         <div class="user-info">
@@ -50,11 +50,11 @@
     <main class="main-content">
         <header class="dashboard-header">
             <div class="header-title">
-                <h1>Hosts Conectados</h1>
+                <h1>Minhas Conexões</h1>
             </div>
             <div class="header-actions">
-                <button class="new-server-btn">
-                    <i class="fas fa-plus"></i> Novo Host
+                <button class="new-connection-btn">
+                    <i class="fas fa-plus"></i> Nova Conexão
                 </button>
             </div>
         </header>
@@ -62,24 +62,56 @@
         <div class="table-controls">
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Buscar hosts...">
+                <input type="text" placeholder="Buscar por nome, IP ou provedor...">
             </div>
-            <div class="filter-dropdown">
-                <button class="filter-btn">
-                    <i class="fas fa-filter"></i>
-                    Filtrar
-                </button>
+            <div class="filter-group">
+                <div class="filter-dropdown">
+                    <button class="filter-btn">
+                        <i class="fas fa-filter"></i>
+                        Status
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-content">
+                        <label><input type="checkbox" checked> Online</label>
+                        <label><input type="checkbox" checked> Offline</label>
+                        <label><input type="checkbox" checked> Em manutenção</label>
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button class="filter-btn">
+                        <i class="fas fa-cloud"></i>
+                        Provedor
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-content">
+                        <label><input type="checkbox" checked> Vultr</label>
+                        <label><input type="checkbox" checked> DigitalOcean</label>
+                        <label><input type="checkbox" checked> AWS</label>
+                        <label><input type="checkbox" checked> Google Cloud</label>
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <button class="filter-btn">
+                        <i class="fas fa-server"></i>
+                        Servidores
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-content">
+                        <label><input type="checkbox" checked> Com servidores</label>
+                        <label><input type="checkbox" checked> Sem servidores</label>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="hosts-list active-view">
-            <table class="hosts-table">
+    <div class="connections-list active-view fade-in">
+            <table class="connections-table">
                 <thead>
                     <tr>
-                        <th>Host</th>
-                        <th>Nome</th>
-                        <th>IP</th>
-                        <th>Servidores</th>
+                        <th>Provedor</th>
+                        <th>Nome da Conexão</th>
+                        <th>Endereço IP</th>
+                        <th>Total de Servidores</th>
                         <th>Criado em</th>
                         <th>Status</th>
                         <th>Ações</th>
@@ -121,22 +153,22 @@
         </div>
     </main>
 
-    <!-- Modal para adicionar novo host -->
-    <div class="modal" id="newHostModal" style="display: none;">
+    <!-- Modal para nova conexão -->
+    <div class="modal" id="newConnectionModal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Adicionar Novo Host</h2>
+                <h2>Nova Conexão</h2>
                 <button class="close-modal"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <form id="newHostForm">
+                <form id="newConnectionForm">
                     <div class="form-group">
-                        <label for="hostName">Nome do Host</label>
-                        <input type="text" id="hostName" required>
+                        <label for="connectionName">Nome da Conexão</label>
+                        <input type="text" id="connectionName" required placeholder="Ex: Servidor Principal">
                     </div>
                     <div class="form-group">
-                        <label for="hostIP">Endereço IP</label>
-                        <input type="text" id="hostIP" required>
+                        <label for="connectionIP">Endereço IP da Conexão</label>
+                        <input type="text" id="connectionIP" required placeholder="Ex: 192.168.1.100">
                     </div>
                     <div class="form-group">
                         <label for="provider">Provedor</label>
@@ -150,13 +182,13 @@
                     </div>
                     <div class="form-actions">
                         <button type="button" class="cancel-btn">Cancelar</button>
-                        <button type="submit" class="submit-btn">Adicionar Host</button>
+                        <button type="submit" class="submit-btn">Adicionar Conexão</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <script src="js/hosts.js"></script>
+    <script src="js/connections.js"></script>
 </body>
 </html>

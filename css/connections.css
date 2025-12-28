@@ -1,5 +1,5 @@
-/* Estilização da tabela de domínios */
-.domains-table {
+/* Estilização da tabela de conexões */
+.connections-table {
     width: 100%;
     border-collapse: collapse;
     background: white;
@@ -8,7 +8,7 @@
     margin-top: 20px;
 }
 
-.domains-table thead th {
+.connections-table thead th {
     background: #f8f9fa;
     padding: 15px;
     text-align: left;
@@ -17,15 +17,22 @@
     border-bottom: 2px solid #edf2f7;
 }
 
-.domains-table tbody td {
+.connections-table tbody td {
     padding: 15px;
     border-bottom: 1px solid #edf2f7;
     color: #4a5568;
     vertical-align: middle;
 }
 
-.domains-table tbody tr:hover {
+.connections-table tbody tr:hover {
     background-color: #f8fafc;
+}
+
+/* Logo do provedor */
+.provider-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 /* Badge de status */
@@ -41,12 +48,7 @@
     color: #03543f;
 }
 
-.status-badge.warning {
-    background-color: #fef3c7;
-    color: #92400e;
-}
-
-.status-badge.expired {
+.status-badge.inactive {
     background-color: #fde8e8;
     color: #9b1c1c;
 }
@@ -72,7 +74,7 @@
     color: #2d3748;
 }
 
-/* Botão Novo Domínio */
+/* Botão Nova Conexão */
 .new-site-btn {
     background-color: #4299e1;
     color: white;
@@ -89,15 +91,6 @@
 
 .new-site-btn:hover {
     background-color: #3182ce;
-}
-
-/* Wrapper da tabela */
-.table-wrapper {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-top: 20px;
 }
 
 /* Barra de pesquisa e filtros */

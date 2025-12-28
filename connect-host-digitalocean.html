@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conectar Host - DigitalOcean</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Alinha o conteúdo do formulário à esquerda */
+            padding-left: 0; /* Remove o padding à esquerda do formulário */
+            padding-right: 0; /* Remove o padding à direita do formulário */
+            width: 100%; /* Define a largura do formulário para 100% para seguir o padrão do cabeçalho */
+        }
+        #connectHostForm {
+            margin-right: 0; /* Remove a margem à direita do formulário */
+        }
+        #token {
+            margin-bottom: 20px; /* Adiciona 20px de margem abaixo do campo token */
+        }
+        .form-section {
+            margin-right: 160px; /* Adiciona margem à direita da seção do formulário */
+        }
+        .connect-btn {
+            --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands";
+            --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free";
+            --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Free";
+            margin: 0;
+            box-sizing: border-box;
+            width: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-size: 16px;
+            justify-content: center;
+            background-color: #4299e1; /* Cor do botão "Conectar" */
+            color: white; /* Cor do texto do botão "Conectar" */
+            border: none; /* Remove a borda padrão */
+            padding: 10px 20px; /* Define o padding do botão "Conectar" */
+            border-radius: 6px; /* Adiciona borda arredondada ao botão "Conectar" */
+            cursor: pointer; /* Muda o cursor para indicar que é clicável */
+            display: flex; /* Alinha o conteúdo do botão "Conectar" */
+            align-items: center; /* Alinha os itens do botão "Conectar" verticalmente */
+            gap: 8px; /* Espaçamento entre os itens do botão "Conectar" */
+            font-weight: 500; /* Define o peso da fonte do botão "Conectar" */
+            transition: background-color 0.2s; /* Transição suave para a cor de fundo do botão "Conectar" */
+        }
+        .new-site-btn {
+            background-color: #4299e1; /* Cor do botão "Voltar" */
+            color: white; /* Cor do texto do botão "Voltar" */
+            border: none; /* Remove a borda padrão do botão "Voltar" */
+            padding: 10px 20px; /* Define o padding do botão "Voltar" */
+            border-radius: 6px; /* Adiciona borda arredondada ao botão "Voltar" */
+            cursor: pointer; /* Muda o cursor para indicar que é clicável */
+            display: flex; /* Alinha o conteúdo do botão "Voltar" */
+            align-items: center; /* Alinha os itens do botão "Voltar" verticalmente */
+            gap: 8px; /* Espaçamento entre os itens do botão "Voltar" */
+            font-weight: 500; /* Define o peso da fonte do botão "Voltar" */
+            transition: background-color 0.2s; /* Transição suave para a cor de fundo do botão "Voltar" */
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li class="active">
+                <a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a>
+            </li>
+            <li>
+                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
+            </li>
+            <li>
+                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
+            </li>
+            <li>
+                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
+            </li>
+            <li>
+                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Conectar Host - DigitalOcean</h1>
+            </div>
+            <div class="header-back">
+                <button class="new-site-btn" onclick="window.location.href='file:///C:/Users/gabri/OneDrive/Documentos/SISTEMAS/teste%20git/cloudease/connect-host.html'">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+            </div>
+        </header>
+
+        <div class="logo-container">
+            <img src="assets/images/DigitalOcean_logo2.svg.png" alt="Logo da DigitalOcean" style="max-width: 10%; height: auto;">
+        </div>
+
+        <section class="form-section" style="margin-top: 40px;">
+            <h2>Configurações de Conexão</h2>
+            <div class="form-container" style="margin-top: 20px;">
+                <form id="connectHostForm" action="cloudease/connect-host-digitalocean.html" method="GET">
+                    <label for="hostName">Nome do Host:</label>
+                    <input type="text" id="hostName" required>
+                    
+                    <label for="token">Token:</label>
+                    <input type="text" id="token" required>
+                    
+                    <button type="submit" class="connect-btn"><i class="fas fa-plug"></i> Conectar</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <script src="js/connect-provider-form.js"></script>
+</body>
+</html>

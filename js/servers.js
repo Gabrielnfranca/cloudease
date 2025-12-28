@@ -1,116 +1,99 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos do DOM
-    const searchInput = document.querySelector('.search-bar input');
-    const filterBtn = document.querySelector('.filter-btn');
-    const newServerBtn = document.querySelector('.new-server-btn');
-    const modal = document.getElementById('newServerModal');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const serverForm = document.getElementById('newServerForm');
-    const serversTable = document.querySelector('.servers-table tbody');
-
-    // Funções de busca
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const rows = serversTable.querySelectorAll('tr');
-
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
-        });
-    });
-
-    // Funções do modal
-    function openModal() {
-        modal.style.display = 'block';
-    }
-
-    function closeModal() {
-        modal.style.display = 'none';
-        serverForm.reset();
-    }
-
-    newServerBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-
-    // Fechar modal ao clicar fora dele
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
+    // Função para carregar servidores da API
+    async function loadServers() {
+        try {
+            // Tenta buscar da API (vai funcionar no Vercel ou localmente se tiver ambiente Node configurado)
+            const response = await fetch('/api/servers');
+            if (!response.ok) throw new Error('Falha na API');
+            const servers = await response.json();
+            renderServers(servers);
+        } catch (error) {
+            console.log('API não disponível, usando dados locais de fallback ou erro:', error);
+            // Fallback para dados locais se a API falhar
+            const localServers = [
+                {
+                    provider: 'Local',
+                    name: 'Servidor Demo (Sem API)',
+                    logo: 'assets/images/server-icon.png',
+                    cpu: '1 vCPU',
+                    ram: '1 GB',
+                    storage: '20 GB',
+                    transfer: '1 TB',
+                    os: 'Ubuntu',
+                    region: 'Local',
+                    plan: 'Demo',
+                    ipv4: '127.0.0.1',
+                    ipv6: '::1',
+                    services: { nginx: true }
+                }
+            ];
+            renderServers(localServers);
         }
-    });
+    }
 
-    // Manipulação do formulário
-    serverForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    function renderServers(servers) {
+        const tbody = document.querySelector('.servers-table tbody');
+        if (!tbody) return;
         
-        const newServer = {
-            name: document.getElementById('serverName').value,
-            ip: document.getElementById('serverIP').value,
-            host: document.getElementById('hostSelect').value,
-            type: document.getElementById('serverType').value
-        };
+        tbody.innerHTML = ''; // Limpa a tabela atual
 
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
-        console.log('Novo servidor:', newServer);
+        servers.forEach((server, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <div class="server-info">
+                        <img src="${server.logo}" alt="${server.provider}" class="provider-icon">
+                        <div>
+                            <div class="server-name">${server.name}</div>
+                            <div class="server-ip">${server.ipv4}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        ${server.region}
+                    </div>
+                </td>
+                <td>
+                    <div class="specs">
+                        <span>${server.cpu}</span>
+                        <span>${server.ram}</span>
+                        <span>${server.storage}</span>
+                    </div>
+                </td>
+                <td><span class="status-badge status-active">Ativo</span></td>
+                <td>
+                    <div class="actions">
+                        <button class="action-btn" title="Console"><i class="fas fa-terminal"></i></button>
+                        <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
+                        <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                    </div>
+                </td>
+            `;
+            
+            // Adiciona eventos
+            tr.addEventListener('click', () => selectServer(server));
+            const configBtn = tr.querySelector('.action-btn[title="Configurações"]');
+            if(configBtn) {
+                configBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectServer(server);
+                });
+            }
 
-        // Obter informações do host selecionado
-        const hostOption = document.getElementById('hostSelect').selectedOptions[0];
-        const hostName = hostOption.text;
-        const hostLogo = newServer.host === 'vultr' ? 
-            'https://www.vultr.com/favicon.ico' : 
-            'https://assets.digitalocean.com/favicon.ico';
+            tbody.appendChild(tr);
+        });
+    }
 
-        // Adicionar nova linha na tabela
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>
-                <img src="${hostLogo}" alt="${hostName}" class="provider-logo">
-            </td>
-            <td>${newServer.name}</td>
-            <td>${newServer.ip}</td>
-            <td>0 ativos</td>
-            <td>${new Date().toLocaleDateString()}</td>
-            <td><span class="status-badge active">Online</span></td>
-            <td class="actions">
-                <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
-                <button class="action-btn" title="Desligar"><i class="fas fa-power-off"></i></button>
-            </td>
-        `;
+    // Função para selecionar um servidor e redirecionar
+    function selectServer(server) {
+        // Armazena os dados do servidor selecionado
+        localStorage.setItem('selectedServer', JSON.stringify(server));
+        // Redireciona para a página de gerenciamento
+        window.location.href = 'gerenciar-servidores.html';
+    }
 
-        serversTable.appendChild(newRow);
-        closeModal();
-    });
-
-    // Ações dos servidores
-    serversTable.addEventListener('click', function(e) {
-        const actionBtn = e.target.closest('.action-btn');
-        if (!actionBtn) return;
-
-        const action = actionBtn.title;
-        const row = actionBtn.closest('tr');
-        const serverName = row.querySelector('td:nth-child(2)').textContent;
-
-        switch(action) {
-            case 'Configurações':
-                console.log(`Abrindo configurações para ${serverName}`);
-                break;
-            case 'Reiniciar':
-                if (confirm(`Deseja reiniciar o servidor ${serverName}?`)) {
-                    console.log(`Reiniciando ${serverName}`);
-                }
-                break;
-            case 'Desligar':
-                if (confirm(`Deseja desligar o servidor ${serverName}?`)) {
-                    console.log(`Desligando ${serverName}`);
-                    const statusBadge = row.querySelector('.status-badge');
-                    statusBadge.textContent = 'Offline';
-                    statusBadge.classList.remove('active');
-                    statusBadge.classList.add('inactive');
-                }
-                break;
-        }
-    });
+    // Iniciar carregamento
+    loadServers();
 });
