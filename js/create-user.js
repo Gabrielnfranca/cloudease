@@ -35,7 +35,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
 
-                const data = await response.json();
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Resposta não-JSON:', text);
+                    throw new Error(`Erro do servidor: ${response.status} ${response.statusText}`);
+                }
 
                 if (response.ok) {
                     alert('Conta criada com sucesso! Faça login para continuar.');
@@ -45,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro de conexão. Tente novamente.');
+                alert('Erro ao conectar com o servidor: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
