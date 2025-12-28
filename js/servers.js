@@ -1,57 +1,91 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Dados de exemplo dos servidores
-    const servers = [
-        {
-            provider: 'Vultr',
-            name: 'Servidor Principal',
-            logo: 'https://www.vultr.com/favicon.ico',
-            cpu: '2 vCPUs',
-            ram: '4 GB',
-            storage: '80 GB',
-            transfer: '4 TB',
-            os: 'Ubuntu 22.04 LTS',
-            region: 'NYC1 (Nova York)',
-            plan: 'Basic',
-            ipv4: '192.168.1.100',
-            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
-            services: {
-                nginx: true,
-                mysql: true,
-                php56: false,
-                php70: false,
-                php71: false,
-                php72: false,
-                php73: true,
-                redis: true,
-                postfix: true
-            }
-        },
-        {
-            provider: 'DigitalOcean',
-            name: 'Servidor de Backup',
-            logo: 'https://assets.digitalocean.com/favicon.ico',
-            cpu: '1 vCPU',
-            ram: '2 GB',
-            storage: '40 GB',
-            transfer: '2 TB',
-            os: 'Ubuntu 20.04 LTS',
-            region: 'MIA (Miami)',
-            plan: 'Starter',
-            ipv4: '192.168.1.101',
-            ipv6: '2001:0db8:85a3:0000:0000:8a2e:0370:7335',
-            services: {
-                nginx: true,
-                mysql: true,
-                php56: true,
-                php70: true,
-                php71: false,
-                php72: false,
-                php73: false,
-                redis: false,
-                postfix: true
-            }
+    // Função para carregar servidores da API
+    async function loadServers() {
+        try {
+            // Tenta buscar da API (vai funcionar no Vercel ou localmente se tiver ambiente Node configurado)
+            // Se estiver apenas abrindo o HTML localmente, isso pode falhar, então mantemos um fallback ou aviso
+            const response = await fetch('/api/servers');
+            if (!response.ok) throw new Error('Falha na API');
+            const servers = await response.json();
+            renderServers(servers);
+        } catch (error) {
+            console.log('API não disponível, usando dados locais de fallback ou erro:', error);
+            // Fallback para dados locais se a API falhar (útil para testes locais sem servidor)
+            const localServers = [
+                {
+                    provider: 'Local',
+                    name: 'Servidor Demo (Sem API)',
+                    logo: 'assets/images/server-icon.png',
+                    cpu: '1 vCPU',
+                    ram: '1 GB',
+                    storage: '20 GB',
+                    transfer: '1 TB',
+                    os: 'Ubuntu',
+                    region: 'Local',
+                    plan: 'Demo',
+                    ipv4: '127.0.0.1',
+                    ipv6: '::1',
+                    services: { nginx: true }
+                }
+            ];
+            renderServers(localServers);
         }
-    ];
+    }
+
+    function renderServers(servers) {
+        const tbody = document.querySelector('.servers-table tbody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = ''; // Limpa a tabela atual
+
+        servers.forEach((server, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <div class="server-info">
+                        <img src="${server.logo}" alt="${server.provider}" class="provider-icon">
+                        <div>
+                            <div class="server-name">${server.name}</div>
+                            <div class="server-ip">${server.ipv4}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        ${server.region}
+                    </div>
+                </td>
+                <td>
+                    <div class="specs">
+                        <span>${server.cpu}</span>
+                        <span>${server.ram}</span>
+                        <span>${server.storage}</span>
+                    </div>
+                </td>
+                <td><span class="status-badge status-active">Ativo</span></td>
+                <td>
+                    <div class="actions">
+                        <button class="action-btn" title="Console"><i class="fas fa-terminal"></i></button>
+                        <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
+                        <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                    </div>
+                </td>
+            `;
+            
+            // Adiciona eventos
+            tr.addEventListener('click', () => selectServer(server));
+            const configBtn = tr.querySelector('.action-btn[title="Configurações"]');
+            if(configBtn) {
+                configBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectServer(server);
+                });
+            }
+
+            tbody.appendChild(tr);
+        });
+    }
 
     // Função para selecionar um servidor e redirecionar
     function selectServer(server) {
@@ -61,18 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'gerenciar-servidores.html';
     }
 
-    // Adiciona eventos de clique aos botões de configuração
-    document.querySelectorAll('.action-btn[title="Configurações"]').forEach((btn, index) => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que o evento de clique da linha seja acionado
-            selectServer(servers[index]);
-        });
-    });
-
-    // Adiciona eventos de clique às linhas da tabela
-    document.querySelectorAll('.servers-table tbody tr').forEach((row, index) => {
-        row.addEventListener('click', () => {
-            selectServer(servers[index]);
-        });
-    });
+    // Iniciar carregamento
+    loadServers();
 });
