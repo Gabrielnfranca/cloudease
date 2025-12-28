@@ -3,14 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadServers() {
         try {
             // Tenta buscar da API (vai funcionar no Vercel ou localmente se tiver ambiente Node configurado)
-            // Se estiver apenas abrindo o HTML localmente, isso pode falhar, então mantemos um fallback ou aviso
             const response = await fetch('/api/servers');
             if (!response.ok) throw new Error('Falha na API');
             const servers = await response.json();
             renderServers(servers);
         } catch (error) {
             console.log('API não disponível, usando dados locais de fallback ou erro:', error);
-            // Fallback para dados locais se a API falhar (útil para testes locais sem servidor)
+            // Fallback para dados locais se a API falhar
             const localServers = [
                 {
                     provider: 'Local',

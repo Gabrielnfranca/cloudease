@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const hostName = document.getElementById('hostName').value;
             const token = document.getElementById('token').value;
             
-            // Determinar o provedor baseado na página ou URL (ou um campo hidden)
-            // Por enquanto, assumimos DigitalOcean se estivermos na página da DO
             let provider = 'digitalocean';
             if (window.location.href.includes('linode')) provider = 'linode';
             if (window.location.href.includes('vultr')) provider = 'vultr';

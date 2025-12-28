@@ -1,5 +1,4 @@
 export default function handler(req, res) {
-    // Simula uma consulta ao banco de dados ou à API da DigitalOcean/Vultr
     const servers = [
         {
             provider: 'Vultr',
