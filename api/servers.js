@@ -1,14 +1,32 @@
 import db from '../lib/db.js';
 import { createInstance, fetchServers } from '../lib/providers.js';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
 
 export default async function handler(req, res) {
+    // Autenticação JWT
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Token de autenticação não fornecido' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    let userId;
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        userId = decoded.userId;
+    } catch (error) {
+        return res.status(401).json({ error: 'Token inválido ou expirado' });
+    }
     if (req.method === 'GET') {
         const { sync } = req.query;
 
         // Sincronização com Provedores (Apenas se solicitado)
         if (sync === 'true') {
             try {
-                const { rows: providers } = await db.query('SELECT * FROM providers WHERE user_id = 1');
+                const { rows: providers } = await db.query('SELECT * FROM providers WHERE user_id = $1', [userId]);
                 
                 for (const provider of providers) {
                     try {
@@ -76,10 +94,11 @@ export default async function handler(req, res) {
                     p.provider_name,
                     p.label as provider_label
                 FROM servers_cache sc
-                LEFT JOIN providers p ON sc.provider_id = p.id
+                JOIN providers p ON sc.provider_id = p.id
+                WHERE p.user_id = $1
                 ORDER BY sc.created_at DESC
             `;
-            const { rows } = await db.query(query);
+            const { rows } = await db.query(query, [userId]);
             if (rows.length === 0) {
                 return res.status(200).json([]);
             }
@@ -115,8 +134,8 @@ export default async function handler(req, res) {
         try {
             // Buscar token do provedor no banco de dados
             const { rows } = await db.query(
-                'SELECT api_key, id FROM providers WHERE provider_name = $1 AND user_id = 1 LIMIT 1',
-                [provider]
+                'SELECT api_key, id FROM providers WHERE provider_name = $1 AND user_id = $2 LIMIT 1',
+                [provider, userId]
             );
             if (rows.length === 0) {
                 return res.status(400).json({ error: 'Provedor não conectado. Vá em Conexões e conecte sua conta primeiro.' });
