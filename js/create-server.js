@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Seleção de Opções (Cards)
-    window.selectOption = function(element, inputId, value) {
+    window.selectOption = async function(element, inputId, value) {
         // Remove seleção dos irmãos
         const container = element.parentElement;
         container.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
@@ -56,7 +56,83 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Atualiza input hidden
         document.getElementById(inputId + 'Input').value = value;
+
+        // Se selecionou provedor, carrega opções
+        if (inputId === 'provider') {
+            await loadProviderOptions(value);
+        }
     };
+
+    async function loadProviderOptions(provider) {
+        const nextBtn = document.getElementById('nextBtn');
+        const originalText = nextBtn.innerHTML;
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+
+        try {
+            const response = await fetch('/api/cloud-options', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ provider })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Erro ao carregar opções');
+            }
+
+            const data = await response.json();
+            renderRegions(data.regions);
+            renderPlans(data.plans);
+
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao carregar opções do provedor: ' + error.message);
+        } finally {
+            nextBtn.disabled = false;
+            nextBtn.innerHTML = originalText;
+        }
+    }
+
+    function renderRegions(regions) {
+        const container = document.querySelector('#step2 .options-grid');
+        container.innerHTML = '';
+        
+        // Filtra regiões populares ou limita quantidade para não poluir
+        const popularRegions = regions.slice(0, 12); 
+
+        popularRegions.forEach(region => {
+            const div = document.createElement('div');
+            div.className = 'option-card';
+            div.onclick = () => selectOption(div, 'region', region.id);
+            div.innerHTML = `
+                <i class="fas fa-globe-americas"></i>
+                <h3>${region.name}</h3>
+                <p style="font-size: 12px; color: #718096;">${region.country}</p>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function renderPlans(plans) {
+        const container = document.querySelector('#step3 .options-grid');
+        container.innerHTML = '';
+
+        // Filtra planos básicos/baratos para começar
+        const basicPlans = plans.filter(p => p.price <= 40).slice(0, 6);
+
+        basicPlans.forEach(plan => {
+            const div = document.createElement('div');
+            div.className = 'option-card';
+            div.onclick = () => selectOption(div, 'plan', plan.id);
+            div.innerHTML = `
+                <i class="fas fa-server"></i>
+                <h3>$${plan.price}/mês</h3>
+                <p style="font-size: 12px; color: #718096;">${plan.cpu} CPU • ${plan.ram}MB RAM</p>
+            `;
+            container.appendChild(div);
+        });
+    }
 
     function validateStep(step) {
         if (step === 1) {
