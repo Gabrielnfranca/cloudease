@@ -100,54 +100,6 @@
         </section>
     </main>
     <script src="js/sidebar.js"></script>
-    <script>
-        document.getElementById('connectHostForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const btn = this.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
-
-            const formData = {
-                provider: 'vultr',
-                name: document.getElementById('hostName').value,
-                token: document.getElementById('token').value
-            };
-
-            try {
-                const response = await fetch('/api/connect-provider', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const contentType = response.headers.get("content-type");
-                let data;
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                    data = await response.json();
-                } else {
-                    const text = await response.text();
-                    console.error("Resposta não-JSON do servidor:", text);
-                    throw new Error(`Erro no servidor (${response.status}). Verifique o console para mais detalhes.`);
-                }
-
-                if (response.ok) {
-                    alert('Conectado com sucesso!');
-                    window.location.href = 'connections.html';
-                } else {
-                    alert('Erro: ' + (data.error || 'Falha na conexão'));
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão: ' + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
-        });
-    </script>
+    <script src="js/connect-provider-form.js"></script>
 </body>
 </html>
