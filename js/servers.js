@@ -1,4 +1,34 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Botão de Sincronizar
+    const syncBtn = document.getElementById('syncServersBtn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', async function() {
+            const originalText = syncBtn.innerHTML;
+            syncBtn.disabled = true;
+            syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
+            
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await fetch('/api/servers?sync=true', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                if (response.ok) {
+                    loadServers(); // Recarrega a lista
+                } else {
+                    alert('Erro ao sincronizar servidores.');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão.');
+            } finally {
+                syncBtn.disabled = false;
+                syncBtn.innerHTML = originalText;
+            }
+        });
+    }
+
     // Função para carregar servidores da API
     async function loadServers() {
         try {

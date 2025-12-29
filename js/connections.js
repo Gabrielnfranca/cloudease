@@ -73,6 +73,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 const row = e.currentTarget.closest('tr');
                 const connectionName = row.querySelector('td:nth-child(2)').textContent;
 
+                if (action === 'Sincronizar') {
+                    const btn = e.currentTarget;
+                    const originalContent = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    btn.disabled = true;
+
+                    try {
+                        const authToken = localStorage.getItem('authToken');
+                        // Chama o endpoint de servidores com ?sync=true para forçar atualização
+                        const response = await fetch('/api/servers?sync=true', {
+                            headers: {
+                                'Authorization': `Bearer ${authToken}`
+                            }
+                        });
+
+                        if (response.ok) {
+                            alert('Sincronização concluída com sucesso!');
+                            // Recarrega a lista de conexões para atualizar contadores se necessário
+                            loadConnections();
+                        } else {
+                            const data = await response.json();
+                            alert('Erro na sincronização: ' + (data.error || 'Erro desconhecido'));
+                        }
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        alert('Erro de conexão ao tentar sincronizar.');
+                    } finally {
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                    }
+                }
+
                 if (action === 'Remover') {
                     if (confirm(`Deseja remover a conexão ${connectionName}? Isso também removerá os servidores associados do painel.`)) {
                         const btn = e.currentTarget;
