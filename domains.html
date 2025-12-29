@@ -17,112 +17,26 @@
             <div class="header-title">
                 <h1>Domínios</h1>
             </div>
-            <div class="header-actions">
-                <button class="new-site-btn">
-                    <i class="fas fa-plus"></i> Novo Domínio
-                </button>
-            </div>
         </header>
-
-        <div class="table-controls">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Buscar domínios...">
-            </div>
-            <div class="filter-dropdown">
-                <button class="filter-btn">
-                    <i class="fas fa-filter"></i>
-                    Filtrar
-                </button>
-            </div>
+        <div class="form-group" style="max-width:400px; margin:30px 0;">
+            <form id="addDomainForm" style="display:flex; gap:10px;">
+                <input type="text" id="domainInput" placeholder="Adicionar novo domínio" required style="flex:1; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+                <button type="submit" class="new-site-btn"><i class="fas fa-plus"></i> Adicionar</button>
+            </form>
         </div>
-
-        <div class="table-wrapper">
-            <table class="domains-table">
-                <thead>
-                    <tr>
-                        <th>Domínio</th>
-                        <th>Registrador</th>
-                        <th>DNS</th>
-                        <th>Expira em</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>exemplo1.com.br</td>
-                        <td>Registro.br</td>
-                        <td>Cloudflare</td>
-                        <td>15/03/2025</td>
-                        <td><span class="status-badge active">Ativo</span></td>
-                        <td class="actions">
-                            <button class="action-btn" title="DNS"><i class="fas fa-network-wired"></i></button>
-                            <button class="action-btn" title="Renovar"><i class="fas fa-sync"></i></button>
-                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>exemplo2.com.br</td>
-                        <td>GoDaddy</td>
-                        <td>Route53</td>
-                        <td>20/06/2024</td>
-                        <td><span class="status-badge warning">Expirando</span></td>
-                        <td class="actions">
-                            <button class="action-btn" title="DNS"><i class="fas fa-network-wired"></i></button>
-                            <button class="action-btn" title="Renovar"><i class="fas fa-sync"></i></button>
-                            <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <table class="domains-table" style="width:100%; margin-top:20px;">
+            <thead>
+                <tr>
+                    <th>Domínio</th>
+                    <th>Cadastrado em</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Preenchido via JS -->
+            </tbody>
+        </table>
     </main>
-
-    <!-- Modal para adicionar novo domínio -->
-    <div class="modal" id="newDomainModal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Adicionar Novo Domínio</h2>
-                <button class="close-modal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="newDomainForm">
-                    <div class="form-group">
-                        <label for="domainName">Nome do Domínio</label>
-                        <input type="text" id="domainName" required placeholder="exemplo.com.br">
-                    </div>
-                    <div class="form-group">
-                        <label for="registrar">Registrador</label>
-                        <select id="registrar" required>
-                            <option value="">Selecione o registrador</option>
-                            <option value="registro.br">Registro.br</option>
-                            <option value="godaddy">GoDaddy</option>
-                            <option value="namecheap">Namecheap</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="dnsProvider">Provedor DNS</label>
-                        <select id="dnsProvider" required>
-                            <option value="">Selecione o provedor DNS</option>
-                            <option value="cloudflare">Cloudflare</option>
-                            <option value="route53">Amazon Route53</option>
-                            <option value="digitalocean">DigitalOcean</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="expiryDate">Data de Expiração</label>
-                        <input type="date" id="expiryDate" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn">Cancelar</button>
-                        <button type="submit" class="submit-btn">Adicionar Domínio</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <script src="js/domains.js"></script>
     <script src="js/sidebar.js"></script>
 </body>
