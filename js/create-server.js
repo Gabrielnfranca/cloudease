@@ -96,6 +96,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderRegions(regions) {
         const select = document.getElementById('regionInput');
+        if (!select) {
+            console.error('Elemento regionInput não encontrado no DOM');
+            return;
+        }
         select.innerHTML = '<option value="">Selecione uma região...</option>';
         
         // Ordena por nome
@@ -111,6 +115,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderPlans(plans) {
         const select = document.getElementById('planInput');
+        if (!select) {
+            console.error('Elemento planInput não encontrado no DOM');
+            return;
+        }
         select.innerHTML = '<option value="">Selecione um plano...</option>';
 
         // Ordena por preço
