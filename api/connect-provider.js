@@ -1,7 +1,26 @@
 import db from '../lib/db.js';
 import { validateToken, fetchServers } from '../lib/providers.js';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
 
 export default async function handler(req, res) {
+    // Autenticação JWT
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Token de autenticação não fornecido' });
+    }
+
+    const tokenAuth = authHeader.split(' ')[1];
+    let userId;
+
+    try {
+        const decoded = jwt.verify(tokenAuth, JWT_SECRET);
+        userId = decoded.userId;
+    } catch (error) {
+        return res.status(401).json({ error: 'Token inválido ou expirado' });
+    }
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -21,20 +40,13 @@ export default async function handler(req, res) {
         }
 
         // 2. Salvar no banco de dados
-        // Garante que existe um usuário admin (ID 1) para associar o provedor
-        await db.query(`
-            INSERT INTO users (id, name, email, password) 
-            VALUES (1, 'Admin', 'admin@cloudease.com', 'temp_pass') 
-            ON CONFLICT (id) DO NOTHING
-        `);
-
         const query = `
             INSERT INTO providers (user_id, provider_name, label, api_key)
             VALUES ($1, $2, $3, $4)
             RETURNING id;
         `;
         
-        const result = await db.query(query, [1, provider, name, token]);
+        const result = await db.query(query, [userId, provider, name, token]);
         const providerId = result.rows[0].id;
         
         console.log(`Provedor ${provider} conectado com sucesso: ${name}, ID: ${providerId}`);

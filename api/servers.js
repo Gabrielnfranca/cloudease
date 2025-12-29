@@ -142,6 +142,7 @@ export default async function handler(req, res) {
             }
             const { api_key: token, id: providerId } = rows[0];
             // Chamar API do provedor para criar a máquina
+            console.log(`Criando servidor na ${provider} para usuário ${userId}...`);
             const result = await createInstance(provider, token, {
                 region,
                 plan,
@@ -149,12 +150,15 @@ export default async function handler(req, res) {
                 name,
                 os_id
             });
+            console.log('Resultado da criação:', JSON.stringify(result));
 
             // Extrai ID corretamente baseado no provedor
             let externalId = 'pending';
             if (result.instance?.id) externalId = result.instance.id; // Vultr
             else if (result.droplet?.id) externalId = result.droplet.id; // DigitalOcean
             else if (result.id) externalId = result.id; // Linode/Genérico
+
+            console.log(`ID Externo extraído: ${externalId}`);
 
             // Salvar referência no banco de dados local (Cache)
             await db.query(`
@@ -166,6 +170,8 @@ export default async function handler(req, res) {
                 name,
                 { app: app, plan: plan, region: region }
             ]);
+            console.log('Servidor salvo no cache com sucesso.');
+            
             return res.status(201).json({ 
                 success: true, 
                 message: 'Servidor sendo criado! O processo de instalação pode levar alguns minutos.',
