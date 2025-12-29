@@ -36,9 +36,20 @@ export default async function handler(req, res) {
                 ip_address VARCHAR(45),
                 status VARCHAR(50),
                 specs JSONB,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 last_synced TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `);
+
+        // Migração: Adicionar coluna created_at se não existir
+        try {
+            await db.query(`
+                ALTER TABLE servers_cache 
+                ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+            `);
+        } catch (e) {
+            console.log('Coluna created_at já existe ou erro ao adicionar:', e.message);
+        }
 
         // Criação da tabela de sites
         await db.query(`
