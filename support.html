@@ -17,122 +17,36 @@
             <div class="header-title">
                 <h1>Suporte</h1>
             </div>
-            <div class="header-actions">
-                <button class="new-site-btn">
-                    <i class="fas fa-plus"></i> Novo Ticket
-                </button>
-            </div>
         </header>
-
-        <div class="tickets-section">
-            <div class="tickets-list">
-                <h2>Meus Tickets</h2>
-                <div class="table-controls">
-                    <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Buscar tickets...">
-                    </div>
-                    <div class="filter-dropdown">
-                        <button class="filter-btn">
-                            <i class="fas fa-filter"></i>
-                            Filtrar
-                        </button>
-                    </div>
-                </div>
-
-                <table class="tickets-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Assunto</th>
-                            <th>Status</th>
-                            <th>Última Atualização</th>
-                            <th>Prioridade</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#1234</td>
-                            <td>Problema com SSL</td>
-                            <td><span class="status-badge pending">Pendente</span></td>
-                            <td>15/03/2024 14:30</td>
-                            <td><span class="priority-badge high">Alta</span></td>
-                            <td class="actions">
-                                <button class="action-btn" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn" title="Responder"><i class="fas fa-reply"></i></button>
-                                <button class="action-btn" title="Fechar Ticket"><i class="fas fa-check"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#1233</td>
-                            <td>Dúvida sobre backup</td>
-                            <td><span class="status-badge resolved">Resolvido</span></td>
-                            <td>14/03/2024 09:15</td>
-                            <td><span class="priority-badge normal">Normal</span></td>
-                            <td class="actions">
-                                <button class="action-btn" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn" title="Responder"><i class="fas fa-reply"></i></button>
-                                <button class="action-btn" title="Reabrir Ticket"><i class="fas fa-redo"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="form-group" style="max-width:600px; margin:30px 0;">
+            <form id="supportForm" style="display:flex; flex-direction:column; gap:10px;">
+                <input type="text" name="subject" placeholder="Assunto do chamado" required style="padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+                <textarea name="description" placeholder="Descreva o problema" required style="padding:10px; border-radius:6px; border:1px solid #e2e8f0; min-height:80px;"></textarea>
+                <select name="urgency" required style="padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+                    <option value="">Selecione a urgência</option>
+                    <option value="Baixa">Baixa</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Crítica">Crítica</option>
+                </select>
+                <button type="submit" class="new-site-btn"><i class="fas fa-plus"></i> Abrir chamado</button>
+            </form>
         </div>
+        <table class="tickets-table" style="width:100%; margin-top:20px;">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Assunto</th>
+                    <th>Urgência</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Preenchido via JS -->
+            </tbody>
+        </table>
     </main>
-
-    <!-- Modal para novo ticket -->
-    <div class="modal" id="newTicketModal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Abrir Novo Ticket</h2>
-                <button class="close-modal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="newTicketForm">
-                    <div class="form-group">
-                        <label for="ticketSubject">Assunto</label>
-                        <input type="text" id="ticketSubject" required placeholder="Digite o assunto do ticket">
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketCategory">Categoria</label>
-                        <select id="ticketCategory" required>
-                            <option value="">Selecione uma categoria</option>
-                            <option value="technical">Problema Técnico</option>
-                            <option value="billing">Faturamento</option>
-                            <option value="question">Dúvida</option>
-                            <option value="suggestion">Sugestão</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketPriority">Prioridade</label>
-                        <select id="ticketPriority" required>
-                            <option value="">Selecione a prioridade</option>
-                            <option value="low">Baixa</option>
-                            <option value="normal">Normal</option>
-                            <option value="high">Alta</option>
-                            <option value="urgent">Urgente</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketMessage">Mensagem</label>
-                        <textarea id="ticketMessage" rows="6" required placeholder="Descreva seu problema ou dúvida em detalhes"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketAttachment">Anexos (opcional)</label>
-                        <input type="file" id="ticketAttachment" multiple>
-                        <small>Você pode anexar até 3 arquivos (máx. 5MB cada)</small>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn">Cancelar</button>
-                        <button type="submit" class="submit-btn">Abrir Ticket</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <script src="js/support.js"></script>
     <script src="js/sidebar.js"></script>
 </body>

@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ticketForm = document.getElementById('newTicketForm');
     const ticketsTable = document.querySelector('.tickets-table tbody');
     const fileInput = document.getElementById('ticketAttachment');
+    const form = document.getElementById('supportForm');
 
     // Funções de busca
     searchInput.addEventListener('input', function(e) {
@@ -156,4 +157,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Atualizar timestamps a cada minuto
     setInterval(updateTimestamps, 60000);
+
+    // Chamados de suporte
+    async function loadTickets() {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+        try {
+            const res = await fetch('/api/support');
+            const tickets = await res.json();
+            renderTickets(tickets);
+        } catch {
+            tbody.innerHTML = '<tr><td colspan="5" style="color:red; text-align:center;">Erro ao carregar chamados</td></tr>';
+        }
+    }
+
+    function renderTickets(tickets) {
+        tbody.innerHTML = '';
+        if (!tickets.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#718096;">Nenhum chamado aberto.</td></tr>';
+            return;
+        }
+        tickets.forEach(ticket => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${ticket.id}</td>
+                <td>${ticket.subject}</td>
+                <td><span class="urgency urgency-${ticket.urgency.toLowerCase()}">${ticket.urgency}</span></td>
+                <td><span class="status-badge status-${ticket.status.toLowerCase()}">${ticket.status}</span></td>
+                <td>${new Date(ticket.created_at).toLocaleDateString('pt-BR')}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const subject = form.subject.value.trim();
+        const description = form.description.value.trim();
+        const urgency = form.urgency.value;
+        if (!subject || !description || !urgency) return alert('Preencha todos os campos');
+        try {
+            const res = await fetch('/api/support', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject, description, urgency })
+            });
+            if (res.ok) {
+                form.reset();
+                loadTickets();
+            } else {
+                alert('Erro ao abrir chamado');
+            }
+        } catch {
+            alert('Erro de conexão');
+        }
+    });
+
+    loadTickets();
 });
