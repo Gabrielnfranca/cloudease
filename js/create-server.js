@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     let currentStep = 1;
-    const totalSteps = 4;
+    const totalSteps = 5;
 
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             allPlans = data.plans || []; // Salva os planos globalmente
             renderRegions(data.regions);
+            renderOS(data.os);
             updatePlansList(); // Renderiza planos filtrados pela região atual (se houver)
 
         } catch (error) {
@@ -117,6 +118,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Adiciona listener para filtrar planos quando a região mudar
         select.addEventListener('change', updatePlansList);
+    }
+
+    function renderOS(osList) {
+        const select = document.getElementById('osInput');
+        if (!select) return;
+        select.innerHTML = '<option value="">Selecione um sistema...</option>';
+        
+        if (!osList || osList.length === 0) {
+            // Fallback se não vier nada
+            const defaultOS = [
+                { id: '1743', name: 'Ubuntu 22.04 x64' },
+                { id: '477', name: 'Debian 11 x64' }
+            ];
+            osList = defaultOS;
+        }
+
+        osList.forEach(os => {
+            const option = document.createElement('option');
+            option.value = os.id;
+            option.textContent = os.name;
+            if (os.name.includes('Ubuntu 22.04')) option.selected = true; // Auto-select recommended
+            select.appendChild(option);
+        });
     }
 
     function updatePlansList() {
@@ -177,6 +201,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         if (step === 3) {
+            const os = document.getElementById('osInput').value;
+            if (!os) {
+                alert('Por favor, selecione um sistema operacional.');
+                return false;
+            }
+        }
+        if (step === 4) {
             const plan = document.getElementById('planInput').value;
             if (!plan) {
                 alert('Por favor, selecione um plano.');
@@ -198,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
             provider: document.getElementById('providerInput').value,
             region: document.getElementById('regionInput').value || 'nyc1',
             plan: document.getElementById('planInput').value || 'basic-1gb',
+            os_id: document.getElementById('osInput').value,
             app: 'base-stack', // Sempre instala a base stack
             name: document.getElementById('serverName').value || 'Novo Servidor'
         };

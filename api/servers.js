@@ -37,16 +37,17 @@ export default async function handler(req, res) {
                                     ip_address = $2, 
                                     status = $3, 
                                     specs = $4, 
+                                    created_at = COALESCE($5, created_at),
                                     last_synced = NOW() 
-                                WHERE id = $5`,
-                                [server.external_id, server.ip_address, server.status, server.specs, existing[0].id]
+                                WHERE id = $6`,
+                                [server.external_id, server.ip_address, server.status, server.specs, server.created_at, existing[0].id]
                             );
                         } else {
                             // Insere novo
                             await db.query(
-                                `INSERT INTO servers_cache (provider_id, external_id, name, ip_address, status, specs)
-                                VALUES ($1, $2, $3, $4, $5, $6)`,
-                                [provider.id, server.external_id, server.name, server.ip_address, server.status, server.specs]
+                                `INSERT INTO servers_cache (provider_id, external_id, name, ip_address, status, specs, created_at)
+                                VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                                [provider.id, server.external_id, server.name, server.ip_address, server.status, server.specs, server.created_at || new Date()]
                             );
                         }
                     }
@@ -98,7 +99,7 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Criar servidor
-        const { provider, region, plan, app, name } = req.body;
+        const { provider, region, plan, app, name, os_id } = req.body;
         if (!provider || !region || !plan || !name) {
             return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
         }
@@ -117,7 +118,8 @@ export default async function handler(req, res) {
                 region,
                 plan,
                 app,
-                name
+                name,
+                os_id
             });
 
             // Extrai ID corretamente baseado no provedor

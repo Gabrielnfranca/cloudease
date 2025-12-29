@@ -152,10 +152,14 @@
                 </div>
                 <div class="step" data-step="3">
                     <div class="step-number">3</div>
-                    <span>Tamanho</span>
+                    <span>Sistema</span>
                 </div>
                 <div class="step" data-step="4">
                     <div class="step-number">4</div>
+                    <span>Tamanho</span>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-number">5</div>
                     <span>Nome</span>
                 </div>
             </div>
@@ -194,8 +198,19 @@
                     </div>
                 </div>
 
-                <!-- Passo 3: Tamanho (Plan) -->
+                <!-- Passo 3: Sistema Operacional -->
                 <div class="wizard-step" id="step3" style="display: none;">
+                    <div class="form-group">
+                        <label for="osInput">Escolha o Sistema Operacional</label>
+                        <select id="osInput" name="os" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
+                            <option value="">Selecione um sistema...</option>
+                        </select>
+                        <p class="helper-text" style="margin-top: 10px; color: #718096; font-size: 14px;">Recomendamos <strong>Ubuntu 22.04</strong> para melhor compatibilidade.</p>
+                    </div>
+                </div>
+
+                <!-- Passo 4: Tamanho (Plan) -->
+                <div class="wizard-step" id="step4" style="display: none;">
                     <div class="form-group">
                         <label for="planInput">Escolha o Tamanho</label>
                         <select id="planInput" name="plan" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
@@ -204,8 +219,8 @@
                     </div>
                 </div>
 
-                <!-- Passo 4: Nome (Finalização) -->
-                <div class="wizard-step" id="step4" style="display: none;">
+                <!-- Passo 5: Nome (Finalização) -->
+                <div class="wizard-step" id="step5" style="display: none;">
                     <div class="form-group">
                         <label for="serverName">Nome do Servidor</label>
                         <p class="helper-text">Dê um nome para identificar este servidor no painel.</p>

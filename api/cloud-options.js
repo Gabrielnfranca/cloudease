@@ -1,5 +1,5 @@
 import { getProviderToken } from '../lib/db-utils.js';
-import { fetchPlans, fetchRegions } from '../lib/providers.js';
+import { fetchPlans, fetchRegions, fetchOS } from '../lib/providers.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -15,14 +15,15 @@ export default async function handler(req, res) {
         if (!token) {
             return res.status(400).json({ error: 'Provedor não conectado.' });
         }
-        // Busca planos e regiões
-        const [plans, regions] = await Promise.all([
+        // Busca planos, regiões e OS
+        const [plans, regions, os] = await Promise.all([
             fetchPlans(provider, token),
-            fetchRegions(provider, token)
+            fetchRegions(provider, token),
+            fetchOS(provider, token)
         ]);
-        res.status(200).json({ plans, regions });
+        res.status(200).json({ plans, regions, os });
     } catch (error) {
-        console.error('Erro ao buscar planos/regiões:', error);
-        res.status(500).json({ error: 'Erro ao buscar planos/regiões' });
+        console.error('Erro ao buscar opções:', error);
+        res.status(500).json({ error: 'Erro ao buscar opções do provedor' });
     }
 }
