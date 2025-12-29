@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
     const form = document.getElementById('createServerForm');
+    
+    let allPlans = []; // Armazena todos os planos carregados
 
     // Navegação do Wizard
     function updateWizard() {
@@ -82,8 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
+            allPlans = data.plans || []; // Salva os planos globalmente
             renderRegions(data.regions);
-            renderPlans(data.plans);
+            updatePlansList(); // Renderiza planos filtrados pela região atual (se houver)
 
         } catch (error) {
             console.error('Erro:', error);
@@ -111,6 +114,31 @@ document.addEventListener('DOMContentLoaded', function() {
             option.textContent = `${region.name} (${region.country})`;
             select.appendChild(option);
         });
+        
+        // Adiciona listener para filtrar planos quando a região mudar
+        select.addEventListener('change', updatePlansList);
+    }
+
+    function updatePlansList() {
+        const regionSelect = document.getElementById('regionInput');
+        const selectedRegion = regionSelect ? regionSelect.value : '';
+        
+        let filteredPlans = allPlans;
+
+        // Se houver região selecionada, filtra os planos
+        if (selectedRegion && allPlans.length > 0) {
+            // Verifica se os planos têm a propriedade 'locations' (Vultr tem)
+            // Se não tiver locations, assume que está disponível em todas (ou não filtra)
+            const hasLocations = allPlans.some(p => p.locations && Array.isArray(p.locations) && p.locations.length > 0);
+            
+            if (hasLocations) {
+                filteredPlans = allPlans.filter(plan => 
+                    plan.locations && plan.locations.includes(selectedRegion)
+                );
+            }
+        }
+
+        renderPlans(filteredPlans);
     }
 
     function renderPlans(plans) {
