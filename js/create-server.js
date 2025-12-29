@@ -95,42 +95,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderRegions(regions) {
-        const container = document.querySelector('#step2 .options-grid');
-        container.innerHTML = '';
+        const select = document.getElementById('regionInput');
+        select.innerHTML = '<option value="">Selecione uma região...</option>';
         
-        // Filtra regiões populares ou limita quantidade para não poluir
-        const popularRegions = regions.slice(0, 12); 
+        // Ordena por nome
+        regions.sort((a, b) => a.name.localeCompare(b.name));
 
-        popularRegions.forEach(region => {
-            const div = document.createElement('div');
-            div.className = 'option-card';
-            div.onclick = () => selectOption(div, 'region', region.id);
-            div.innerHTML = `
-                <i class="fas fa-globe-americas"></i>
-                <h3>${region.name}</h3>
-                <p style="font-size: 12px; color: #718096;">${region.country}</p>
-            `;
-            container.appendChild(div);
+        regions.forEach(region => {
+            const option = document.createElement('option');
+            option.value = region.id;
+            option.textContent = `${region.name} (${region.country})`;
+            select.appendChild(option);
         });
     }
 
     function renderPlans(plans) {
-        const container = document.querySelector('#step3 .options-grid');
-        container.innerHTML = '';
+        const select = document.getElementById('planInput');
+        select.innerHTML = '<option value="">Selecione um plano...</option>';
 
-        // Filtra planos básicos/baratos para começar
-        const basicPlans = plans.filter(p => p.price <= 40).slice(0, 6);
+        // Ordena por preço
+        plans.sort((a, b) => a.price - b.price);
 
-        basicPlans.forEach(plan => {
-            const div = document.createElement('div');
-            div.className = 'option-card';
-            div.onclick = () => selectOption(div, 'plan', plan.id);
-            div.innerHTML = `
-                <i class="fas fa-server"></i>
-                <h3>$${plan.price}/mês</h3>
-                <p style="font-size: 12px; color: #718096;">${plan.cpu} CPU • ${plan.ram}MB RAM</p>
-            `;
-            container.appendChild(div);
+        plans.forEach(plan => {
+            const option = document.createElement('option');
+            option.value = plan.id;
+            option.textContent = `$${plan.price}/mês - ${plan.cpu} CPU, ${plan.ram}MB RAM`;
+            select.appendChild(option);
         });
     }
 
@@ -142,7 +132,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
         }
-        // Adicionar validações para outros passos conforme necessário
+        if (step === 2) {
+            const region = document.getElementById('regionInput').value;
+            if (!region) {
+                alert('Por favor, selecione uma região.');
+                return false;
+            }
+        }
+        if (step === 3) {
+            const plan = document.getElementById('planInput').value;
+            if (!plan) {
+                alert('Por favor, selecione um plano.');
+                return false;
+            }
+        }
         return true;
     }
 

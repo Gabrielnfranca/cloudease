@@ -187,22 +187,20 @@
                 <!-- Passo 2: Região -->
                 <div class="wizard-step" id="step2" style="display: none;">
                     <div class="form-group">
-                        <label>Escolha a Região</label>
-                        <div class="options-grid">
-                            <!-- Preenchido via JS -->
-                        </div>
-                        <input type="hidden" name="region" id="regionInput">
+                        <label for="regionInput">Escolha a Região</label>
+                        <select id="regionInput" name="region" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
+                            <option value="">Selecione uma região...</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Passo 3: Tamanho (Plan) -->
                 <div class="wizard-step" id="step3" style="display: none;">
                     <div class="form-group">
-                        <label>Escolha o Tamanho</label>
-                        <div class="options-grid">
-                            <!-- Preenchido via JS -->
-                        </div>
-                        <input type="hidden" name="plan" id="planInput">
+                        <label for="planInput">Escolha o Tamanho</label>
+                        <select id="planInput" name="plan" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
+                            <option value="">Selecione um plano...</option>
+                        </select>
                     </div>
                 </div>
 
