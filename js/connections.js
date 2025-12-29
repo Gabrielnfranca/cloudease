@@ -69,9 +69,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 const connectionName = row.querySelector('td:nth-child(2)').textContent;
 
                 if (action === 'Remover') {
-                    if (confirm(`Deseja remover a conexão ${connectionName}?`)) {
-                        // Implementar remoção via API futuramente
-                        alert('Funcionalidade de remoção em breve.');
+                    if (confirm(`Deseja remover a conexão ${connectionName}? Isso também removerá os servidores associados do painel.`)) {
+                        const btn = e.currentTarget;
+                        const id = btn.dataset.id;
+                        
+                        // Feedback visual
+                        const originalContent = btn.innerHTML;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                        btn.disabled = true;
+
+                        try {
+                            const response = await fetch(`/api/delete-provider?id=${id}`, {
+                                method: 'DELETE'
+                            });
+
+                            if (response.ok) {
+                                row.remove();
+                                // Verifica se a tabela ficou vazia
+                                if (document.querySelectorAll('.connections-table tbody tr').length === 0) {
+                                    document.querySelector('.connections-table tbody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma conexão encontrada.</td></tr>';
+                                }
+                            } else {
+                                const data = await response.json();
+                                alert('Erro ao remover: ' + (data.error || 'Erro desconhecido'));
+                                btn.innerHTML = originalContent;
+                                btn.disabled = false;
+                            }
+                        } catch (error) {
+                            console.error('Erro:', error);
+                            alert('Erro de conexão ao tentar remover.');
+                            btn.innerHTML = originalContent;
+                            btn.disabled = false;
+                        }
                     }
                 } else if (action === 'Configurações') {
                     console.log(`Abrir configurações para: ${connectionName}`);
