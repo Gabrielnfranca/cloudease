@@ -1,49 +1,90 @@
 import db from '../lib/db';
+import { createInstance } from '../lib/providers';
 
 export default async function handler(req, res) {
-    try {
-        // Busca servidores do banco de dados com JOIN em providers
-        const query = `
-            SELECT 
-                sc.*,
-                p.provider_name,
-                p.label as provider_label
-            FROM servers_cache sc
-            LEFT JOIN providers p ON sc.provider_id = p.id
-            ORDER BY sc.created_at DESC
-        `;
-        
-        const { rows } = await db.query(query);
-
-        // Se não tiver nada no banco, retornamos um array vazio
-        if (rows.length === 0) {
-            return res.status(200).json([]);
+    if (req.method === 'GET') {
+        // Listar servidores
+        try {
+            const query = `
+                SELECT 
+                    sc.*,
+                    p.provider_name,
+                    p.label as provider_label
+                FROM servers_cache sc
+                LEFT JOIN providers p ON sc.provider_id = p.id
+                ORDER BY sc.created_at DESC
+            `;
+            const { rows } = await db.query(query);
+            if (rows.length === 0) {
+                return res.status(200).json([]);
+            }
+            const servers = rows.map(row => {
+                const specs = row.specs || {};
+                return {
+                    id: row.id,
+                    provider: formatProviderName(row.provider_name),
+                    name: row.name,
+                    logo: getProviderLogo(row.provider_name),
+                    cpu: specs.cpu || 'N/A',
+                    ram: specs.ram || 'N/A',
+                    storage: specs.storage || 'N/A',
+                    os: specs.os || 'Linux',
+                    region: specs.region || 'Unknown',
+                    plan: specs.plan || 'Standard',
+                    ipv4: row.ip_address,
+                    status: row.status,
+                    created_at: row.created_at
+                };
+            });
+            res.status(200).json(servers);
+        } catch (error) {
+            console.error('Erro ao buscar servidores:', error);
+            res.status(500).json({ error: 'Erro interno ao buscar servidores' });
         }
-
-        // Mapeia os dados do banco para o formato que o frontend espera
-        const servers = rows.map(row => {
-            const specs = row.specs || {};
-            return {
-                id: row.id,
-                provider: formatProviderName(row.provider_name),
-                name: row.name,
-                logo: getProviderLogo(row.provider_name),
-                cpu: specs.cpu || 'N/A',
-                ram: specs.ram || 'N/A',
-                storage: specs.storage || 'N/A',
-                os: specs.os || 'Linux',
-                region: specs.region || 'Unknown', // Agora pegamos do specs
-                plan: specs.plan || 'Standard',
-                ipv4: row.ip_address,
-                status: row.status,
-                created_at: row.created_at
-            };
-        });
-
-        res.status(200).json(servers);
-    } catch (error) {
-        console.error('Erro ao buscar servidores:', error);
-        res.status(500).json({ error: 'Erro interno ao buscar servidores' });
+    } else if (req.method === 'POST') {
+        // Criar servidor
+        const { provider, region, plan, app, name } = req.body;
+        if (!provider || !region || !plan || !name) {
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+        }
+        try {
+            // Buscar token do provedor no banco de dados
+            const { rows } = await db.query(
+                'SELECT api_key, id FROM providers WHERE provider_name = $1 AND user_id = 1 LIMIT 1',
+                [provider]
+            );
+            if (rows.length === 0) {
+                return res.status(400).json({ error: 'Provedor não conectado. Vá em Conexões e conecte sua conta primeiro.' });
+            }
+            const { api_key: token, id: providerId } = rows[0];
+            // Chamar API do provedor para criar a máquina
+            const result = await createInstance(provider, token, {
+                region,
+                plan,
+                app,
+                name
+            });
+            // Salvar referência no banco de dados local (Cache)
+            await db.query(`
+                INSERT INTO servers_cache (provider_id, external_id, name, status, specs)
+                VALUES ($1, $2, $3, 'creating', $4)
+            `, [
+                providerId, 
+                result.id || result.droplet?.id || 'pending',
+                name,
+                { app: app, plan: plan, region: region }
+            ]);
+            return res.status(201).json({ 
+                success: true, 
+                message: 'Servidor sendo criado! O processo de instalação pode levar alguns minutos.',
+                details: result
+            });
+        } catch (error) {
+            console.error('Erro ao criar servidor:', error);
+            return res.status(500).json({ error: error.message || 'Erro interno ao criar servidor' });
+        }
+    } else {
+        res.status(405).json({ error: 'Method not allowed' });
     }
 }
 

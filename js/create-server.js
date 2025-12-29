@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         try {
-            const response = await fetch('/api/create-server', {
+            const response = await fetch('/api/servers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
