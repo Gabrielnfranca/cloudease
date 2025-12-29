@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     async function loadAdminData() {
         try {
-            const res = await fetch('/api/admin-panel');
+            const res = await fetch('/api/admin?type=dashboard');
             const data = await res.json();
             // Cards
             document.getElementById('admin-users-count').textContent = data.users.length;

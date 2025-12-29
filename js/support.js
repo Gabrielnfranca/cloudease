@@ -69,45 +69,64 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Manipulação do formulário
-    ticketForm.addEventListener('submit', function(e) {
+    ticketForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const newTicket = {
-            subject: document.getElementById('ticketSubject').value,
-            category: document.getElementById('ticketCategory').value,
-            priority: document.getElementById('ticketPriority').value,
-            message: document.getElementById('ticketMessage').value,
-            attachments: fileInput.files
-        };
+        const subject = document.getElementById('ticketSubject').value;
+        const category = document.getElementById('ticketCategory').value;
+        const priority = document.getElementById('ticketPriority').value;
+        const message = document.getElementById('ticketMessage').value;
 
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
-        console.log('Novo ticket:', newTicket);
+        try {
+            const res = await fetch('/api/admin?type=ticket-create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subject: subject,
+                    description: message,
+                    urgency: priority
+                })
+            });
+            if (res.ok) {
+                alert('Chamado criado com sucesso!');
+                closeModal();
+                loadTickets();
+            } else {
+                alert('Erro ao criar chamado');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao conectar');
+        }
+    });
 
-        // Gerar ID único para o ticket (simulação)
-        const ticketId = Math.floor(Math.random() * 10000);
-
-        // Adicionar nova linha na tabela
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>#${ticketId}</td>
-            <td>${newTicket.subject}</td>
-            <td><span class="status-badge pending">Pendente</span></td>
-            <td>${new Date().toLocaleString()}</td>
-            <td><span class="priority-badge ${newTicket.priority}">${newTicket.priority.charAt(0).toUpperCase() + newTicket.priority.slice(1)}</span></td>
-            <td class="actions">
-                <button class="action-btn" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
-                <button class="action-btn" title="Responder"><i class="fas fa-reply"></i></button>
-                <button class="action-btn" title="Fechar Ticket"><i class="fas fa-check"></i></button>
-            </td>
-        `;
-
-        ticketsTable.insertBefore(newRow, ticketsTable.firstChild);
+    async function loadTickets() {
+        try {
+            const res = await fetch('/api/admin?type=tickets');
+            const tickets = await res.json();
+            ticketsTable.innerHTML = '';
+            tickets.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${t.id}</td>
+                    <td>${t.subject}</td>
+                    <td><span class="status-badge ${t.status === 'Aberto' ? 'pending' : 'active'}">${t.status}</span></td>
+                    <td>${new Date(t.created_at).toLocaleString()}</td>
+                    <td><span class="priority-badge ${t.urgency}">${t.urgency}</span></td>
+                    <td class="actions">
+                        <button class="action-btn" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
+                    </td>
+                `;
+                ticketsTable.appendChild(tr);
+            });
+        } catch (e) {
+            console.error('Erro ao carregar tickets:', e);
+        }
+    }
+    loadTickets();
         closeModal();
 
         // Mostrar mensagem de confirmação
-        alert('Ticket criado com sucesso! Responderemos em até 24 horas.');
-    });
-
     // Ações dos tickets
     ticketsTable.addEventListener('click', function(e) {
         const actionBtn = e.target.closest('.action-btn');

@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
             // O HTML usa 'username' mas a API espera 'email'
-            // Vamos assumir que o usuário digita o email no campo username
+            // Vamos assumir que o usuï¿½rio digita o email no campo username
             const email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch('/api/auth?action=login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Salva o token e dados do usuário
+                    // Salva o token e dados do usuï¿½rio
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro de conexão. Tente novamente.');
+                alert('Erro de conexï¿½o. Tente novamente.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             try {
-                const response = await fetch('/api/register', {
+                const response = await fetch('/api/auth?action=register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
