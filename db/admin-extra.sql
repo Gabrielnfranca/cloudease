@@ -1,0 +1,18 @@
+-- Tabela de Chamados de Suporte
+CREATE TABLE IF NOT EXISTS tickets (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  subject VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  urgency VARCHAR(20) NOT NULL,
+  status VARCHAR(20) DEFAULT 'aberto',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de Faturamento
+CREATE TABLE IF NOT EXISTS revenue (
+  id SERIAL PRIMARY KEY,
+  client_name VARCHAR(255) NOT NULL,
+  amount NUMERIC(10,2) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
