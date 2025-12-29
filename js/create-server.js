@@ -127,7 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
         plans.forEach(plan => {
             const option = document.createElement('option');
             option.value = plan.id;
-            option.textContent = `$${plan.price}/mês - ${plan.cpu} CPU, ${plan.ram}MB RAM`;
+            const price = parseFloat(plan.price || 0).toFixed(2);
+            option.textContent = `US$ ${price}/mês - ${plan.cpu} vCPU, ${plan.ram}MB RAM, ${plan.disk}GB SSD`;
             select.appendChild(option);
         });
     }
