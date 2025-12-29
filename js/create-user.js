@@ -46,8 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (response.ok) {
-                    alert('Conta criada com sucesso! Faça login para continuar.');
-                    window.location.href = 'index.html';
+                    alert('Conta criada com sucesso! Redirecionando para o painel...');
+                    window.location.href = 'dashboard.html';
                 } else {
                     alert('Erro: ' + (data.error || 'Falha ao criar conta'));
                 }
