@@ -58,10 +58,13 @@ export default async function handler(req, res) {
                         }
                     } catch (err) {
                         console.error(`Erro sync ${provider.provider_name}:`, err);
+                        // Se falhar a sync, retorna erro para o cliente saber
+                        return res.status(500).json({ error: `Erro ao sincronizar com ${provider.provider_name}: ${err.message}` });
                     }
                 }
             } catch (error) {
                 console.error('Erro geral de sync:', error);
+                return res.status(500).json({ error: `Erro geral de sincronização: ${error.message}` });
             }
         }
 
