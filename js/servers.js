@@ -28,14 +28,44 @@ document.addEventListener('DOMContentLoaded', function() {
             const tr = document.createElement('tr');
             
             // Status Badge Logic
+            let statusHtml = '';
             let statusClass = 'status-active';
             let statusText = 'Ativo';
-            if (server.status === 'creating' || server.status === 'new') {
-                statusClass = 'status-warning'; // Você precisará definir essa classe no CSS se não existir
-                statusText = 'Criando...';
-            } else if (server.status === 'off' || server.status === 'stopped') {
-                statusClass = 'status-inactive';
-                statusText = 'Parado';
+
+            // Calcula tempo desde a criação
+            const createdAt = new Date(server.created_at);
+            const now = new Date();
+            const diffMs = now - createdAt;
+            const diffMinutes = diffMs / 60000; // Diferença em minutos
+
+            // Se o servidor tem menos de 5 minutos, mostra barra de progresso
+            if (diffMinutes < 5 && (server.status === 'active' || server.status === 'creating' || server.status === 'new')) {
+                const percent = Math.min(100, Math.round((diffMinutes / 5) * 100));
+                let stepText = 'Iniciando...';
+                if (percent > 10) stepText = 'Provisionando VM...';
+                if (percent > 30) stepText = 'Instalando Dependências...';
+                if (percent > 60) stepText = 'Configurando Servidor...';
+                if (percent > 90) stepText = 'Finalizando...';
+
+                statusHtml = `
+                    <div class="status-container">
+                        <span class="status-badge status-warning" style="background: #ebf8ff; color: #2b6cb0;">Instalando ${percent}%</span>
+                        <div class="installation-progress">
+                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                        </div>
+                        <span class="status-text">${stepText}</span>
+                    </div>
+                `;
+            } else {
+                // Lógica padrão de status
+                if (server.status === 'creating' || server.status === 'new') {
+                    statusClass = 'status-warning';
+                    statusText = 'Criando...';
+                } else if (server.status === 'off' || server.status === 'stopped') {
+                    statusClass = 'status-inactive';
+                    statusText = 'Parado';
+                }
+                statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
             }
 
             tr.innerHTML = `
@@ -66,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span title="Disco" style="margin-left: 8px;"><i class="fas fa-hdd"></i> ${server.storage}</span>
                     </div>
                 </td>
-                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${statusHtml}</td>
                 <td>
                     <div class="actions">
                         <button class="action-btn" title="Console"><i class="fas fa-terminal"></i></button>

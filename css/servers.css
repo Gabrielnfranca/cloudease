@@ -127,3 +127,37 @@
     white-space: nowrap;
     text-align: right;
 }
+
+/* Barra de Progresso de Instalação */
+.installation-progress {
+    width: 100%;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    height: 6px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: #3182ce; /* Azul */
+    transition: width 0.5s ease;
+    border-radius: 4px;
+    background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+    background-size: 1rem 1rem;
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    0% { background-position: 1rem 0; }
+    100% { background-position: 0 0; }
+}
+
+.status-text {
+    font-size: 11px;
+    color: #718096;
+    margin-top: 4px;
+    display: block;
+    font-style: italic;
+}
+
