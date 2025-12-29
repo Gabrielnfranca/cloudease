@@ -1,5 +1,5 @@
-import db from '../lib/db';
-import { createInstance } from '../lib/providers';
+import db from '../lib/db.js';
+import { createInstance } from '../lib/providers.js';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {

@@ -124,7 +124,15 @@
                     body: JSON.stringify(formData)
                 });
 
-                const data = await response.json();
+                const contentType = response.headers.get("content-type");
+                let data;
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error("Resposta não-JSON do servidor:", text);
+                    throw new Error(`Erro no servidor (${response.status}). Verifique o console para mais detalhes.`);
+                }
 
                 if (response.ok) {
                     alert('Conectado com sucesso!');
@@ -134,7 +142,7 @@
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro de conexão. Tente novamente.');
+                alert('Erro de conexão: ' + error.message);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;

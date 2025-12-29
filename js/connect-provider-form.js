@@ -30,17 +30,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
 
-                const data = await response.json();
+                const contentType = response.headers.get("content-type");
+                let data;
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error("Resposta não-JSON do servidor:", text);
+                    throw new Error(`Erro no servidor (${response.status}). Verifique o console.`);
+                }
 
                 if (response.ok) {
                     alert('Conexão realizada com sucesso!');
                     window.location.href = 'connections.html';
                 } else {
-                    alert('Erro: ' + data.error);
+                    alert('Erro: ' + (data.error || 'Falha desconhecida'));
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro ao conectar com o servidor.');
+                alert('Erro ao conectar: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;

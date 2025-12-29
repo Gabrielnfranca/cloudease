@@ -1,5 +1,5 @@
-import db from '../lib/db';
-import { validateToken, fetchServers } from '../lib/providers';
+import db from '../lib/db.js';
+import { validateToken, fetchServers } from '../lib/providers.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {

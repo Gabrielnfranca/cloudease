@@ -1,5 +1,5 @@
-import { getProviderToken } from '../lib/db-utils';
-import { fetchPlans, fetchRegions } from '../lib/providers';
+import { getProviderToken } from '../lib/db-utils.js';
+import { fetchPlans, fetchRegions } from '../lib/providers.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
