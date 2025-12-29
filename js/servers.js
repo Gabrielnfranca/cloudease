@@ -3,7 +3,12 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadServers() {
         try {
             // Tenta buscar da API (vai funcionar no Vercel ou localmente se tiver ambiente Node configurado)
-            const response = await fetch('/api/servers');
+            const authToken = localStorage.getItem('authToken');
+            const response = await fetch('/api/servers', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
             if (!response.ok) throw new Error('Falha na API');
             const servers = await response.json();
             renderServers(servers);

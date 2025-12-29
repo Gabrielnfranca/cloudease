@@ -72,9 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
 
         try {
+            const authToken = localStorage.getItem('authToken');
             const response = await fetch('/api/cloud-options', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
                 body: JSON.stringify({ provider })
             });
 
@@ -235,10 +239,12 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         try {
+            const authToken = localStorage.getItem('authToken');
             const response = await fetch('/api/servers', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
                 },
                 body: JSON.stringify(formData)
             });

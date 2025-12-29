@@ -18,10 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (window.location.href.includes('vultr')) provider = 'vultr';
 
             try {
+                const authToken = localStorage.getItem('authToken');
                 const response = await fetch('/api/connect-provider', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     body: JSON.stringify({
                         provider: provider,

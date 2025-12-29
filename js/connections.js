@@ -12,7 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando...</td></tr>';
             
-            const response = await fetch('/api/get-providers');
+            const authToken = localStorage.getItem('authToken');
+            const response = await fetch('/api/get-providers', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
             if (!response.ok) throw new Error('Falha ao buscar conexões');
             
             const connections = await response.json();
@@ -79,8 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         btn.disabled = true;
 
                         try {
+                            const authToken = localStorage.getItem('authToken');
                             const response = await fetch(`/api/delete-provider?id=${id}`, {
-                                method: 'DELETE'
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${authToken}`
+                                }
                             });
 
                             if (response.ok) {
