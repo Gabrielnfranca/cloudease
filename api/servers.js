@@ -3,62 +3,66 @@ import { createInstance, fetchServers } from '../lib/providers.js';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
-        // Sincronização com Provedores
-        try {
-            const { rows: providers } = await db.query('SELECT * FROM providers WHERE user_id = 1');
-            
-            for (const provider of providers) {
-                try {
-                    // Garante que o nome do provedor esteja em minúsculo para bater com a chave do objeto PROVIDERS
-                    const providerKey = provider.provider_name.toLowerCase();
-                    const remoteServers = await fetchServers(providerKey, provider.api_key);
-                    
-                    for (const server of remoteServers) {
-                        // Tenta encontrar servidor existente pelo ID externo
-                        let { rows: existing } = await db.query(
-                            'SELECT id FROM servers_cache WHERE provider_id = $1 AND external_id = $2',
-                            [provider.id, server.external_id]
-                        );
+        const { sync } = req.query;
 
-                        // Se não achou pelo ID, tenta achar um 'pending' com o mesmo nome (criado recentemente)
-                        if (existing.length === 0) {
-                            const { rows: pending } = await db.query(
-                                "SELECT id FROM servers_cache WHERE provider_id = $1 AND external_id = 'pending' AND name = $2",
-                                [provider.id, server.name]
+        // Sincronização com Provedores (Apenas se solicitado)
+        if (sync === 'true') {
+            try {
+                const { rows: providers } = await db.query('SELECT * FROM providers WHERE user_id = 1');
+                
+                for (const provider of providers) {
+                    try {
+                        // Garante que o nome do provedor esteja em minúsculo para bater com a chave do objeto PROVIDERS
+                        const providerKey = provider.provider_name.toLowerCase();
+                        const remoteServers = await fetchServers(providerKey, provider.api_key);
+                        
+                        for (const server of remoteServers) {
+                            // Tenta encontrar servidor existente pelo ID externo
+                            let { rows: existing } = await db.query(
+                                'SELECT id FROM servers_cache WHERE provider_id = $1 AND external_id = $2',
+                                [provider.id, server.external_id]
                             );
-                            if (pending.length > 0) {
-                                existing = pending;
+
+                            // Se não achou pelo ID, tenta achar um 'pending' com o mesmo nome (criado recentemente)
+                            if (existing.length === 0) {
+                                const { rows: pending } = await db.query(
+                                    "SELECT id FROM servers_cache WHERE provider_id = $1 AND external_id = 'pending' AND name = $2",
+                                    [provider.id, server.name]
+                                );
+                                if (pending.length > 0) {
+                                    existing = pending;
+                                }
+                            }
+
+                            if (existing.length > 0) {
+                                // Atualiza
+                                await db.query(
+                                    `UPDATE servers_cache SET 
+                                        external_id = $1, 
+                                        ip_address = $2, 
+                                        status = $3, 
+                                        specs = $4, 
+                                        created_at = COALESCE($5, created_at),
+                                        last_synced = NOW() 
+                                    WHERE id = $6`,
+                                    [server.external_id, server.ip_address, server.status, server.specs, server.created_at, existing[0].id]
+                                );
+                            } else {
+                                // Insere novo
+                                await db.query(
+                                    `INSERT INTO servers_cache (provider_id, external_id, name, ip_address, status, specs, created_at)
+                                    VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                                    [provider.id, server.external_id, server.name, server.ip_address, server.status, server.specs, server.created_at || new Date()]
+                                );
                             }
                         }
-
-                        if (existing.length > 0) {
-                            // Atualiza
-                            await db.query(
-                                `UPDATE servers_cache SET 
-                                    external_id = $1, 
-                                    ip_address = $2, 
-                                    status = $3, 
-                                    specs = $4, 
-                                    created_at = COALESCE($5, created_at),
-                                    last_synced = NOW() 
-                                WHERE id = $6`,
-                                [server.external_id, server.ip_address, server.status, server.specs, server.created_at, existing[0].id]
-                            );
-                        } else {
-                            // Insere novo
-                            await db.query(
-                                `INSERT INTO servers_cache (provider_id, external_id, name, ip_address, status, specs, created_at)
-                                VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-                                [provider.id, server.external_id, server.name, server.ip_address, server.status, server.specs, server.created_at || new Date()]
-                            );
-                        }
+                    } catch (err) {
+                        console.error(`Erro sync ${provider.provider_name}:`, err);
                     }
-                } catch (err) {
-                    console.error(`Erro sync ${provider.provider_name}:`, err);
                 }
+            } catch (error) {
+                console.error('Erro geral de sync:', error);
             }
-        } catch (error) {
-            console.error('Erro geral de sync:', error);
         }
 
         // Listar servidores

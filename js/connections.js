@@ -105,7 +105,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (action === 'Configurações') {
                     console.log(`Abrir configurações para: ${connectionName}`);
                 } else if (action === 'Sincronizar') {
-                    console.log(`Sincronizando ${connectionName}`);
+                    const btn = e.currentTarget;
+                    const originalContent = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    btn.disabled = true;
+
+                    try {
+                        const response = await fetch('/api/servers?sync=true');
+                        if (response.ok) {
+                            alert(`Sincronização com ${connectionName} concluída com sucesso!`);
+                            // Recarrega a lista para atualizar contadores se necessário
+                            loadConnections();
+                        } else {
+                            alert('Erro ao sincronizar.');
+                        }
+                    } catch (error) {
+                        console.error('Erro sync:', error);
+                        alert('Erro ao tentar sincronizar.');
+                    } finally {
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                    }
                 }
             });
         });
