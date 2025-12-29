@@ -9,7 +9,9 @@ export default async function handler(req, res) {
             
             for (const provider of providers) {
                 try {
-                    const remoteServers = await fetchServers(provider.provider_name, provider.api_key);
+                    // Garante que o nome do provedor esteja em minúsculo para bater com a chave do objeto PROVIDERS
+                    const providerKey = provider.provider_name.toLowerCase();
+                    const remoteServers = await fetchServers(providerKey, provider.api_key);
                     
                     for (const server of remoteServers) {
                         // Tenta encontrar servidor existente pelo ID externo
