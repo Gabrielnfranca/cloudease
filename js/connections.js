@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function attachActionListeners() {
         document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 const action = e.currentTarget.getAttribute('title');
                 const row = e.currentTarget.closest('tr');
                 const connectionName = row.querySelector('td:nth-child(2)').textContent;
