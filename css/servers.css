@@ -128,7 +128,7 @@
     text-align: right;
 }
 
-/* Barra de Progresso de Instalação */
+/* Barra de Progresso de Instalaï¿½ï¿½o */
 .installation-progress {
     width: 100%;
     background-color: #e2e8f0;
@@ -159,5 +159,76 @@
     margin-top: 4px;
     display: block;
     font-style: italic;
+}
+
+/* Header Actions Alignment */
+.header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* BotÃ£o Sincronizar - Estilo Profissional */
+.sync-btn {
+    background-color: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    height: 35px; /* Altura fixa para alinhar com outros botÃµes */
+    white-space: nowrap;
+}
+
+.sync-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e0;
+    color: #2d3748;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sync-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-color: #f1f5f9;
+}
+
+.sync-btn i {
+    font-size: 12px;
+    color: #718096;
+    transition: transform 0.4s ease;
+}
+
+.sync-btn:hover i {
+    color: #3182ce;
+    transform: rotate(180deg);
+}
+
+/* Estado de Carregamento */
+.sync-btn.loading {
+    background-color: #f7fafc;
+    color: #a0aec0;
+    border-color: #edf2f7;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.sync-btn.loading i {
+    animation: spin 1s linear infinite;
+    color: #4299e1;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
