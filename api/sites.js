@@ -42,6 +42,7 @@ export default async function handler(req, res) {
                 ip: site.ip_address || 'Pendente',
                 tempUrl: site.ip_address ? `http://${site.domain}.${site.ip_address}.nip.io` : null,
                 created_at: new Date(site.created_at).toLocaleDateString('pt-BR'),
+                created_at_iso: site.created_at, // Timestamp completo para cálculos
                 status: site.status
             }));
             res.status(200).json(sites);

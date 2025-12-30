@@ -147,6 +147,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusClass = 'warning';
                 statusText = 'Criando...';
                 statusIcon = '<i class="fas fa-spinner fa-spin"></i>';
+
+                // Verifica se está demorando muito (> 5 minutos)
+                if (site.created_at_iso) {
+                    const created = new Date(site.created_at_iso);
+                    const now = new Date();
+                    const diffMinutes = (now - created) / 1000 / 60;
+                    
+                    if (diffMinutes > 5) {
+                        statusClass = 'danger';
+                        statusText = 'Tempo Excedido';
+                        statusIcon = '<i class="fas fa-clock"></i>';
+                        retryBtn = `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
+                    }
+                }
             } else if (site.status === 'error') {
                 statusClass = 'danger';
                 statusText = 'Erro';
