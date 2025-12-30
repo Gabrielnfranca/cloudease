@@ -103,9 +103,9 @@ export default async function handler(req, res) {
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
                 })
                 .catch(async (err) => {
+                    console.error(`Erro ao provisionar ${domain}:`, err);
                     const errorMsg = err.message || 'Erro desconhecido';
-                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg
-                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['error', siteId]);
+                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg, siteId]);
                 });
 
             return res.status(201).json({ 
@@ -160,9 +160,9 @@ export default async function handler(req, res) {
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
                 })
                 .catch(async (err) => {
+                    console.error(`Erro ao re-provisionar ${site.domain}:`, err);
                     const errorMsg = err.message || 'Erro desconhecido';
-                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg
-                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['error', siteId]);
+                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg, siteId]);
                 });
 
             return res.status(200).json({ message: 'Re-provisionamento iniciado.' });
