@@ -90,9 +90,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </td>
                 <td>
-                    <a href="http://${site.domain}" target="_blank" style="color: #4299e1; text-decoration: none; font-weight: 500;">
-                        ${site.domain} <i class="fas fa-external-link-alt" style="font-size: 12px;"></i>
-                    </a>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <a href="http://${site.domain}" target="_blank" style="color: #4299e1; text-decoration: none; font-weight: 500;">
+                            ${site.domain} <i class="fas fa-external-link-alt" style="font-size: 12px;"></i>
+                        </a>
+                        ${site.tempUrl ? `
+                            <a href="${site.tempUrl}" target="_blank" title="Link Provisório (Acesso sem DNS)" style="font-size: 11px; color: #718096; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                                <i class="fas fa-link"></i> Link Provisório
+                            </a>
+                        ` : ''}
+                    </div>
                 </td>
                 <td>
                     <span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>

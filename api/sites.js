@@ -32,6 +32,7 @@ export default async function handler(req, res) {
                 ssl: site.status === 'active' ? true : false,
                 server: site.server_name || 'Desconhecido',
                 ip: site.ip_address || 'Pendente',
+                tempUrl: site.ip_address ? `http://${site.domain}.${site.ip_address}.nip.io` : null,
                 created_at: new Date(site.created_at).toLocaleDateString('pt-BR'),
                 status: site.status
             }));
