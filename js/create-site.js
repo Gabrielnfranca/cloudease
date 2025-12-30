@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const formData = {
             serverId: serverSelect.value,
+            rootPassword: document.getElementById('rootPassword').value,
             domain: document.getElementById('domain').value,
             platform: document.getElementById('platform').value,
             phpVersion: document.getElementById('phpVersion').value,
