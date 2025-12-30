@@ -66,6 +66,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    window.deleteSite = async function(siteId, domain) {
+        if (!confirm(`Tem certeza que deseja excluir o site ${domain}? \n\nTodos os arquivos e banco de dados serão apagados permanentemente.`)) {
+            return;
+        }
+
+        const btn = document.querySelector(`button[onclick="deleteSite(${siteId}, '${domain}')"]`);
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+        }
+
+        try {
+            const response = await fetch(`/api/sites?id=${siteId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert('Site excluído com sucesso!');
+                loadSites();
+            } else {
+                const data = await response.json();
+                alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-trash"></i>';
+                    btn.disabled = false;
+                }
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro de conexão.');
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-trash"></i>';
+                btn.disabled = false;
+            }
+        }
+    };
+
     function renderSites(sites) {
         const tbody = document.querySelector('.sites-table tbody');
         tbody.innerHTML = '';
@@ -151,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${retryBtn}
                     <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
                     <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
-                    <button class="action-btn delete-btn" title="Excluir"><i class="fas fa-trash"></i></button>
+                    <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')"><i class="fas fa-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(tr);

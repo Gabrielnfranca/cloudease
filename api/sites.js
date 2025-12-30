@@ -1,5 +1,5 @@
 import db from '../lib/db.js';
-import { provisionWordPress } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance } from '../lib/provisioner.js';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
@@ -166,6 +166,45 @@ export default async function handler(req, res) {
         } catch (error) {
             console.error('Erro ao re-tentar site:', error);
             return res.status(500).json({ error: 'Erro interno' });
+        }
+    } else if (req.method === 'DELETE') {
+        // Excluir Site
+        const { id } = req.query;
+        if (!id) return res.status(400).json({ error: 'ID do site obrigatório' });
+
+        try {
+            // Buscar dados do site e servidor
+            const { rows } = await db.query(`
+                SELECT s.id, s.domain, sc.ip_address 
+                FROM sites s
+                JOIN servers_cache sc ON s.server_id = sc.id
+                WHERE s.id = $1
+            `, [id]);
+
+            if (rows.length === 0) {
+                return res.status(404).json({ error: 'Site não encontrado' });
+            }
+
+            const site = rows[0];
+
+            // Tentar remover do servidor (SSH)
+            // Não falhamos se o servidor não responder, pois queremos permitir limpar o banco
+            try {
+                if (site.ip_address) {
+                    await deleteSiteFromInstance(site.ip_address, site.domain);
+                }
+            } catch (sshError) {
+                console.error('Erro ao limpar servidor (ignorando):', sshError);
+            }
+
+            // Remover do banco
+            await db.query('DELETE FROM sites WHERE id = $1', [id]);
+
+            return res.status(200).json({ success: true, message: 'Site excluído com sucesso' });
+
+        } catch (error) {
+            console.error('Erro ao excluir site:', error);
+            return res.status(500).json({ error: 'Erro interno ao excluir site' });
         }
     } else {
         res.status(405).json({ error: 'Method not allowed' });
