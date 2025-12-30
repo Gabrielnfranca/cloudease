@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         statusClass = 'danger';
                         statusText = 'Tempo Excedido';
                         statusIcon = '<i class="fas fa-clock"></i>';
+                        // Garante que o botão de retry apareça mesmo em timeout
                         retryBtn = `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
                     }
                 }
@@ -207,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${site.created_at}</td>
                 <td class="actions">
                     ${retryBtn}
+                    <button class="action-btn" title="Tentar Novamente (Forçar)" onclick="retryProvision(${site.id})"><i class="fas fa-redo"></i></button>
                     <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
                     <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
                     <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')"><i class="fas fa-trash"></i></button>
