@@ -14,6 +14,7 @@ export default async function handler(req, res) {
                     s.status, 
                     s.created_at,
                     s.enable_temp_url,
+                    s.last_error,
                     sc.name as server_name,
                     sc.ip_address
                 FROM sites s
@@ -36,7 +37,8 @@ export default async function handler(req, res) {
                 tempUrl: (site.ip_address && site.enable_temp_url) ? `http://${site.domain}.${site.ip_address}.nip.io` : null,
                 created_at: new Date(site.created_at).toLocaleDateString('pt-BR'),
                 created_at_iso: site.created_at, // Timestamp completo para cálculos
-                status: site.status
+                status: site.status,
+                last_error: site.last_error
             }));
             res.status(200).json(sites);
         } catch (error) {
@@ -101,7 +103,8 @@ export default async function handler(req, res) {
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
                 })
                 .catch(async (err) => {
-                    console.error(`Erro ao provisionar ${domain}:`, err);
+                    const errorMsg = err.message || 'Erro desconhecido';
+                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['error', siteId]);
                 });
 
@@ -157,7 +160,8 @@ export default async function handler(req, res) {
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
                 })
                 .catch(async (err) => {
-                    console.error(`Erro ao re-provisionar ${site.domain}:`, err);
+                    const errorMsg = err.message || 'Erro desconhecido';
+                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['error', siteId]);
                 });
 

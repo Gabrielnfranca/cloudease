@@ -166,6 +166,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusText = 'Erro';
                 statusIcon = '<i class="fas fa-exclamation-circle"></i>';
                 retryBtn = `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
+                
+                if (site.last_error) {
+                    const errorMsg = site.last_error.replace(/"/g, '&quot;');
+                    statusText = `<span title="${errorMsg}" style="cursor: help; border-bottom: 1px dotted rgba(255,255,255,0.5);">Erro</span>`;
+                    // Adiciona um botão de info se houver erro
+                    retryBtn = `<button class="action-btn" title="${errorMsg}" onclick="alert('${errorMsg.replace(/'/g, "\\'")}')" style="color: #e53e3e; margin-right: 5px;"><i class="fas fa-info-circle"></i></button>` + retryBtn;
+                }
             }
 
             tr.innerHTML = `
