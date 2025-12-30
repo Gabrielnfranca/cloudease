@@ -99,6 +99,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td>${site.server}</td>
                 <td>${site.ip}</td>
+                <td>
+                    <span class="ssl-badge ${statusClass}">
+                        ${statusIcon} ${statusText}
+                    </span>
+                </td>
                 <td>${site.created_at}</td>
                 <td class="actions">
                     <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>

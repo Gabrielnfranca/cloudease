@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             servers.forEach(server => {
                 const option = document.createElement('option');
-                option.value = server.external_id || server.name; // Idealmente usar ID interno
-                option.text = `${server.name} (${server.ipv4})`;
+                option.value = server.id;
+                option.text = `${server.name} (${server.ipv4 || server.ip_address})`;
                 serverSelect.add(option);
             });
         }

@@ -56,7 +56,7 @@ export default async function handler(req, res) {
                 INSERT INTO sites (server_id, domain, platform, php_version, cache_type, status)
                 VALUES ($1, $2, $3, $4, $5, 'provisioning')
                 RETURNING id
-            `, [1, domain, platform, phpVersion, cache]);
+            `, [serverId, domain, platform, phpVersion, cache]);
             setTimeout(async () => {
                 await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', result.rows[0].id]);
             }, 5000);
