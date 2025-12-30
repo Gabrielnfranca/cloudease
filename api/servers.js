@@ -189,37 +189,34 @@ export default async function handler(req, res) {
         }
 
         try {
-            // Buscar informações do servidor para saber qual provedor e ID externo
+            // Buscar informações do servidor (LEFT JOIN para permitir excluir mesmo se o provedor foi removido)
             const { rows } = await db.query(`
                 SELECT sc.id, sc.external_id, p.provider_name, p.api_key 
                 FROM servers_cache sc
-                JOIN providers p ON sc.provider_id = p.id
-                WHERE sc.id = $1 AND p.user_id = $2
-            `, [id, userId]);
+                LEFT JOIN providers p ON sc.provider_id = p.id
+                WHERE sc.id = $1
+            `, [id]);
 
             if (rows.length === 0) {
-                return res.status(404).json({ error: 'Servidor não encontrado ou sem permissão.' });
+                return res.status(404).json({ error: 'Servidor não encontrado.' });
             }
 
             const server = rows[0];
 
-            // Se o ID externo for 'pending', significa que o servidor ainda não foi totalmente criado ou falhou.
-            // Nesse caso, apenas removemos do banco de dados local.
-            if (server.external_id !== 'pending') {
-                // Excluir no provedor
+            // Se tiver dados do provedor e ID externo válido, tenta excluir na API
+            if (server.provider_name && server.api_key && server.external_id && server.external_id !== 'pending') {
                 try {
                     await deleteInstance(server.provider_name.toLowerCase(), server.api_key, server.external_id);
                 } catch (providerError) {
                     console.error('Erro ao excluir no provedor (ignorando para limpar DB):', providerError);
-                    // Continuar para limpar o banco mesmo se falhar na API (ex: já deletado)
                 }
             }
 
+            // Excluir sites associados primeiro (FK constraint)
+            await db.query('DELETE FROM sites WHERE server_id = $1', [id]);
+
             // Excluir do banco de dados local
             await db.query('DELETE FROM servers_cache WHERE id = $1', [id]);
-
-            // Também excluir sites associados (opcional, mas recomendado para manter consistência)
-            await db.query('DELETE FROM sites WHERE server_id = $1', [id]);
 
             return res.status(200).json({ success: true, message: 'Servidor excluído com sucesso.' });
 
