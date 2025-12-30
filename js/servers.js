@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.ok) {
                     loadServers(); // Recarrega a lista
                 } else {
-                    alert('Erro ao sincronizar servidores.');
+                    const data = await response.json();
+                    alert('Erro ao sincronizar: ' + (data.error || 'Erro desconhecido'));
                 }
             } catch (error) {
                 console.error('Erro:', error);
