@@ -13,6 +13,7 @@ export default async function handler(req, res) {
                     s.php_version, 
                     s.status, 
                     s.created_at,
+                    s.enable_temp_url,
                     sc.name as server_name,
                     sc.ip_address
                 FROM sites s
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
                 ssl: site.status === 'active' ? true : false,
                 server: site.server_name || 'Desconhecido',
                 ip: site.ip_address || 'Pendente',
-                tempUrl: site.ip_address ? `http://${site.domain}.${site.ip_address}.nip.io` : null,
+                tempUrl: (site.ip_address && site.enable_temp_url) ? `http://${site.domain}.${site.ip_address}.nip.io` : null,
                 created_at: new Date(site.created_at).toLocaleDateString('pt-BR'),
                 created_at_iso: site.created_at, // Timestamp completo para cálculos
                 status: site.status
@@ -44,7 +45,7 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Criar site
-        const { serverId, domain, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
+        const { serverId, domain, enableTempUrl, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
         
         if (!serverId || !domain) {
             return res.status(400).json({ error: 'Servidor e Domínio são obrigatórios' });
@@ -73,10 +74,10 @@ export default async function handler(req, res) {
 
             // Salvar no banco de dados como 'provisioning'
             const result = await db.query(`
-                INSERT INTO sites (server_id, domain, platform, php_version, cache_type, status)
-                VALUES ($1, $2, $3, $4, $5, 'provisioning')
+                INSERT INTO sites (server_id, domain, platform, php_version, cache_type, status, enable_temp_url)
+                VALUES ($1, $2, $3, $4, $5, 'provisioning', $6)
                 RETURNING id
-            `, [serverId, domain, platform, phpVersion, cache]);
+            `, [serverId, domain, platform, phpVersion, cache, enableTempUrl]);
 
             const siteId = result.rows[0].id;
 
@@ -87,8 +88,12 @@ export default async function handler(req, res) {
                 adminPass: wpAdminPass,
                 adminEmail: wpAdminEmail,
                 lang: wpLang || 'pt_BR',
-                cache: cache // Passando a opção de cache
-            } : { cache: cache };
+                cache: cache,
+                enableTempUrl: enableTempUrl
+            } : { 
+                cache: cache,
+                enableTempUrl: enableTempUrl
+            };
 
             provisionWordPress(serverIp, domain, wpConfig)
                 .then(async (creds) => {
@@ -142,8 +147,9 @@ export default async function handler(req, res) {
                 adminUser: 'admin',
                 adminPass: 'admin123', // Isso é ruim. O ideal seria salvar os params de install temporariamente.
                 adminEmail: 'admin@example.com',
-                lang: 'pt_BR'
-            } : null;
+                lang: 'pt_BR',
+                enableTempUrl: site.enable_temp_url
+            } : { enableTempUrl: site.enable_temp_url };
 
             // Iniciar provisionamento
             provisionWordPress(site.ip_address, site.domain, wpConfig)

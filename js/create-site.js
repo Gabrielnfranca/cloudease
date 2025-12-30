@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const formData = {
             serverId: serverSelect.value,
             domain: document.getElementById('domain').value,
+            enableTempUrl: document.getElementById('enableTempUrl').checked,
             platform: platform,
             phpVersion: document.getElementById('phpVersion').value,
             cache: document.getElementById('cache').value,
