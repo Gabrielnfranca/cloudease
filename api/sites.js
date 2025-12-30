@@ -43,14 +43,10 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Criar site
-        const { serverId, rootPassword, domain, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
+        const { serverId, domain, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
         
         if (!serverId || !domain) {
             return res.status(400).json({ error: 'Servidor e Domínio são obrigatórios' });
-        }
-
-        if (!rootPassword) {
-             return res.status(400).json({ error: 'Senha Root é obrigatória para instalação.' });
         }
 
         // Validação básica para WP
@@ -92,7 +88,7 @@ export default async function handler(req, res) {
                 lang: wpLang || 'pt_BR'
             } : null;
 
-            provisionWordPress(serverIp, rootPassword, domain, wpConfig)
+            provisionWordPress(serverIp, domain, wpConfig)
                 .then(async (creds) => {
                     console.log(`Site ${domain} provisionado com sucesso!`);
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
