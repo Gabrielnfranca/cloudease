@@ -5,14 +5,6 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         // Listar sites
         try {
-            // Verificar e atualizar sites travados em 'provisioning' há mais de 5 minutos
-            await db.query(`
-                UPDATE sites 
-                SET status = 'error' 
-                WHERE status = 'provisioning' 
-                AND created_at < NOW() - INTERVAL '5 minutes'
-            `);
-
             const query = `
                 SELECT 
                     s.id, 
