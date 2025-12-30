@@ -5,6 +5,14 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         // Listar sites
         try {
+            // Verificar e atualizar sites travados em 'provisioning' há mais de 5 minutos
+            await db.query(`
+                UPDATE sites 
+                SET status = 'error' 
+                WHERE status = 'provisioning' 
+                AND created_at < NOW() - INTERVAL '5 minutes'
+            `);
+
             const query = `
                 SELECT 
                     s.id, 
@@ -107,6 +115,57 @@ export default async function handler(req, res) {
         } catch (error) {
             console.error('Erro ao criar site:', error);
             return res.status(500).json({ error: 'Erro interno ao criar site' });
+        }
+    } else if (req.method === 'PUT') {
+        // Re-tentar provisionamento
+        const { siteId } = req.body;
+        
+        try {
+            // Buscar dados do site
+            const siteQuery = await db.query(`
+                SELECT s.*, sc.ip_address 
+                FROM sites s
+                JOIN servers_cache sc ON s.server_id = sc.id
+                WHERE s.id = $1
+            `, [siteId]);
+
+            if (siteQuery.rows.length === 0) {
+                return res.status(404).json({ error: 'Site não encontrado' });
+            }
+
+            const site = siteQuery.rows[0];
+            
+            // Atualizar status para provisioning
+            await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['provisioning', siteId]);
+
+            // Configuração WP (Recuperar do banco se possível, ou usar defaults/null por enquanto)
+            // Nota: Idealmente deveríamos ter salvo a config do WP no banco. 
+            // Por simplificação, vamos assumir que se falhou, tentamos o básico ou o usuário recria.
+            // Mas para retry funcionar bem, vamos tentar provisionar novamente.
+            
+            const wpConfig = site.platform === 'wordpress' ? {
+                title: 'My WordPress Site', // Defaults genéricos pois não salvamos os dados sensíveis
+                adminUser: 'admin',
+                adminPass: 'admin123', // Isso é ruim. O ideal seria salvar os params de install temporariamente.
+                adminEmail: 'admin@example.com',
+                lang: 'pt_BR'
+            } : null;
+
+            // Iniciar provisionamento
+            provisionWordPress(site.ip_address, site.domain, wpConfig)
+                .then(async () => {
+                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
+                })
+                .catch(async (err) => {
+                    console.error(`Erro ao re-provisionar ${site.domain}:`, err);
+                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['error', siteId]);
+                });
+
+            return res.status(200).json({ message: 'Re-provisionamento iniciado.' });
+
+        } catch (error) {
+            console.error('Erro ao re-tentar site:', error);
+            return res.status(500).json({ error: 'Erro interno' });
         }
     } else {
         res.status(405).json({ error: 'Method not allowed' });

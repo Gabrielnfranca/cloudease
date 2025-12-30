@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadSites();
+    
+    // Polling para atualizar status
+    setInterval(() => {
+        const hasPending = document.querySelector('.ssl-badge.warning');
+        if (hasPending) {
+            loadSites(true); // true = silent reload
+        }
+    }, 10000);
 
     // Elementos de busca
     const searchInput = document.querySelector('.search-bar input');
@@ -15,12 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    async function loadSites() {
+    async function loadSites(silent = false) {
         const tbody = document.querySelector('.sites-table tbody');
         if (!tbody) return;
 
         try {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Carregando sites...</td></tr>';
+            if (!silent) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Carregando sites...</td></tr>';
+            }
 
             const response = await fetch('/api/sites');
             if (!response.ok) throw new Error('Falha na API');
@@ -29,9 +39,32 @@ document.addEventListener('DOMContentLoaded', function() {
             renderSites(sites);
         } catch (error) {
             console.error('Erro:', error);
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: red;">Erro ao carregar sites.</td></tr>';
+            if (!silent) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: red;">Erro ao carregar sites.</td></tr>';
+            }
         }
     }
+
+    window.retryProvision = async function(siteId) {
+        if (!confirm('Deseja tentar instalar novamente?')) return;
+        
+        try {
+            const response = await fetch('/api/sites', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ siteId })
+            });
+            
+            if (response.ok) {
+                alert('Re-tentativa iniciada!');
+                loadSites();
+            } else {
+                alert('Erro ao iniciar re-tentativa.');
+            }
+        } catch (e) {
+            alert('Erro de conexão.');
+        }
+    };
 
     function renderSites(sites) {
         const tbody = document.querySelector('.sites-table tbody');
@@ -71,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let statusClass = 'active';
             let statusText = 'Ativo';
             let statusIcon = '<i class="fas fa-check-circle"></i>';
+            let retryBtn = '';
             
             if (site.status === 'provisioning') {
                 statusClass = 'warning';
@@ -80,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusClass = 'danger';
                 statusText = 'Erro';
                 statusIcon = '<i class="fas fa-exclamation-circle"></i>';
+                retryBtn = `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
             }
 
             tr.innerHTML = `
@@ -113,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td>${site.created_at}</td>
                 <td class="actions">
+                    ${retryBtn}
                     <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
                     <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
                     <button class="action-btn delete-btn" title="Excluir"><i class="fas fa-trash"></i></button>
