@@ -203,8 +203,17 @@ export default async function handler(req, res) {
 
             const server = rows[0];
 
-            // Excluir no provedor
-            await deleteInstance(server.provider_name.toLowerCase(), server.api_key, server.external_id);
+            // Se o ID externo for 'pending', significa que o servidor ainda não foi totalmente criado ou falhou.
+            // Nesse caso, apenas removemos do banco de dados local.
+            if (server.external_id !== 'pending') {
+                // Excluir no provedor
+                try {
+                    await deleteInstance(server.provider_name.toLowerCase(), server.api_key, server.external_id);
+                } catch (providerError) {
+                    console.error('Erro ao excluir no provedor (ignorando para limpar DB):', providerError);
+                    // Continuar para limpar o banco mesmo se falhar na API (ex: já deletado)
+                }
+            }
 
             // Excluir do banco de dados local
             await db.query('DELETE FROM servers_cache WHERE id = $1', [id]);
