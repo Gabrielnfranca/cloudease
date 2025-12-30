@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         try {
             const token = localStorage.getItem('authToken');
-            const response = await fetch('/api/create-site', {
+            const response = await fetch('/api/sites', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
