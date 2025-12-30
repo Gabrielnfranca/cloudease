@@ -1,39 +1,54 @@
 document.addEventListener('DOMContentLoaded', function() {
+    let pollingInterval = null;
+
     // Botão de Sincronizar
     const syncBtn = document.getElementById('syncServersBtn');
     if (syncBtn) {
-        syncBtn.addEventListener('click', async function() {
-            const originalText = syncBtn.innerHTML;
+        syncBtn.addEventListener('click', () => syncServers(false));
+    }
+
+    // Carregar servidores ao iniciar
+    loadServers();
+
+    // Função unificada de sincronização
+    async function syncServers(isAuto = false) {
+        if (!isAuto) {
             syncBtn.disabled = true;
-            syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
+            syncBtn.classList.add('loading');
+            syncBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sincronizando...';
+        }
+
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const response = await fetch('/api/servers?sync=true', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
             
-            try {
-                const authToken = localStorage.getItem('authToken');
-                const response = await fetch('/api/servers?sync=true', {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                if (response.ok) {
-                    loadServers(); // Recarrega a lista
-                } else {
+            if (response.ok) {
+                await loadServers(); // Recarrega a lista
+            } else {
+                if (!isAuto) {
                     const data = await response.json();
                     alert('Erro ao sincronizar: ' + (data.error || 'Erro desconhecido'));
                 }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão.');
-            } finally {
-                syncBtn.disabled = false;
-                syncBtn.innerHTML = originalText;
             }
-        });
+        } catch (error) {
+            console.error('Erro:', error);
+            if (!isAuto) alert('Erro de conexão.');
+        } finally {
+            if (!isAuto) {
+                syncBtn.disabled = false;
+                syncBtn.classList.remove('loading');
+                syncBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sincronizar';
+            }
+        }
     }
 
     // Função para carregar servidores da API
     async function loadServers() {
         try {
-            // Tenta buscar da API (vai funcionar no Vercel ou localmente se tiver ambiente Node configurado)
             const authToken = localStorage.getItem('authToken');
             const response = await fetch('/api/servers', {
                 headers: {
@@ -43,9 +58,34 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Falha na API');
             const servers = await response.json();
             renderServers(servers);
+            
+            // Verifica se precisa continuar polling
+            checkPolling(servers);
         } catch (error) {
             console.log('API não disponível ou erro:', error);
             renderServers([]);
+        }
+    }
+
+    function checkPolling(servers) {
+        const hasPending = servers.some(s => 
+            s.status === 'creating' || 
+            s.status === 'new' || 
+            s.status === 'pending' ||
+            s.status === 'unknown'
+        );
+
+        if (hasPending) {
+            if (!pollingInterval) {
+                console.log('Iniciando auto-refresh de servidores...');
+                pollingInterval = setInterval(() => syncServers(true), 10000); // Poll a cada 10s
+            }
+        } else {
+            if (pollingInterval) {
+                console.log('Todos os servidores ativos. Parando auto-refresh.');
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
         }
     }
 
@@ -74,32 +114,41 @@ document.addEventListener('DOMContentLoaded', function() {
             const diffMs = now - createdAt;
             const diffMinutes = diffMs / 60000; // Diferença em minutos
 
-            // Se o servidor tem menos de 5 minutos, mostra barra de progresso
-            if (diffMinutes < 5 && (server.status === 'active' || server.status === 'creating' || server.status === 'new')) {
-                const percent = Math.min(100, Math.round((diffMinutes / 5) * 100));
-                let stepText = 'Iniciando...';
-                if (percent > 10) stepText = 'Provisionando VM...';
-                if (percent > 30) stepText = 'Instalando Dependências...';
-                if (percent > 60) stepText = 'Configurando Servidor...';
-                if (percent > 90) stepText = 'Finalizando...';
+            // Lógica de Progresso:
+            // Se status NÃO for active/running, mostra barra de progresso
+            // Se status FOR active, assume 100% concluído
+            const isProvisioning = server.status === 'creating' || server.status === 'new' || server.status === 'pending';
+            
+            if (isProvisioning) {
+                // Simula progresso baseado no tempo (max 2 minutos para provisionar VM)
+                // Se passar de 2 min e ainda estiver creating, trava em 90%
+                let percent = Math.min(90, Math.round((diffMinutes / 2) * 100));
+                if (percent < 5) percent = 5; // Mínimo visual
+
+                let stepText = 'Provisionando...';
+                if (percent > 30) stepText = 'Alocando IP...';
+                if (percent > 60) stepText = 'Iniciando Sistema...';
+                if (percent >= 90) stepText = 'Finalizando...';
 
                 statusHtml = `
                     <div class="status-container">
-                        <span class="status-badge status-warning" style="background: #ebf8ff; color: #2b6cb0;">Instalando ${percent}%</span>
-                        <div class="installation-progress">
-                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                        <span class="status-badge status-warning" style="background: #ebf8ff; color: #2b6cb0; margin-bottom: 4px; display: inline-block;">${stepText} ${percent}%</span>
+                        <div class="installation-progress" style="height: 6px; background: #edf2f7; border-radius: 3px; overflow: hidden;">
+                            <div class="progress-bar-fill" style="width: ${percent}%; height: 100%; background: #4299e1; transition: width 0.5s ease;"></div>
                         </div>
-                        <span class="status-text">${stepText}</span>
                     </div>
                 `;
             } else {
-                // Lógica padrão de status
-                if (server.status === 'creating' || server.status === 'new') {
-                    statusClass = 'status-warning';
-                    statusText = 'Criando...';
+                // Status Real
+                if (server.status === 'active' || server.status === 'running') {
+                    statusClass = 'status-active';
+                    statusText = 'Ativo';
                 } else if (server.status === 'off' || server.status === 'stopped') {
                     statusClass = 'status-inactive';
                     statusText = 'Parado';
+                } else {
+                    statusClass = 'status-warning'; // Unknown ou outros
+                    statusText = server.status;
                 }
                 statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
             }
@@ -142,28 +191,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             `;
             
-            // Adiciona eventos
-            tr.addEventListener('click', () => selectServer(server));
-            const configBtn = tr.querySelector('.action-btn[title="Configurações"]');
-            if(configBtn) {
-                configBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectServer(server);
-                });
-            }
-
             tbody.appendChild(tr);
         });
     }
 
-    // Função para selecionar um servidor e redirecionar
     function selectServer(server) {
-        // Armazena os dados do servidor selecionado
-        localStorage.setItem('selectedServer', JSON.stringify(server));
-        // Redireciona para a página de gerenciamento
-        window.location.href = 'gerenciar-servidores.html';
+        console.log('Selecionado:', server);
+        // Implementar lógica de seleção se necessário
     }
-
-    // Iniciar carregamento
-    loadServers();
 });
