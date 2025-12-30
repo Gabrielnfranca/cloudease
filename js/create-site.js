@@ -4,7 +4,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Carregar servidores disponíveis
     try {
-        const response = await fetch('/api/servers');
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/servers', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         const servers = await response.json();
         
         serverSelect.innerHTML = '<option value="">Selecione um servidor...</option>';
@@ -45,10 +50,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         };
 
         try {
+            const token = localStorage.getItem('authToken');
             const response = await fetch('/api/create-site', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(formData)
             });
