@@ -1,5 +1,5 @@
 import db from '../lib/db.js';
-import { createInstance, fetchServers } from '../lib/providers.js';
+import { createInstance, fetchServers, deleteInstance } from '../lib/providers.js';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
@@ -180,6 +180,43 @@ export default async function handler(req, res) {
         } catch (error) {
             console.error('Erro ao criar servidor:', error);
             return res.status(500).json({ error: error.message || 'Erro interno ao criar servidor' });
+        }
+    } else if (req.method === 'DELETE') {
+        // Excluir servidor
+        const { id } = req.query;
+        if (!id) {
+            return res.status(400).json({ error: 'ID do servidor é obrigatório' });
+        }
+
+        try {
+            // Buscar informações do servidor para saber qual provedor e ID externo
+            const { rows } = await db.query(`
+                SELECT sc.id, sc.external_id, p.provider_name, p.api_key 
+                FROM servers_cache sc
+                JOIN providers p ON sc.provider_id = p.id
+                WHERE sc.id = $1 AND p.user_id = $2
+            `, [id, userId]);
+
+            if (rows.length === 0) {
+                return res.status(404).json({ error: 'Servidor não encontrado ou sem permissão.' });
+            }
+
+            const server = rows[0];
+
+            // Excluir no provedor
+            await deleteInstance(server.provider_name.toLowerCase(), server.api_key, server.external_id);
+
+            // Excluir do banco de dados local
+            await db.query('DELETE FROM servers_cache WHERE id = $1', [id]);
+
+            // Também excluir sites associados (opcional, mas recomendado para manter consistência)
+            await db.query('DELETE FROM sites WHERE server_id = $1', [id]);
+
+            return res.status(200).json({ success: true, message: 'Servidor excluído com sucesso.' });
+
+        } catch (error) {
+            console.error('Erro ao excluir servidor:', error);
+            return res.status(500).json({ error: error.message || 'Erro interno ao excluir servidor' });
         }
     } else {
         res.status(405).json({ error: 'Method not allowed' });

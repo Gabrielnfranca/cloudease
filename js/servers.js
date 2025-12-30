@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="actions">
                         <button class="action-btn" title="Console"><i class="fas fa-terminal"></i></button>
                         <button class="action-btn" title="Reiniciar"><i class="fas fa-sync-alt"></i></button>
-                        <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn delete-btn" title="Excluir Servidor" onclick="deleteServer(${server.id}, '${server.name}')" style="color: #e53e3e;"><i class="fas fa-trash"></i></button>
                     </div>
                 </td>
             `;
@@ -194,6 +194,48 @@ document.addEventListener('DOMContentLoaded', function() {
             tbody.appendChild(tr);
         });
     }
+
+    window.deleteServer = async function(id, name) {
+        if (!confirm(`Tem certeza que deseja excluir o servidor "${name}"? \n\nEsta ação é irreversível e apagará todos os sites e dados hospedados nele.`)) {
+            return;
+        }
+
+        const btn = document.querySelector(`button[onclick="deleteServer(${id}, '${name}')"]`);
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const response = await fetch(`/api/servers?id=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Servidor excluído com sucesso!');
+                loadServers();
+            } else {
+                alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-trash"></i>';
+                }
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro de conexão ao tentar excluir.');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash"></i>';
+            }
+        }
+    };
 
     function selectServer(server) {
         console.log('Selecionado:', server);
