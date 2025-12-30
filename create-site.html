@@ -82,11 +82,45 @@
 
                 <div class="form-group">
                     <label for="platform">Plataforma</label>
-                    <select id="platform" class="form-control">
+                    <select id="platform" class="form-control" onchange="toggleWpFields()">
                         <option value="wordpress">WordPress (Recomendado)</option>
                         <option value="php">PHP Puro</option>
                         <option value="html">HTML Estático</option>
                     </select>
+                </div>
+
+                <!-- Campos Específicos do WordPress -->
+                <div id="wp-fields" style="background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px; color: #2d3748; border-bottom: 1px solid #cbd5e0; padding-bottom: 10px;">Configuração do WordPress</h3>
+                    
+                    <div class="form-group">
+                        <label for="wpTitle">Título do Site</label>
+                        <input type="text" id="wpTitle" class="form-control" placeholder="Meu Site Incrível">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wpAdminUser">Usuário Administrador</label>
+                        <input type="text" id="wpAdminUser" class="form-control" placeholder="admin">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wpAdminPass">Senha do Administrador</label>
+                        <input type="password" id="wpAdminPass" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wpAdminEmail">E-mail do Administrador</label>
+                        <input type="email" id="wpAdminEmail" class="form-control" placeholder="admin@exemplo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wpLang">Idioma</label>
+                        <select id="wpLang" class="form-control">
+                            <option value="pt_BR">Português do Brasil</option>
+                            <option value="en_US">Inglês (US)</option>
+                            <option value="es_ES">Espanhol</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">

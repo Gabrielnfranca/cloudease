@@ -43,7 +43,7 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Criar site
-        const { serverId, rootPassword, domain, platform, phpVersion, cache } = req.body;
+        const { serverId, rootPassword, domain, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
         
         if (!serverId || !domain) {
             return res.status(400).json({ error: 'Servidor e Domínio são obrigatórios' });
@@ -51,6 +51,13 @@ export default async function handler(req, res) {
 
         if (!rootPassword) {
              return res.status(400).json({ error: 'Senha Root é obrigatória para instalação.' });
+        }
+
+        // Validação básica para WP
+        if (platform === 'wordpress') {
+            if (!wpTitle || !wpAdminUser || !wpAdminPass || !wpAdminEmail) {
+                return res.status(400).json({ error: 'Todos os campos de configuração do WordPress são obrigatórios.' });
+            }
         }
 
         try {
@@ -77,7 +84,15 @@ export default async function handler(req, res) {
             const siteId = result.rows[0].id;
 
             // Iniciar provisionamento em background
-            provisionWordPress(serverIp, rootPassword, domain)
+            const wpConfig = platform === 'wordpress' ? {
+                title: wpTitle,
+                adminUser: wpAdminUser,
+                adminPass: wpAdminPass,
+                adminEmail: wpAdminEmail,
+                lang: wpLang || 'pt_BR'
+            } : null;
+
+            provisionWordPress(serverIp, rootPassword, domain, wpConfig)
                 .then(async (creds) => {
                     console.log(`Site ${domain} provisionado com sucesso!`);
                     await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);

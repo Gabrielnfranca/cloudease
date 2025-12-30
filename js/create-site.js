@@ -32,6 +32,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         serverSelect.innerHTML = '<option value="">Erro ao carregar servidores</option>';
     }
 
+    // Toggle WP Fields
+    window.toggleWpFields = function() {
+        const platform = document.getElementById('platform').value;
+        const wpFields = document.getElementById('wp-fields');
+        if (platform === 'wordpress') {
+            wpFields.style.display = 'block';
+        } else {
+            wpFields.style.display = 'none';
+        }
+    };
+    // Inicializa estado
+    toggleWpFields();
+
     // Envio do formulário
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -41,13 +54,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando Site...';
 
+        const platform = document.getElementById('platform').value;
+        
         const formData = {
             serverId: serverSelect.value,
             rootPassword: document.getElementById('rootPassword').value,
             domain: document.getElementById('domain').value,
-            platform: document.getElementById('platform').value,
+            platform: platform,
             phpVersion: document.getElementById('phpVersion').value,
-            cache: document.getElementById('cache').value
+            cache: document.getElementById('cache').value,
+            // Campos WP opcionais
+            wpTitle: platform === 'wordpress' ? document.getElementById('wpTitle').value : null,
+            wpAdminUser: platform === 'wordpress' ? document.getElementById('wpAdminUser').value : null,
+            wpAdminPass: platform === 'wordpress' ? document.getElementById('wpAdminPass').value : null,
+            wpAdminEmail: platform === 'wordpress' ? document.getElementById('wpAdminEmail').value : null,
+            wpLang: platform === 'wordpress' ? document.getElementById('wpLang').value : null
         };
 
         try {
