@@ -94,8 +94,9 @@ export default async function handler(req, res) {
                 adminUser: wpAdminUser,
                 adminPass: wpAdminPass,
                 adminEmail: wpAdminEmail,
-                lang: wpLang || 'pt_BR'
-            } : null;
+                lang: wpLang || 'pt_BR',
+                cache: cache // Passando a opção de cache
+            } : { cache: cache };
 
             provisionWordPress(serverIp, domain, wpConfig)
                 .then(async (creds) => {
