@@ -1,5 +1,5 @@
 import db from '../lib/db.js';
-import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus, updateNginxConfig } from '../lib/provisioner.js';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
@@ -141,8 +141,8 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Erro interno ao criar site' });
         }
     } else if (req.method === 'PUT') {
-        // Re-tentar provisionamento
-        const { siteId } = req.body;
+        // Re-tentar provisionamento ou atualizar config
+        const { siteId, action } = req.body;
         
         try {
             // Buscar dados do site
@@ -158,6 +158,17 @@ export default async function handler(req, res) {
             }
 
             const site = siteQuery.rows[0];
+
+            if (action === 'update_nginx') {
+                // Apenas atualizar Nginx (para ativar link provisório)
+                try {
+                    await updateNginxConfig(site.ip_address, site.domain, site.enable_temp_url);
+                    return res.status(200).json({ message: 'Configuração do Nginx atualizada com sucesso.' });
+                } catch (err) {
+                    console.error('Erro ao atualizar Nginx:', err);
+                    return res.status(500).json({ error: 'Erro ao atualizar Nginx: ' + err.message });
+                }
+            }
             
             // Atualizar status para provisioning
             await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['provisioning', siteId]);

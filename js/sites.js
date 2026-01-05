@@ -66,6 +66,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    window.updateNginx = async function(siteId) {
+        if (!confirm('Deseja atualizar a configuração do Nginx (ativar link provisório)?')) return;
+        
+        try {
+            const response = await fetch('/api/sites', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ siteId, action: 'update_nginx' })
+            });
+            
+            if (response.ok) {
+                alert('Configuração atualizada com sucesso!');
+                loadSites();
+            } else {
+                const data = await response.json();
+                alert('Erro: ' + (data.error || 'Falha ao atualizar'));
+            }
+        } catch (e) {
+            alert('Erro de conexão.');
+        }
+    };
+
     window.deleteSite = async function(siteId, domain) {
         if (!confirm(`Tem certeza que deseja excluir o site ${domain}? \n\nTodos os arquivos e banco de dados serão apagados permanentemente.`)) {
             return;
@@ -208,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${site.created_at}</td>
                 <td class="actions">
                     ${retryBtn}
+                    <button class="action-btn" title="Reparar Link Provisório" onclick="updateNginx(${site.id})"><i class="fas fa-wrench"></i></button>
                     <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
                     <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
                     <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')"><i class="fas fa-trash"></i></button>
