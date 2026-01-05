@@ -15,9 +15,9 @@ conn.on('ready', () => {
     console.log(`Checking ${DOMAIN} on ${SERVER_IP}...`);
     
     const commands = [
-        `ls -la /var/www/${DOMAIN}`,
-        `cat /var/log/cloudease/${DOMAIN}.log`,
-        `tail -n 20 /var/log/nginx/${DOMAIN}.error.log`
+        'ps aux | grep install',
+        'ls -la /tmp',
+        'cat /var/log/cloudease/teste.com.br.log'
     ];
     
     const cmd = commands.join(' && echo "---" && ');
