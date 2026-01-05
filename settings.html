@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Configurações</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div id="sidebar-include"></div>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Configurações</h1>
+                <p>Gerencie suas preferências e informações da conta</p>
+            </div>
+        </header>
+
+        <div class="settings-container">
+            <aside class="settings-sidebar">
+                <nav class="settings-nav">
+                    <button class="settings-nav-item active" data-target="profile">
+                        <i class="fas fa-user"></i> Perfil
+                    </button>
+                    <button class="settings-nav-item" data-target="security">
+                        <i class="fas fa-lock"></i> Segurança
+                    </button>
+                    <button class="settings-nav-item" data-target="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferências
+                    </button>
+                    <button class="settings-nav-item" data-target="notifications">
+                        <i class="fas fa-bell"></i> Notificações
+                    </button>
+                </nav>
+            </aside>
+
+            <div class="settings-content">
+                <!-- Seção Perfil -->
+                <section id="profile" class="settings-section active">
+                    <div class="section-header">
+                        <h2>Perfil Público</h2>
+                        <p>Essas informações serão exibidas no seu perfil.</p>
+                    </div>
+                    
+                    <form id="profileForm" class="settings-form">
+                        <div class="form-group avatar-group">
+                            <div class="avatar-preview">
+                                <img src="https://via.placeholder.com/100" alt="Avatar" id="userAvatar">
+                            </div>
+                            <div class="avatar-actions">
+                                <button type="button" class="btn-secondary">Alterar foto</button>
+                                <button type="button" class="btn-text text-danger">Remover</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="userName">Nome Completo</label>
+                                <input type="text" id="userName" name="name" placeholder="Seu nome">
+                            </div>
+                            <div class="form-group">
+                                <label for="userEmail">Email</label>
+                                <input type="email" id="userEmail" name="email" placeholder="seu@email.com">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Seção Segurança -->
+                <section id="security" class="settings-section">
+                    <div class="section-header">
+                        <h2>Segurança</h2>
+                        <p>Gerencie sua senha e segurança da conta.</p>
+                    </div>
+
+                    <form id="passwordForm" class="settings-form">
+                        <div class="form-group">
+                            <label for="currentPassword">Senha Atual</label>
+                            <input type="password" id="currentPassword" name="currentPassword">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newPassword">Nova Senha</label>
+                                <input type="password" id="newPassword" name="newPassword">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirmar Nova Senha</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Atualizar Senha</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Seção Preferências -->
+                <section id="preferences" class="settings-section">
+                    <div class="section-header">
+                        <h2>Preferências</h2>
+                        <p>Personalize sua experiência no CloudEase.</p>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Modo Escuro</h3>
+                                <p>Alterne entre temas claro e escuro.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Idioma</h3>
+                                <p>Selecione o idioma da interface.</p>
+                            </div>
+                            <select class="form-select" disabled>
+                                <option value="pt-BR" selected>Português (Brasil)</option>
+                                <option value="en-US">English (US)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Seção Notificações -->
+                <section id="notifications" class="settings-section">
+                    <div class="section-header">
+                        <h2>Notificações</h2>
+                        <p>Escolha como você quer ser notificado.</p>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Alertas de Servidor</h3>
+                                <p>Receba notificações quando um servidor cair.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Faturas</h3>
+                                <p>Receba notificações sobre novas faturas.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Novidades e Ofertas</h3>
+                                <p>Receba emails sobre novas funcionalidades.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/sidebar.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>
