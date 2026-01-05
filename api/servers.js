@@ -1,5 +1,6 @@
 import db from '../lib/db.js';
 import { createInstance, fetchServers, deleteInstance } from '../lib/providers.js';
+import { discoverSites } from '../lib/provisioner.js';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
@@ -52,7 +53,9 @@ export default async function handler(req, res) {
                                 }
                             }
 
+                            let serverId;
                             if (existing.length > 0) {
+                                serverId = existing[0].id;
                                 // Atualiza
                                 await db.query(
                                     `UPDATE servers_cache SET 
@@ -63,15 +66,43 @@ export default async function handler(req, res) {
                                         created_at = COALESCE($5, created_at),
                                         last_synced = NOW() 
                                     WHERE id = $6`,
-                                    [server.external_id, server.ip_address, server.status, server.specs, server.created_at, existing[0].id]
+                                    [server.external_id, server.ip_address, server.status, server.specs, server.created_at, serverId]
                                 );
                             } else {
                                 // Insere novo
-                                await db.query(
+                                const insertResult = await db.query(
                                     `INSERT INTO servers_cache (provider_id, external_id, name, ip_address, status, specs, created_at)
-                                    VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                                    VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
                                     [provider.id, server.external_id, server.name, server.ip_address, server.status, server.specs, server.created_at || new Date()]
                                 );
+                                serverId = insertResult.rows[0].id;
+                            }
+
+                            // Sincronizar sites se o servidor estiver ativo
+                            if (server.status === 'active' && server.ip_address && server.ip_address !== '0.0.0.0') {
+                                try {
+                                    const discoveredSites = await discoverSites(server.ip_address);
+                                    
+                                    if (discoveredSites === null) {
+                                        console.warn(`Falha na descoberta de sites para ${server.name} (${server.ip_address}). Verifique acesso SSH.`);
+                                        // Opcional: Marcar no banco que houve erro de conexão SSH
+                                    } else {
+                                        for (const domain of discoveredSites) {
+                                            const siteCheck = await db.query('SELECT id FROM sites WHERE domain = $1', [domain]);
+                                            if (siteCheck.rows.length === 0) {
+                                                await db.query(`
+                                                    INSERT INTO sites (server_id, domain, platform, status, created_at)
+                                                    VALUES ($1, $2, 'wordpress', 'active', NOW())
+                                                `, [serverId, domain]);
+                                            } else {
+                                                // Atualiza server_id se necessário
+                                                await db.query('UPDATE sites SET server_id = $1, status = $2 WHERE id = $3', [serverId, 'active', siteCheck.rows[0].id]);
+                                            }
+                                        }
+                                    }
+                                } catch (siteErr) {
+                                    console.error(`Erro ao sincronizar sites do servidor ${server.name}:`, siteErr);
+                                }
                             }
                         }
                     } catch (err) {
