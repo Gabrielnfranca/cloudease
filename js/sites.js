@@ -208,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${site.created_at}</td>
                 <td class="actions">
                     ${retryBtn}
-                    <button class="action-btn" title="Tentar Novamente (Forçar)" onclick="retryProvision(${site.id})"><i class="fas fa-redo"></i></button>
                     <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
                     <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
                     <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')"><i class="fas fa-trash"></i></button>
