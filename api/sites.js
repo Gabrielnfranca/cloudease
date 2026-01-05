@@ -69,11 +69,13 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Criar site
-        const { serverId, domain, enableTempUrl, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
+        let { serverId, domain, enableTempUrl, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
         
         if (!serverId || !domain) {
             return res.status(400).json({ error: 'Servidor e Domínio são obrigatórios' });
         }
+
+        domain = domain.toLowerCase();
 
         // Validação básica para WP
         if (platform === 'wordpress') {
