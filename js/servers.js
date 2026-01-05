@@ -181,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span title="Disco" style="margin-left: 8px;"><i class="fas fa-hdd"></i> ${server.storage}</span>
                     </div>
                 </td>
+                <td><span class="badge-sites" style="background-color: #edf2f7; color: #4a5568; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">${server.sites_count || 0} sites</span></td>
                 <td>${statusHtml}</td>
                 <td>
                     <div class="actions">

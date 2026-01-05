@@ -92,10 +92,13 @@ export default async function handler(req, res) {
                 SELECT 
                     sc.*,
                     p.provider_name,
-                    p.label as provider_label
+                    p.label as provider_label,
+                    COUNT(s.id) as sites_count
                 FROM servers_cache sc
                 JOIN providers p ON sc.provider_id = p.id
+                LEFT JOIN sites s ON sc.id = s.server_id
                 WHERE p.user_id = $1
+                GROUP BY sc.id, p.provider_name, p.label
                 ORDER BY sc.created_at DESC
             `;
             const { rows } = await db.query(query, [userId]);
