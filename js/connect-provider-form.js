@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const authToken = localStorage.getItem('authToken');
-                const response = await fetch('/api/connect-provider', {
+                const response = await fetch('/api/providers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

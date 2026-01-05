@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando...</td></tr>';
             
             const authToken = localStorage.getItem('authToken');
-            const response = await fetch('/api/get-providers', {
+            const response = await fetch('/api/providers', {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 }
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         try {
                             const authToken = localStorage.getItem('authToken');
-                            const response = await fetch(`/api/delete-provider?id=${id}`, {
+                            const response = await fetch(`/api/providers?id=${id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     'Authorization': `Bearer ${authToken}`
