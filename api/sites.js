@@ -1,5 +1,5 @@
 import db from '../lib/db.js';
-import { provisionWordPress, deleteSiteFromInstance } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus } from '../lib/provisioner.js';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
@@ -25,6 +25,28 @@ export default async function handler(req, res) {
             if (rows.length === 0) {
                 return res.status(200).json([]);
             }
+
+            // Verificar status de sites em provisionamento (apenas se solicitado ou se houver poucos)
+            // Para evitar timeout no GET, vamos verificar apenas 1 site por vez ou usar um endpoint separado.
+            // Mas como o usuário quer ver o status atualizado, vamos tentar verificar os 'provisioning' aqui.
+            // Limitamos a verificar no máximo 2 sites por requisição para não estourar o tempo.
+            
+            const provisioningSites = rows.filter(s => s.status === 'provisioning' && s.ip_address);
+            
+            if (provisioningSites.length > 0) {
+                // Verifica apenas o mais antigo ou aleatório para ir atualizando aos poucos
+                const siteToCheck = provisioningSites[0]; 
+                try {
+                    const newStatus = await checkProvisionStatus(siteToCheck.ip_address, siteToCheck.domain);
+                    if (newStatus !== 'provisioning') {
+                        await db.query("UPDATE sites SET status = $1 WHERE id = $2", [newStatus, siteToCheck.id]);
+                        siteToCheck.status = newStatus; // Atualiza para o retorno atual
+                    }
+                } catch (e) {
+                    console.error(`Erro ao verificar status do site ${siteToCheck.domain}:`, e);
+                }
+            }
+
             const sites = rows.map(site => ({
                 id: site.id,
                 domain: site.domain,
@@ -156,8 +178,8 @@ export default async function handler(req, res) {
 
             // Iniciar provisionamento
             provisionWordPress(site.ip_address, site.domain, wpConfig)
-                .then(async () => {
-                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
+                .then(() => {
+                    console.log('Re-provisionamento iniciado em background'
                 })
                 .catch(async (err) => {
                     console.error(`Erro ao re-provisionar ${site.domain}:`, err);
