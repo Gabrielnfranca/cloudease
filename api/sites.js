@@ -121,8 +121,8 @@ export default async function handler(req, res) {
 
             provisionWordPress(serverIp, domain, wpConfig)
                 .then(async (creds) => {
-                    console.log(`Site ${domain} provisionado com sucesso!`);
-                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
+                    console.log(`Site ${domain}: Instalação iniciada em background.`);
+                    // Não atualizar para active aqui. O frontend fará polling no status via log.
                 })
                 .catch(async (err) => {
                     console.error(`Erro ao provisionar ${domain}:`, err);
@@ -190,8 +190,8 @@ export default async function handler(req, res) {
             // Iniciar provisionamento
             provisionWordPress(site.ip_address, site.domain, wpConfig)
                 .then(async () => {
-                    console.log('Re-provisionamento iniciado em background');
-                    await db.query('UPDATE sites SET status = $1 WHERE id = $2', ['active', siteId]);
+                    console.log(`Site ${site.domain}: Re-instalação iniciada em background.`);
+                    // Não atualizar para active aqui.
                 })
                 .catch(async (err) => {
                     console.error(`Erro ao re-provisionar ${site.domain}:`, err);
