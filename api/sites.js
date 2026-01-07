@@ -123,8 +123,21 @@ export default async function handler(req, res) {
 
             provisionWordPress(serverIp, domain, wpConfig)
                 .then(async (creds) => {
-                    console.log(`Site ${domain}: Instalação iniciada em background.`);
-                    // Não atualizar para active aqui. O frontend fará polling no status via log.
+                    console.log(`Site ${domain}: Provisionamento iniciado.`);
+                    
+                    // Criar registro de Job
+                    await db.query(`
+                        INSERT INTO jobs (server_id, site_id, type, status, log_output)
+                        VALUES ($1, $2, 'install_wordpress', 'running', 'Provisionamento iniciado via SSH')
+                    `, [serverId, siteId]);
+
+                    // Salvar Application Data (Credenciais DB geradas pelo Node)
+                    if (platform === 'wordpress' && creds && creds.dbName) {
+                         await db.query(`
+                            INSERT INTO applications (site_id, type, db_name, db_user, db_pass, admin_email, admin_user, installation_status)
+                            VALUES ($1, 'wordpress', $2, $3, $4, $5, $6, 'pending_verification')
+                        `, [siteId, creds.dbName, creds.dbUser, creds.dbPass, wpAdminEmail, wpAdminUser]);
+                    }
                 })
                 .catch(async (err) => {
                     console.error(`Erro ao provisionar ${domain}:`, err);
