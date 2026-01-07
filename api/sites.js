@@ -33,14 +33,27 @@ export default async function handler(req, res) {
             
             const provisioningSites = rows.filter(s => s.status === 'provisioning' && s.ip_address);
             
+
             if (provisioningSites.length > 0) {
                 // Verifica apenas o mais antigo ou aleatório para ir atualizando aos poucos
                 const siteToCheck = provisioningSites[0]; 
                 try {
                     const newStatus = await checkProvisionStatus(siteToCheck.ip_address, siteToCheck.domain);
                     if (newStatus !== 'provisioning') {
-                        await db.query("UPDATE sites SET status = $1 WHERE id = $2", [newStatus, siteToCheck.id]);
-                        siteToCheck.status = newStatus; // Atualiza para o retorno atual
+                        if (newStatus.startsWith('error:')) {
+                            const errorMsg = newStatus.substring(6);
+                            await db.query("UPDATE sites SET status = 'error', last_error = $1 WHERE id = $2", [errorMsg, siteToCheck.id]);
+                            siteToCheck.status = 'error';
+                            siteToCheck.last_error = errorMsg;
+                        } else {
+                            // Se for active, atualizamos também applications se necessário
+                            await db.query("UPDATE sites SET status = $1 WHERE id = $2", [newStatus, siteToCheck.id]);
+                            if (newStatus === 'active') {
+                                // Atualiza application status também
+                                await db.query("UPDATE applications SET installation_status = 'completed' WHERE site_id = $1", [siteToCheck.id]);
+                            }
+                            siteToCheck.status = newStatus;
+                        }
                     }
                 } catch (e) {
                     console.error(`Erro ao verificar status do site ${siteToCheck.domain}:`, e);
