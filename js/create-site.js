@@ -45,6 +45,40 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Inicializa estado
     toggleWpFields();
 
+    // Funções de Senha
+    window.togglePasswordVisibility = function() {
+        const passwordInput = document.getElementById('wpAdminPass');
+        const icon = document.getElementById('togglePasswordIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    };
+
+    window.generateStrongPassword = function() {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        const length = 16;
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            const randomNumber = crypto.getRandomValues(new Uint32Array(1))[0];
+            password += chars[randomNumber % chars.length];
+        }
+        
+        const passwordInput = document.getElementById('wpAdminPass');
+        passwordInput.value = password;
+        
+        // Mostra a senha gerada
+        if (passwordInput.type === 'password') {
+            togglePasswordVisibility();
+        }
+    };
+
     // Envio do formulário
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
