@@ -151,7 +151,8 @@ export default async function handler(req, res) {
                     plan: specs.plan || 'Standard',
                     ipv4: row.ip_address,
                     status: row.status,
-                    created_at: row.created_at
+                    created_at: row.created_at,
+                    sites_count: parseInt(row.sites_count || 0)
                 };
             });
             res.status(200).json(servers);
