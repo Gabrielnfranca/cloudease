@@ -35,42 +35,59 @@
         .form-control:focus {
             border-color: #4299e1;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
         }
         .helper-text {
             font-size: 13px;
             color: #718096;
-            margin-top: 6px;
+            margin-top: 5px;
         }
         
-        /* Password Field Styling */
-        .password-group {
+        /* New Password Styling */
+        .password-row {
             display: flex;
-            gap: 10px;
-            align-items: center; /* Centraliza verticalmente se houver diferença de altura */
+            gap: 8px;
         }
-        /* ... */
-        .btn-generate {
-            padding: 10px 15px; /* Altura controlada por padding */
-            background: #f1f5f9;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            color: #4a5568;
-            font-size: 13px;
-            font-weight: 600;
+        .password-input-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+        .password-input-wrapper input {
+            padding-right: 40px;
+        }
+        .field-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
             cursor: pointer;
+            z-index: 2;
+            transition: color 0.2s;
+        }
+        .field-icon:hover {
+            color: #4a5568;
+        }
+        .btn-gen-pass {
+            width: 48px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            white-space: nowrap;
-            height: fit-content; /* Evita esticar para o tamanho do input se o input for muito alto */
-            align-self: center;
+            justify-content: center;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #4a5568;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
-        .btn-generate:hover {
-            background: #e2e8f0;
-            color: #1a202c;
-            border-color: #a0aec0;
+        .btn-gen-pass:hover {
+            background-color: #edf2f7;
+            border-color: #cbd5e0;
+            color: #2d3748;
+        }
+        .btn-gen-pass i {
+            font-size: 16px;
         }
     </style>
 </head>
@@ -138,15 +155,13 @@
 
                     <div class="form-group">
                         <label for="wpAdminPass">Senha do Administrador</label>
-                        <div class="password-group">
-                            <div class="input-icon-wrapper">
-                                <input type="password" id="wpAdminPass" class="form-control" placeholder="Senha segura">
-                                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility()" title="Mostrar/Ocultar">
-                                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
-                                </button>
+                        <div class="password-row">
+                            <div class="password-input-wrapper">
+                                <input type="password" id="wpAdminPass" class="form-control" placeholder="Senha Forte">
+                                <i class="fas fa-eye field-icon" id="togglePass" onclick="togglePassword()"></i>
                             </div>
-                            <button type="button" class="btn-generate" onclick="generateStrongPassword()">
-                                <i class="fas fa-key"></i> Gerar Senha
+                            <button type="button" class="btn-gen-pass" onclick="generatePassword()" title="Gerar Senha Aleatória">
+                                <i class="fas fa-random"></i>
                             </button>
                         </div>
                         <p class="helper-text">Deixe em branco para gerar automaticamente.</p>
