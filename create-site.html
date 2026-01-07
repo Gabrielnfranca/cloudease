@@ -46,7 +46,7 @@
         /* Password Field Styling */
         .password-group {
             display: flex;
-            gap: 10px;
+            gap: 8px; /* Reduzido gap */
         }
         .input-icon-wrapper {
             position: relative;
@@ -57,44 +57,52 @@
         }
         .toggle-password-btn {
             position: absolute;
-            right: 1px;
-            top: 1px;
-            bottom: 1px;
+            right: 0;
+            top: 0;
+            bottom: 0;
             width: 40px;
             border: none;
             background: transparent;
             cursor: pointer;
-            color: #a0aec0;
+            color: #cbd5e0;
             border-radius: 0 6px 6px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.2s;
+            transition: all 0.2s;
         }
         .toggle-password-btn:hover {
             color: #4a5568;
+            background: #f7fafc;
         }
         .btn-generate {
-            padding: 0 16px;
-            background: #edf2f7;
+            padding: 0 10px; /* Padding menor horizontal */
+            background: #fff;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
             color: #4a5568;
-            font-weight: 500;
+            font-size: 12px; /* Fonte menor */
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.2s;
             white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
         .btn-generate:hover {
-            background: #e2e8f0;
             border-color: #cbd5e0;
             color: #2d3748;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn-generate:active {
+            transform: translateY(0);
         }
         .btn-generate i {
-            font-size: 14px;
+            font-size: 12px;
+            color: #718096;
         }
     </style>
 </head>
@@ -170,7 +178,7 @@
                                 </button>
                             </div>
                             <button type="button" class="btn-generate" onclick="generateStrongPassword()">
-                                <i class="fas fa-key"></i> Gerar Senha
+                                <i class="fas fa-magic"></i> Gerar
                             </button>
                         </div>
                         <p class="helper-text">Deixe em branco para gerar automaticamente.</p>
