@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Detalhes do Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/site-details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a></li>
+            <li><a href="servers.html"><i class="fas fa-server"></i> Servidores</a></li>
+            <li class="active"><a href="sites.html"><i class="fas fa-globe"></i> Sites</a></li>
+            <li><a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a></li>
+            <li><a href="support.html"><i class="fas fa-headset"></i> Suporte</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Configurações</a></li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="sidebar-include"></div>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <a href="sites.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar</a>
+                <h1 id="siteDomainTitle">Carregando...</h1>
+                <span id="siteStatusBadge" class="status-badge">...</span>
+            </div>
+            <div class="header-actions">
+                <a href="#" target="_blank" id="visitSiteBtn" class="action-btn secondary">
+                    <i class="fas fa-external-link-alt"></i> Visitar Site
+                </a>
+            </div>
+        </header>
+
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="details">
+                    <i class="fas fa-info-circle"></i> Detalhes
+                </button>
+                <button class="tab-btn" data-tab="access">
+                    <i class="fas fa-key"></i> Acesso (SFTP/SSH)
+                </button>
+                <button class="tab-btn" data-tab="database">
+                    <i class="fas fa-database"></i> Banco de Dados
+                </button>
+            </div>
+
+            <div class="tab-content active" id="details">
+                <div class="info-card">
+                    <h3><i class="fas fa-server"></i> Informações do Servidor</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Domínio</label>
+                            <span id="detailDomain" class="copyable">-</span>
+                        </div>
+                         <div class="info-item">
+                            <label>IP do Servidor</label>
+                            <span id="detailIp" class="copyable">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Nome do Servidor</label>
+                            <span id="detailServerName">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Plataforma</label>
+                            <span id="detailPlatform">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Versão PHP</label>
+                            <span id="detailPhp">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Caminho Raiz (Root Path)</label>
+                            <span id="detailRootPath" class="copyable">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="access">
+                <div class="info-card">
+                    <div class="card-header-actions">
+                        <h3><i class="fas fa-folder-open"></i> Acesso SFTP</h3>
+                        <a href="#" id="webFileManagerBtn" class="action-btn small" target="_blank">
+                            <i class="fas fa-folder"></i> Gerenciador de Arquivos Web
+                        </a>
+                    </div>
+                    <p class="description">Use estas credenciais para acessar seus arquivos via FileZilla ou outro cliente SFTP.</p>
+                    
+                    <div class="credentials-box">
+                        <div class="credential-row">
+                            <span class="label">Host:</span>
+                            <span class="value" id="sftpHost">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('#sftpHost')"><i class="far fa-copy"></i></button>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Porta:</span>
+                            <span class="value">22</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Protocolo:</span>
+                            <span class="value">SFTP (SSH File Transfer Protocol)</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Usuário:</span>
+                            <span class="value" id="sftpUser">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('#sftpUser')"><i class="far fa-copy"></i></button>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Senha:</span>
+                            <div class="password-field">
+                                <span class="value blur" id="sftpPass">********</span>
+                                <button class="toggle-pass" onclick="togglePass('sftpPass')"><i class="far fa-eye"></i></button>
+                            </div>
+                            <button class="copy-btn" onclick="copyToClipboard('#sftpPass')"><i class="far fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="database">
+                <div class="info-card">
+                    <div class="card-header-actions">
+                        <h3><i class="fas fa-database"></i> MySQL / MariaDB</h3>
+                        <a href="/phpmyadmin" id="phpMyAdminBtn" class="action-btn small" target="_blank">
+                            <i class="fas fa-table"></i> Acessar phpMyAdmin
+                        </a>
+                    </div>
+                    
+                    <div class="credentials-box">
+                         <div class="credential-row">
+                            <span class="label">Host:</span>
+                            <span class="value" id="dbHost">localhost</span>
+                             <button class="copy-btn" onclick="copyToClipboard('#dbHost')"><i class="far fa-copy"></i></button>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Nome do Banco:</span>
+                            <span class="value" id="dbName">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('#dbName')"><i class="far fa-copy"></i></button>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Usuário:</span>
+                            <span class="value" id="dbUser">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('#dbUser')"><i class="far fa-copy"></i></button>
+                        </div>
+                        <div class="credential-row">
+                            <span class="label">Senha:</span>
+                            <div class="password-field">
+                                <span class="value blur" id="dbPass">********</span>
+                                <button class="toggle-pass" onclick="togglePass('dbPass')"><i class="far fa-eye"></i></button>
+                            </div>
+                            <button class="copy-btn" onclick="copyToClipboard('#dbPass')"><i class="far fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/sidebar.js"></script>
+    <script src="js/site-details.js"></script>
+</body>
+</html>

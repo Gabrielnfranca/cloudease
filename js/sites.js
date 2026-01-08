@@ -230,9 +230,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${site.created_at}</td>
                 <td class="actions">
                     ${retryBtn}
-                    <button class="action-btn" title="Reparar Link Provisório" onclick="updateNginx(${site.id})"><i class="fas fa-wrench"></i></button>
-                    <button class="action-btn" title="Gerenciar"><i class="fas fa-cog"></i></button>
-                    <button class="action-btn" title="Arquivos"><i class="fas fa-folder"></i></button>
+                     <!-- Botão Detalhes Principal -->
+                    <button class="action-btn" title="Detalhes do Site" onclick="window.location.href='site-details.html?id=${site.id}'" style="background-color: #3182ce; color: white;">
+                        <i class="fas fa-info-circle"></i> Detalhes
+                    </button>
+                    <!-- Mantém botões antigos, mas talvez menos destacados -->
                     <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')"><i class="fas fa-trash"></i></button>
                 </td>
             `;

@@ -1,8 +1,71 @@
 import db from '../lib/db.js';
 import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus, updateNginxConfig } from '../lib/provisioner.js';
 
+function formatPlatform(platform) {
+    if (!platform) return 'PHP Puro';
+    return platform.charAt(0).toUpperCase() + platform.slice(1);
+}
+
+function getPlatformIcon(platform) {
+    if (platform === 'wordpress') return 'fab fa-wordpress';
+    if (platform === 'laravel') return 'fab fa-laravel';
+    return 'fab fa-php';
+}
+
 export default async function handler(req, res) {
     if (req.method === 'GET') {
+        const { id, detailed } = req.query;
+
+        if (id && detailed) {
+            // Buscar Detalhes de um único site
+            try {
+                const query = `
+                    SELECT 
+                        s.*,
+                        sc.name as server_name,
+                        sc.ip_address,
+                        a.db_name, a.db_user, a.db_pass, a.db_host
+                    FROM sites s
+                    LEFT JOIN servers_cache sc ON s.server_id = sc.id
+                    LEFT JOIN applications a ON s.id = a.site_id
+                    WHERE s.id = $1
+                `;
+                const { rows } = await db.query(query, [id]);
+                
+                if (rows.length === 0) {
+                    return res.status(404).json({ error: 'Site não encontrado' });
+                }
+
+                const site = rows[0];
+                const detailedSite = {
+                    id: site.id,
+                    domain: site.domain,
+                    platform: site.platform,
+                    platformLabel: formatPlatform(site.platform),
+                    status: site.status,
+                    server_id: site.server_id,
+                    server_name: site.server_name,
+                    ip: site.ip_address,
+                    php_version: site.php_version,
+                    enable_temp_url: site.enable_temp_url,
+                    system_user: site.system_user,
+                    system_password: site.system_password,
+                    application: {
+                        db_name: site.db_name,
+                        db_user: site.db_user,
+                        db_pass: site.db_pass,
+                        db_host: site.db_host || 'localhost'
+                    }
+                };
+
+                return res.status(200).json(detailedSite);
+
+            } catch (error) {
+                console.error('Erro ao buscar detalhes do site:', error);
+                return res.status(500).json({ error: 'Erro interno' });
+            }
+        }
+
         // Listar sites
         try {
             const query = `
@@ -144,12 +207,19 @@ export default async function handler(req, res) {
                         VALUES ($1, $2, 'install_wordpress', 'running', 'Provisionamento iniciado via SSH')
                     `, [serverId, siteId]);
 
-                    // Salvar Application Data (Credenciais DB geradas pelo Node)
+                    // Salvar Application Data e Dados de Sistema
                     if (platform === 'wordpress' && creds && creds.dbName) {
                          await db.query(`
                             INSERT INTO applications (site_id, type, db_name, db_user, db_pass, admin_email, admin_user, installation_status)
                             VALUES ($1, 'wordpress', $2, $3, $4, $5, $6, 'pending_verification')
                         `, [siteId, creds.dbName, creds.dbUser, creds.dbPass, wpAdminEmail, wpAdminUser]);
+                    }
+
+                    // Atualizar Site com System User/Pass (SFTP)
+                    if (creds && creds.sysUser) {
+                        await db.query(`
+                            UPDATE sites SET system_user = $1, system_password = $2 WHERE id = $3
+                        `, [creds.sysUser, creds.sysPass, siteId]);
                     }
                 })
                 .catch(async (err) => {
