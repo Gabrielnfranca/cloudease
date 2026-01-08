@@ -126,10 +126,13 @@
                         <div class="credential-row">
                             <span class="label">Senha:</span>
                             <div class="password-field">
-                                <span class="value blur" id="sftpPass">********</span>
+                                <input type="text" class="value blur" id="sftpPass" readonly value="********">
                                 <button class="toggle-pass" onclick="togglePass('sftpPass')"><i class="far fa-eye"></i></button>
                             </div>
                             <button class="copy-btn" onclick="copyToClipboard('#sftpPass')"><i class="far fa-copy"></i></button>
+                            <button class="action-btn small secondary" style="margin-left: 10px;" onclick="openPasswordModal('sftp')">
+                                <i class="fas fa-sync-alt"></i> Redefinir
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -163,10 +166,13 @@
                         <div class="credential-row">
                             <span class="label">Senha:</span>
                             <div class="password-field">
-                                <span class="value blur" id="dbPass">********</span>
+                                <input type="text" class="value blur" id="dbPass" readonly value="********">
                                 <button class="toggle-pass" onclick="togglePass('dbPass')"><i class="far fa-eye"></i></button>
                             </div>
                             <button class="copy-btn" onclick="copyToClipboard('#dbPass')"><i class="far fa-copy"></i></button>
+                             <button class="action-btn small secondary" style="margin-left: 10px;" onclick="openPasswordModal('db')">
+                                <i class="fas fa-sync-alt"></i> Redefinir
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -174,6 +180,40 @@
 
         </div>
     </main>
+
+    <!-- Modal de Alteração de Senha -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Redefinir Senha</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: #64748b; font-size: 14px;">A nova senha será aplicada imediatamente no servidor.</p>
+                
+                <div class="form-group">
+                    <label>Nova Senha</label>
+                    <div class="password-input-group">
+                        <input type="text" id="newPassword" placeholder="Digite ou gere uma senha forte">
+                        <button type="button" class="generate-btn" onclick="generateStrongPassword()">
+                            <i class="fas fa-magic"></i> Gerar
+                        </button>
+                    </div>
+                    <div class="strength-meter">
+                        <div class="strength-bar"></div>
+                        <span class="strength-text">Fraca</span>
+                    </div>
+                    <small style="color: #64748b; font-size: 12px; margin-top: 5px; display: block;">
+                        Recomendado: Mínimo 12 caracteres, use letras maiúsculas, números e símbolos (!@#$%^&*).
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel close-modal-btn">Cancelar</button>
+                <button class="btn-save" onclick="saveNewPassword()">Salvar Nova Senha</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/sidebar.js"></script>
     <script src="js/site-details.js"></script>
