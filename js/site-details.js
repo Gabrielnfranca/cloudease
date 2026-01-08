@@ -104,29 +104,41 @@ function renderDetails(site) {
 }
 
 function renderAccess(site) {
-    document.getElementById('sftpHost').textContent = site.ip || '-';
-    document.getElementById('sftpUser').textContent = site.system_user || 'root (não recomendado)'; 
+    // Inputs use .value, not .textContent
+    const hostInput = document.getElementById('sftpHost');
+    if (hostInput) hostInput.value = site.ip || '-';
+    
+    const userInput = document.getElementById('sftpUser');
+    if (userInput) userInput.value = site.system_user || 'root (não recomendado)'; 
+    
     // Using value for inputs
     const passInput = document.getElementById('sftpPass');
     if (passInput) passInput.value = site.system_password || '********';
     
     const btn = document.getElementById('webFileManagerBtn');
-    btn.href = `http://${site.ip}:8080/filemanager?root=/var/www/${site.domain}`; 
+    if(btn) btn.href = `http://${site.ip}:8080/filemanager?root=/var/www/${site.domain}`; 
 }
 
 function renderDatabase(site) {
     if (site.application && site.application.db_name) {
-        document.getElementById('dbName').textContent = site.application.db_name;
-        document.getElementById('dbUser').textContent = site.application.db_user;
+        const dbNameInput = document.getElementById('dbName');
+        if (dbNameInput) dbNameInput.value = site.application.db_name;
+        
+        const dbUserInput = document.getElementById('dbUser');
+        if (dbUserInput) dbUserInput.value = site.application.db_user;
+        
         const dbPassInput = document.getElementById('dbPass');
         if (dbPassInput) dbPassInput.value = site.application.db_pass;
-        document.getElementById('dbHost').textContent = site.application.db_host || 'localhost';
+        
+        const dbHostInput = document.getElementById('dbHost');
+        if (dbHostInput) dbHostInput.value = site.application.db_host || 'localhost';
     } else {
-        document.getElementById('database').innerHTML = '<div class="info-card"><p>Nenhum banco de dados associado a este site.</p></div>';
+        const dbDiv = document.getElementById('database');
+        if (dbDiv) dbDiv.innerHTML = '<div class="info-card"><p>Nenhum banco de dados associado a este site.</p></div>';
     }
     
     const pmaBtn = document.getElementById('phpMyAdminBtn');
-    if (site.ip) {
+    if (site.ip && pmaBtn) {
         pmaBtn.href = `http://${site.ip}/phpmyadmin`;
     }
 }

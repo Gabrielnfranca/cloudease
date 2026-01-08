@@ -108,8 +108,9 @@
                                 <label>Host / Endereço IP</label>
                                 <div class="input-copy-wrapper">
                                     <div class="input-icon"><i class="fas fa-server"></i></div>
-                                    <input type="text" readonly id="sftpHost" value="-">
-                                    <button onclick="copyToClipboard('#sftpHost')"><i class="far fa-copy"></i></button>
+                                    <input type="text" class="blur" readonly id="sftpHost" value="-">
+                                    <button onclick="togglePass('sftpHost')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                    <button onclick="copyToClipboard('#sftpHost')" title="Copiar"><i class="far fa-copy"></i></button>
                                 </div>
                             </div>
                             
@@ -117,8 +118,9 @@
                                 <label>Usuário</label>
                                 <div class="input-copy-wrapper">
                                     <div class="input-icon"><i class="fas fa-user"></i></div>
-                                    <input type="text" readonly id="sftpUser" value="-">
-                                    <button onclick="copyToClipboard('#sftpUser')"><i class="far fa-copy"></i></button>
+                                    <input type="text" class="blur" readonly id="sftpUser" value="-">
+                                    <button onclick="togglePass('sftpUser')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                    <button onclick="copyToClipboard('#sftpUser')" title="Copiar"><i class="far fa-copy"></i></button>
                                 </div>
                             </div>
 
@@ -175,8 +177,9 @@
                                 <label>Host Interno</label>
                                 <div class="input-copy-wrapper">
                                     <div class="input-icon"><i class="fas fa-network-wired"></i></div>
-                                    <input type="text" readonly id="dbHost" value="localhost">
-                                    <button onclick="copyToClipboard('#dbHost')"><i class="far fa-copy"></i></button>
+                                    <input type="text" class="blur" readonly id="dbHost" value="localhost">
+                                    <button onclick="togglePass('dbHost')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                    <button onclick="copyToClipboard('#dbHost')" title="Copiar"><i class="far fa-copy"></i></button>
                                 </div>
                             </div>
                             
@@ -185,7 +188,7 @@
                                 <div class="input-copy-wrapper">
                                     <div class="input-icon"><i class="fas fa-database"></i></div>
                                     <input type="text" readonly id="dbName" value="-">
-                                    <button onclick="copyToClipboard('#dbName')"><i class="far fa-copy"></i></button>
+                                    <button onclick="copyToClipboard('#dbName')" title="Copiar"><i class="far fa-copy"></i></button>
                                 </div>
                             </div>
 
@@ -193,8 +196,9 @@
                                 <label>Usuário</label>
                                 <div class="input-copy-wrapper">
                                     <div class="input-icon"><i class="fas fa-user-tag"></i></div>
-                                    <input type="text" readonly id="dbUser" value="-">
-                                    <button onclick="copyToClipboard('#dbUser')"><i class="far fa-copy"></i></button>
+                                    <input type="text" class="blur" readonly id="dbUser" value="-">
+                                    <button onclick="togglePass('dbUser')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                    <button onclick="copyToClipboard('#dbUser')" title="Copiar"><i class="far fa-copy"></i></button>
                                 </div>
                             </div>
                         </div>
