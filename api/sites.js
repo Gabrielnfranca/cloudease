@@ -89,39 +89,16 @@ export default async function handler(req, res) {
                 return res.status(200).json([]);
             }
 
-            // Verificar status de sites em provisionamento (apenas se solicitado ou se houver poucos)
-            // Para evitar timeout no GET, vamos verificar apenas 1 site por vez ou usar um endpoint separado.
-            // Mas como o usuário quer ver o status atualizado, vamos tentar verificar os 'provisioning' aqui.
-            // Limitamos a verificar no máximo 2 sites por requisição para não estourar o tempo.
-            
+            // Verificar status de sites em provisionamento (DESATIVADO PARA EVITAR TIMEOUT)
+            // O processo de verificação deve ser feito via Cron ou botão manual "Atualizar Status"
+            /*
             const provisioningSites = rows.filter(s => s.status === 'provisioning' && s.ip_address);
             
-
             if (provisioningSites.length > 0) {
-                // Verifica apenas o mais antigo ou aleatório para ir atualizando aos poucos
-                const siteToCheck = provisioningSites[0]; 
-                try {
-                    const newStatus = await checkProvisionStatus(siteToCheck.ip_address, siteToCheck.domain);
-                    if (newStatus !== 'provisioning') {
-                        if (newStatus.startsWith('error:')) {
-                            const errorMsg = newStatus.substring(6);
-                            await db.query("UPDATE sites SET status = 'error', last_error = $1 WHERE id = $2", [errorMsg, siteToCheck.id]);
-                            siteToCheck.status = 'error';
-                            siteToCheck.last_error = errorMsg;
-                        } else {
-                            // Se for active, atualizamos também applications se necessário
-                            await db.query("UPDATE sites SET status = $1 WHERE id = $2", [newStatus, siteToCheck.id]);
-                            if (newStatus === 'active') {
-                                // Atualiza application status também
-                                await db.query("UPDATE applications SET installation_status = 'completed' WHERE site_id = $1", [siteToCheck.id]);
-                            }
-                            siteToCheck.status = newStatus;
-                        }
-                    }
-                } catch (e) {
-                    console.error(`Erro ao verificar status do site ${siteToCheck.domain}:`, e);
-                }
+                 // ... Código SSH original omitido para performance ...
             }
+            */
+
 
             const sites = rows.map(site => ({
                 id: site.id,
@@ -141,7 +118,7 @@ export default async function handler(req, res) {
             res.status(200).json(sites);
         } catch (error) {
             console.error('Erro ao buscar sites:', error);
-            res.status(500).json({ error: 'Erro interno ao buscar sites' });
+            res.status(500).json({ error: 'Erro interno ao buscar sites: ' + error.message });
         }
     } else if (req.method === 'POST') {
         // Criar site

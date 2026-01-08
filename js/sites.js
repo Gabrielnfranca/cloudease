@@ -33,17 +33,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const response = await fetch('/api/sites');
-            if (!response.ok) throw new Error('Falha na API');
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Falha na API: ' + response.status);
+            }
             
             const sites = await response.json();
             renderSites(sites);
         } catch (error) {
             console.error('Erro:', error);
             if (!silent) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: red;">Erro ao carregar sites.</td></tr>';
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding: 20px; color: red;">
+                            <p>Erro ao carregar sites.</p>
+                            <small style="color: #718096;">${error.message}</small>
+                            <br><br>
+                            <button onclick="repairDatabase()" class="action-btn" style="background: #e53e3e; color: white;">
+                                <i class="fas fa-tools"></i> Tentar Reparar Banco de Dados
+                            </button>
+                        </td>
+                    </tr>
+                `;
             }
         }
     }
+
+    window.repairDatabase = async function() {
+        if(!confirm("Isso tentará rodar as migrações pendentes. Continuar?")) return;
+        try {
+            const btn = document.querySelector('button[onclick="repairDatabase()"]');
+            if(btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reparando...';
+            
+            const res = await fetch('/api/migrate');
+            const data = await res.json();
+            
+            alert('Resultado: ' + (data.message || JSON.stringify(data)));
+            loadSites();
+        } catch(e) {
+            alert('Erro ao tentar reparar: ' + e.message);
+        }
+    };
 
     window.retryProvision = async function(siteId) {
         if (!confirm('Deseja tentar instalar novamente?')) return;
