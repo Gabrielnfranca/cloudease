@@ -106,21 +106,25 @@
                         <div class="access-column details">
                             <div class="field-group">
                                 <label>Host / Endereço IP</label>
-                                <div class="input-copy-wrapper">
+                                <div class="modern-input-wrapper">
                                     <div class="input-icon"><i class="fas fa-server"></i></div>
                                     <input type="text" class="blur" readonly id="sftpHost" value="-">
-                                    <button onclick="togglePass('sftpHost')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                    <button onclick="copyToClipboard('#sftpHost')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    <div class="input-actions">
+                                        <button onclick="togglePass('sftpHost')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                        <button onclick="copyToClipboard('#sftpHost')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="field-group">
                                 <label>Usuário</label>
-                                <div class="input-copy-wrapper">
+                                <div class="modern-input-wrapper">
                                     <div class="input-icon"><i class="fas fa-user"></i></div>
                                     <input type="text" class="blur" readonly id="sftpUser" value="-">
-                                    <button onclick="togglePass('sftpUser')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                    <button onclick="copyToClipboard('#sftpUser')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    <div class="input-actions">
+                                        <button onclick="togglePass('sftpUser')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                        <button onclick="copyToClipboard('#sftpUser')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -140,9 +144,10 @@
                         <div class="access-column security">
                             <div class="field-group">
                                 <label>Senha de Acesso</label>
-                                <div class="password-box-modern">
+                                <div class="modern-input-wrapper">
+                                    <div class="input-icon"><i class="fas fa-lock"></i></div>
                                     <input type="text" class="blur" id="sftpPass" readonly value="********">
-                                    <div class="pass-actions">
+                                    <div class="input-actions">
                                         <button onclick="togglePass('sftpPass')" title="Visualizar"><i class="far fa-eye"></i></button>
                                         <button onclick="copyToClipboard('#sftpPass')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
@@ -175,30 +180,36 @@
                         <div class="access-column details">
                             <div class="field-group">
                                 <label>Host Interno</label>
-                                <div class="input-copy-wrapper">
+                                <div class="modern-input-wrapper">
                                     <div class="input-icon"><i class="fas fa-network-wired"></i></div>
                                     <input type="text" class="blur" readonly id="dbHost" value="localhost">
-                                    <button onclick="togglePass('dbHost')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                    <button onclick="copyToClipboard('#dbHost')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    <div class="input-actions">
+                                        <button onclick="togglePass('dbHost')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                        <button onclick="copyToClipboard('#dbHost')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="field-group">
                                 <label>Nome do Banco</label>
-                                <div class="input-copy-wrapper">
+                                <div class="modern-input-wrapper">
                                     <div class="input-icon"><i class="fas fa-database"></i></div>
                                     <input type="text" readonly id="dbName" value="-">
-                                    <button onclick="copyToClipboard('#dbName')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    <div class="input-actions">
+                                        <button onclick="copyToClipboard('#dbName')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="field-group">
                                 <label>Usuário</label>
-                                <div class="input-copy-wrapper">
+                                <div class="modern-input-wrapper">
                                     <div class="input-icon"><i class="fas fa-user-tag"></i></div>
                                     <input type="text" class="blur" readonly id="dbUser" value="-">
-                                    <button onclick="togglePass('dbUser')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                    <button onclick="copyToClipboard('#dbUser')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    <div class="input-actions">
+                                        <button onclick="togglePass('dbUser')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                        <button onclick="copyToClipboard('#dbUser')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,9 +218,10 @@
                         <div class="access-column security">
                             <div class="field-group">
                                 <label>Senha do Banco</label>
-                                <div class="password-box-modern">
+                                <div class="modern-input-wrapper">
+                                    <div class="input-icon"><i class="fas fa-lock"></i></div>
                                     <input type="text" class="blur" id="dbPass" readonly value="********">
-                                    <div class="pass-actions">
+                                    <div class="input-actions">
                                         <button onclick="togglePass('dbPass')" title="Visualizar"><i class="far fa-eye"></i></button>
                                         <button onclick="copyToClipboard('#dbPass')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
