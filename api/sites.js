@@ -26,7 +26,7 @@ export default async function handler(req, res) {
                         s.*,
                         sc.name as server_name,
                         sc.ip_address,
-                        a.db_name, a.db_user, a.db_pass, a.db_host
+                        a.db_name, a.db_user, a.db_pass
                     FROM sites s
                     LEFT JOIN servers_cache sc ON s.server_id = sc.id
                     LEFT JOIN applications a ON s.id = a.site_id
