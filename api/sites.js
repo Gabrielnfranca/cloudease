@@ -2,6 +2,8 @@ import db from '../lib/db.js';
 import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus, updateNginxConfig } from '../lib/provisioner.js';
 
 function formatPlatform(platform) {
+    if (platform === 'wordpress') return 'WordPress';
+    if (platform === 'html') return 'HTML Estático';
     if (!platform) return 'PHP Puro';
     return platform.charAt(0).toUpperCase() + platform.slice(1);
 }
@@ -324,14 +326,3 @@ export default async function handler(req, res) {
     }
 }
 
-function formatPlatform(platform) {
-    if (platform === 'wordpress') return 'WordPress';
-    if (platform === 'html') return 'HTML Estático';
-    return 'PHP ' + (platform === 'php' ? '' : platform);
-}
-
-function getPlatformIcon(platform) {
-    if (platform === 'wordpress') return 'https://s.w.org/style/images/about/WordPress-logotype-wmark.png';
-    if (platform === 'html') return 'assets/images/html5-logo.png';
-    return 'assets/images/php-logo.png';
-}
