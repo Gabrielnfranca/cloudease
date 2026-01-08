@@ -472,17 +472,20 @@
 }
 
 .modern-input-wrapper .input-icon { 
-    padding-left: 12px; 
+    padding-left: 14px;
+    padding-right: 16px; 
+    border-right: 1px solid #f1f5f9; /* Optional separator to see if user likes it, but maybe just space is better */
     color: #94a3b8; 
     display: flex; 
     align-items: center; 
     font-size: 14px;
+    height: 24px; /* Fix height for vertical alignment */
 } 
 
 .modern-input-wrapper input { 
     flex: 1; 
     border: none; 
-    padding: 10px 12px; 
+    padding: 10px 12px 10px 12px; 
     font-family: 'Consolas', 'Monaco', monospace; 
     font-size: 14px; 
     color: #334155; 
