@@ -95,84 +95,127 @@
             </div>
 
             <div class="tab-content" id="access">
-                <div class="info-card">
-                    <div class="card-header-actions">
-                        <h3><i class="fas fa-folder-open"></i> Acesso SFTP</h3>
-                        <a href="#" id="webFileManagerBtn" class="action-btn small" target="_blank">
-                            <i class="fas fa-folder"></i> Gerenciador de Arquivos Web
-                        </a>
+                <div class="info-card no-padding">
+                    <div class="card-header-simple">
+                        <h3><i class="fas fa-terminal"></i> Credenciais do Sistema (SFTP/SSH)</h3>
+                        <p class="header-desc">Gerencie o acesso aos arquivos do seu servidor.</p>
                     </div>
-                    <p class="description">Use estas credenciais para acessar seus arquivos via FileZilla ou outro cliente SFTP.</p>
                     
-                    <div class="credentials-box">
-                        <div class="credential-row">
-                            <span class="label">Host:</span>
-                            <span class="value" id="sftpHost">-</span>
-                            <button class="copy-btn" onclick="copyToClipboard('#sftpHost')"><i class="far fa-copy"></i></button>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Porta:</span>
-                            <span class="value">22</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Protocolo:</span>
-                            <span class="value">SFTP (SSH File Transfer Protocol)</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Usuário:</span>
-                            <span class="value" id="sftpUser">-</span>
-                            <button class="copy-btn" onclick="copyToClipboard('#sftpUser')"><i class="far fa-copy"></i></button>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Senha:</span>
-                            <div class="password-field">
-                                <input type="text" class="value blur" id="sftpPass" readonly value="********">
-                                <button class="toggle-pass" onclick="togglePass('sftpPass')"><i class="far fa-eye"></i></button>
+                    <div class="access-layout">
+                        <!-- Left: Connection Details -->
+                        <div class="access-column details">
+                            <div class="field-group">
+                                <label>Host / Endereço IP</label>
+                                <div class="input-copy-wrapper">
+                                    <input type="text" readonly id="sftpHost" value="-">
+                                    <button onclick="copyToClipboard('#sftpHost')"><i class="far fa-copy"></i></button>
+                                </div>
                             </div>
-                            <button class="copy-btn" onclick="copyToClipboard('#sftpPass')"><i class="far fa-copy"></i></button>
-                            <button class="action-btn small secondary" style="margin-left: 10px;" onclick="openPasswordModal('sftp')">
-                                <i class="fas fa-sync-alt"></i> Redefinir
-                            </button>
+                            
+                            <div class="field-group">
+                                <label>Usuário</label>
+                                <div class="input-copy-wrapper">
+                                    <input type="text" readonly id="sftpUser" value="-">
+                                    <button onclick="copyToClipboard('#sftpUser')"><i class="far fa-copy"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="row-split">
+                                <div class="field-group">
+                                    <label>Porta</label>
+                                    <input type="text" readonly value="22" class="static-input">
+                                </div>
+                                <div class="field-group">
+                                    <label>Protocolo</label>
+                                    <input type="text" readonly value="SFTP" class="static-input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Auth & Actions -->
+                        <div class="access-column security">
+                            <div class="field-group">
+                                <label>Senha de Acesso</label>
+                                <div class="password-box-modern">
+                                    <input type="text" class="blur" id="sftpPass" readonly value="********">
+                                    <div class="pass-actions">
+                                        <button onclick="togglePass('sftpPass')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                        <button onclick="copyToClipboard('#sftpPass')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
+                                </div>
+                                <button class="btn-reset-pass" onclick="openPasswordModal('sftp')">
+                                    <i class="fas fa-key"></i> Redefinir Senha
+                                </button>
+                            </div>
+
+                            <div class="action-buttons-grid">
+                                <a href="#" id="webFileManagerBtn" class="big-action-btn primary-soft" target="_blank">
+                                    <i class="fas fa-folder"></i>
+                                    <span>Gerenciador de Arquivos</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="tab-content" id="database">
-                <div class="info-card">
-                    <div class="card-header-actions">
-                        <h3><i class="fas fa-database"></i> MySQL / MariaDB</h3>
-                        <a href="/phpmyadmin" id="phpMyAdminBtn" class="action-btn small" target="_blank">
-                            <i class="fas fa-table"></i> Acessar phpMyAdmin
-                        </a>
+                <div class="info-card no-padding">
+                    <div class="card-header-simple">
+                        <h3><i class="fas fa-database"></i> Acesso ao Banco de Dados</h3>
+                        <p class="header-desc">Credenciais para conexão direta ou via phpMyAdmin.</p>
                     </div>
                     
-                    <div class="credentials-box">
-                         <div class="credential-row">
-                            <span class="label">Host:</span>
-                            <span class="value" id="dbHost">localhost</span>
-                             <button class="copy-btn" onclick="copyToClipboard('#dbHost')"><i class="far fa-copy"></i></button>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Nome do Banco:</span>
-                            <span class="value" id="dbName">-</span>
-                            <button class="copy-btn" onclick="copyToClipboard('#dbName')"><i class="far fa-copy"></i></button>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Usuário:</span>
-                            <span class="value" id="dbUser">-</span>
-                            <button class="copy-btn" onclick="copyToClipboard('#dbUser')"><i class="far fa-copy"></i></button>
-                        </div>
-                        <div class="credential-row">
-                            <span class="label">Senha:</span>
-                            <div class="password-field">
-                                <input type="text" class="value blur" id="dbPass" readonly value="********">
-                                <button class="toggle-pass" onclick="togglePass('dbPass')"><i class="far fa-eye"></i></button>
+                    <div class="access-layout">
+                        <!-- Left: Connection Details -->
+                        <div class="access-column details">
+                            <div class="field-group">
+                                <label>Host Interno</label>
+                                <div class="input-copy-wrapper">
+                                    <input type="text" readonly id="dbHost" value="localhost">
+                                    <button onclick="copyToClipboard('#dbHost')"><i class="far fa-copy"></i></button>
+                                </div>
                             </div>
-                            <button class="copy-btn" onclick="copyToClipboard('#dbPass')"><i class="far fa-copy"></i></button>
-                             <button class="action-btn small secondary" style="margin-left: 10px;" onclick="openPasswordModal('db')">
-                                <i class="fas fa-sync-alt"></i> Redefinir
-                            </button>
+                            
+                            <div class="field-group">
+                                <label>Nome do Banco</label>
+                                <div class="input-copy-wrapper">
+                                    <input type="text" readonly id="dbName" value="-">
+                                    <button onclick="copyToClipboard('#dbName')"><i class="far fa-copy"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="field-group">
+                                <label>Usuário</label>
+                                <div class="input-copy-wrapper">
+                                    <input type="text" readonly id="dbUser" value="-">
+                                    <button onclick="copyToClipboard('#dbUser')"><i class="far fa-copy"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Auth & Actions -->
+                        <div class="access-column security">
+                            <div class="field-group">
+                                <label>Senha do Banco</label>
+                                <div class="password-box-modern">
+                                    <input type="text" class="blur" id="dbPass" readonly value="********">
+                                    <div class="pass-actions">
+                                        <button onclick="togglePass('dbPass')" title="Visualizar"><i class="far fa-eye"></i></button>
+                                        <button onclick="copyToClipboard('#dbPass')" title="Copiar"><i class="far fa-copy"></i></button>
+                                    </div>
+                                </div>
+                                <button class="btn-reset-pass" onclick="openPasswordModal('db')">
+                                    <i class="fas fa-key"></i> Redefinir Senha
+                                </button>
+                            </div>
+
+                            <div class="action-buttons-grid">
+                                <a href="/phpmyadmin" id="phpMyAdminBtn" class="big-action-btn primary-soft" target="_blank">
+                                    <i class="fas fa-table"></i>
+                                    <span>Acessar phpMyAdmin</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

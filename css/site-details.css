@@ -439,3 +439,48 @@
     text-shadow: 0 0 8px rgba(0,0,0,0.5); */
 }
 
+/* Access Tab Modern Layout */
+.info-card.no-padding { padding: 0 !important; overflow: hidden; }
+.card-header-simple { padding: 20px 25px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.card-header-simple h3 { margin: 0; font-size: 16px; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+.header-desc { margin: 5px 0 0 0; font-size: 13px; color: #64748b; margin-left: 26px; }
+
+.access-layout { display: flex; flex-wrap: wrap; }
+.access-column { padding: 30px; flex: 1; min-width: 320px; }
+.access-column.details { border-right: 1px solid #f1f5f9; background-color: #ffffff; }
+.access-column.security { background: #fafafa; }
+
+.field-group { margin-bottom: 20px; }
+.field-group label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.input-copy-wrapper { display: flex; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.input-copy-wrapper:hover { border-color: #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.input-copy-wrapper input { flex: 1; border: none; padding: 10px 12px; font-family: 'Consolas', monospace; font-size: 14px; color: #334155; width: 100%; outline: none; background: transparent; }
+.input-copy-wrapper button { border: none; background: #f8fafc; padding: 0 15px; color: #94a3b8; cursor: pointer; border-left: 1px solid #e2e8f0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.input-copy-wrapper button:hover { background: #f1f5f9; color: #2563eb; }
+.input-copy-wrapper button i { font-size: 14px; }
+
+.row-split { display: flex; gap: 20px; }
+.row-split .field-group { flex: 1; }
+.static-input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f1f5f9; color: #64748b; font-family: sans-serif; font-size: 14px; }
+
+.password-box-modern { display: flex; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+.password-box-modern input { flex: 1; border: none; padding: 12px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; background: transparent; }
+.pass-actions { display: flex; }
+.pass-actions button { border: none; background: white; padding: 0 12px; border-left: 1px solid #f1f5f9; color: #94a3b8; cursor: pointer; transition: color 0.2s; }
+.pass-actions button:hover { color: #2563eb; background: #f8fafc; }
+
+.btn-reset-pass { width: 100%; padding: 10px; border: 1px dashed #cbd5e1; background: transparent; border-radius: 6px; color: #64748b; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-reset-pass:hover { border-color: #94a3b8; color: #1e293b; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+.action-buttons-grid { margin-top: 30px; display: grid; gap: 15px; }
+.big-action-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.big-action-btn.primary-soft { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+.big-action-btn.primary-soft:hover { background: #dbeafe; border-color: #bfdbfe; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1); }
+.big-action-btn i { font-size: 16px; }
+
+@media (max-width: 768px) {
+    .access-column.details { border-right: none; border-bottom: 1px solid #e2e8f0; }
+    .access-column { padding: 20px; }
+}
+
