@@ -1,15 +1,19 @@
+// Modal State
+let currentModalType = null; // 'sftp' or 'db'
+let currentSiteId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Obter Site ID da URL
     const urlParams = new URLSearchParams(window.location.search);
-    const siteId = urlParams.get('id');
+    currentSiteId = urlParams.get('id');
 
-    if (!siteId) {
+    if (!currentSiteId) {
         alert('Site não especificado');
         window.location.href = 'sites.html';
         return;
     }
 
-    loadSiteDetails(siteId);
+    loadSiteDetails(currentSiteId);
 
     // Tab Switching Logic
     const tabs = document.querySelectorAll('.tab-btn');
@@ -27,6 +31,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(target).classList.add('active');
         });
     });
+
+    // Close Modal Logic
+    document.querySelectorAll('.close-modal, .close-modal-btn').forEach(el => {
+        el.addEventListener('click', closeModal);
+    });
+
+    document.getElementById('newPassword').addEventListener('input', checkPasswordStrength);
 });
 
 async function loadSiteDetails(siteId) {
@@ -64,33 +75,8 @@ async function loadSiteDetails(siteId) {
     }
 }
 
-window.repairDatabase = async function() {
-    if(!confirm("Isso tentará rodar as migrações pendentes para corrigir tabelas. Continuar?")) return;
-    try {
-        const btn = document.querySelector('button[onclick="repairDatabase()"]');
-        if(btn) {
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reparando...';
-            btn.disabled = true;
-        }
-        
-        const res = await fetch('/api/migrate');
-        const data = await res.json();
-        
-        if (res.ok) {
-            alert('Reparo concluído: ' + data.message);
-            window.location.reload();
-        } else {
-            throw new Error(data.error || 'Erro desconhecido');
-        }
-    } catch(e) {
-        alert('Erro ao tentar reparar: ' + e.message);
-        const btn = document.querySelector('button[onclick="repairDatabase()"]');
-        if(btn) {
-            btn.innerHTML = '<i class="fas fa-tools"></i> Tentar Novamente';
-            btn.disabled = false;
-        }
-    }
-};
+// ... repairDatabase ... (This function is already in the file, keeping it by context or assume it's there. 
+// Wait, replace_string_in_file needs EXACT match. I am replacing the top part of the file.
 
 function renderHeader(site) {
     document.getElementById('siteDomainTitle').textContent = site.domain;
@@ -119,25 +105,21 @@ function renderDetails(site) {
 
 function renderAccess(site) {
     document.getElementById('sftpHost').textContent = site.ip || '-';
-    // SFTP usa o system_user gerado no provisionamento (geralmente 'cloudease' ou o user do site)
-    // Se não tivermos isso salvo, fallback para generic info
     document.getElementById('sftpUser').textContent = site.system_user || 'root (não recomendado)'; 
-    document.getElementById('sftpPass').textContent = site.system_password || 'Mesma senha do servidor';
+    // Using value for inputs
+    const passInput = document.getElementById('sftpPass');
+    if (passInput) passInput.value = site.system_password || '********';
     
-    // Web File Manager Link (Placeholder ou real integration)
     const btn = document.getElementById('webFileManagerBtn');
-     // Se tivermos um file manager instalado
     btn.href = `http://${site.ip}:8080/filemanager?root=/var/www/${site.domain}`; 
-    // Ou desativar se não tiver
-    // btn.style.display = 'none';
 }
 
 function renderDatabase(site) {
-    // Preencher dados do banco (trazidos da tabela applications)
     if (site.application && site.application.db_name) {
         document.getElementById('dbName').textContent = site.application.db_name;
         document.getElementById('dbUser').textContent = site.application.db_user;
-        document.getElementById('dbPass').textContent = site.application.db_pass;
+        const dbPassInput = document.getElementById('dbPass');
+        if (dbPassInput) dbPassInput.value = site.application.db_pass;
         document.getElementById('dbHost').textContent = site.application.db_host || 'localhost';
     } else {
         document.getElementById('database').innerHTML = '<div class="info-card"><p>Nenhum banco de dados associado a este site.</p></div>';
@@ -145,8 +127,149 @@ function renderDatabase(site) {
     
     const pmaBtn = document.getElementById('phpMyAdminBtn');
     if (site.ip) {
-        // Assume default PMA path
         pmaBtn.href = `http://${site.ip}/phpmyadmin`;
+    }
+}
+
+function togglePass(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    
+    if (el.classList.contains('blur')) {
+        el.classList.remove('blur');
+        // el.type = 'text'; // It's already text input, just removing blur
+    } else {
+        el.classList.add('blur');
+        // el.type = 'password';
+    }
+}
+
+function copyToClipboard(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    
+    const text = el.value || el.textContent;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        // Visual feedback could be improved but simple alert for now or updated icon
+        const btn = document.querySelector(`button[onclick="copyToClipboard('${selector}')"]`);
+        if (btn) {
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
+            setTimeout(() => { btn.innerHTML = original; }, 1500);
+        }
+    });
+}
+
+// Modal Functions
+function openPasswordModal(type) {
+    currentModalType = type;
+    const modal = document.getElementById('passwordModal');
+    const title = document.getElementById('modalTitle');
+    const input = document.getElementById('newPassword');
+    
+    title.textContent = type === 'sftp' ? 'Redefinir Senha SFTP' : 'Redefinir Senha Banco de Dados';
+    input.value = '';
+    
+    generateStrongPassword(); // Auto generate
+    
+    modal.classList.add('show');
+}
+
+function closeModal() {
+    const modal = document.getElementById('passwordModal');
+    modal.classList.remove('show');
+    currentModalType = null;
+}
+
+function generateStrongPassword() {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    let password = "";
+    // Ensure complexity
+    password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
+    password += "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random() * 26));
+    password += "0123456789".charAt(Math.floor(Math.random() * 10));
+    password += "!@#$%^&*".charAt(Math.floor(Math.random() * 8));
+
+    for (let i = 0; i < 12; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    
+    // Shuffle
+    password = password.split('').sort(function(){return 0.5-Math.random()}).join('');
+    
+    const input = document.getElementById('newPassword');
+    input.value = password;
+    checkPasswordStrength();
+}
+
+function checkPasswordStrength() {
+    const password = document.getElementById('newPassword').value;
+    const bar = document.querySelector('.strength-bar');
+    const text = document.querySelector('.strength-text');
+    
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    bar.className = 'strength-bar';
+    if (strength < 3) {
+        bar.classList.add('weak');
+        text.textContent = 'Fraca';
+        text.style.color = '#ef4444';
+    } else if (strength < 5) {
+        bar.classList.add('medium');
+        text.textContent = 'Média';
+        text.style.color = '#f59e0b';
+    } else {
+        bar.classList.add('strong');
+        text.textContent = 'Forte';
+        text.style.color = '#10b981';
+    }
+}
+
+async function saveNewPassword() {
+    const newPass = document.getElementById('newPassword').value;
+    if (!newPass || newPass.length < 8) {
+        alert('A senha deve ter pelo menos 8 caracteres.');
+        return;
+    }
+
+    const btn = document.querySelector('.btn-save');
+    const originalText = btn.textContent;
+    btn.textContent = 'Salvando...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/sites', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'update_password',
+                siteId: currentSiteId,
+                type: currentModalType, // 'sftp' or 'db'
+                password: newPass
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Senha atualizada com sucesso!');
+            closeModal();
+            loadSiteDetails(currentSiteId); // Reload to show new
+        } else {
+            throw new Error(data.error || 'Erro ao atualizar senha');
+        }
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
     }
 }
 

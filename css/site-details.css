@@ -218,3 +218,224 @@
     margin-bottom: 20px;
     font-size: 14px;
 }
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    background-color: #f8fafc;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #1e293b;
+}
+
+.close-modal {
+    cursor: pointer;
+    font-size: 20px;
+    color: #94a3b8;
+}
+
+.close-modal:hover {
+    color: #475569;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: #f8fafc;
+    border-radius: 0 0 8px 8px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #334155;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.password-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.password-input-group input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+}
+
+.generate-btn {
+    padding: 10px 15px;
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #475569;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.generate-btn:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
+}
+
+.btn-cancel {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #64748b;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-cancel:hover {
+    background-color: #f8fafc;
+}
+
+.btn-save {
+    padding: 8px 16px;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-save:hover {
+    background-color: #1d4ed8;
+}
+
+.strength-meter {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.strength-bar {
+    height: 4px;
+    flex: 1;
+    background-color: #e2e8f0;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.strength-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    transition: width 0.3s, background-color 0.3s;
+}
+
+.strength-bar.weak::after { width: 30%; background-color: #ef4444; }
+.strength-bar.medium::after { width: 60%; background-color: #f59e0b; }
+.strength-bar.strong::after { width: 100%; background-color: #10b981; }
+
+.strength-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+.password-field {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #f1f5f9;
+    border-radius: 4px;
+    padding: 0;
+    flex: 1;
+    position: relative;
+    min-width: 0; /* Prevent flex overflow */
+}
+
+.password-field input {
+    border: none;
+    background: transparent;
+    padding: 4px 8px;
+    width: 100%;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    color: #334155;
+    outline: none;
+}
+.password-field .toggle-pass {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0 8px;
+}
+.password-field .toggle-pass:hover {
+    color: #64748b;
+}
+
+.value.blur {
+    /* text-security: disc; - Webkit only */
+    -webkit-text-security: disc;
+    /* color: transparent; 
+    text-shadow: 0 0 8px rgba(0,0,0,0.5); */
+}
+

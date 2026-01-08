@@ -1,5 +1,5 @@
 import db from '../lib/db.js';
-import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus, updateNginxConfig } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance, checkProvisionStatus, updateNginxConfig, updateSitePassword } from '../lib/provisioner.js';
 
 function formatPlatform(platform) {
     if (platform === 'wordpress') return 'WordPress';
@@ -244,6 +244,45 @@ export default async function handler(req, res) {
                 } catch (err) {
                     console.error('Erro ao atualizar Nginx:', err);
                     return res.status(500).json({ error: 'Erro ao atualizar Nginx: ' + err.message });
+                }
+            }
+            
+            if (action === 'update_password') {
+                const { type, password } = req.body;
+                if (!password || password.length < 8) {
+                    return res.status(400).json({ error: 'Senha inválida' });
+                }
+
+                // Determinar usuário
+                let userToUpdate = '';
+                if (type === 'sftp') {
+                    userToUpdate = site.system_user;
+                } else if (type === 'db') {
+                    // Need to fetch db_user from applications table
+                    const appQuery = await db.query('SELECT db_user FROM applications WHERE site_id = $1', [siteId]);
+                    if (appQuery.rows.length > 0) {
+                        userToUpdate = appQuery.rows[0].db_user;
+                    }
+                }
+
+                if (!userToUpdate) {
+                    return res.status(400).json({ error: 'Usuário não encontrado para este site.' });
+                }
+
+                try {
+                    await updateSitePassword(site.ip_address, type, userToUpdate, password);
+                    
+                    // Update DB record
+                    if (type === 'sftp') {
+                        await db.query('UPDATE sites SET system_password = $1 WHERE id = $2', [password, siteId]);
+                    } else if (type === 'db') {
+                        await db.query('UPDATE applications SET db_pass = $1 WHERE site_id = $2', [password, siteId]);
+                    }
+
+                    return res.status(200).json({ message: 'Senha atualizada com sucesso.' });
+                } catch (err) {
+                    console.error('Erro ao atualizar senha:', err);
+                    return res.status(500).json({ error: 'Erro ao atualizar senha no servidor: ' + err.message });
                 }
             }
             
