@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
             } catch (error) {
                 console.error('Erro ao buscar detalhes do site:', error);
-                return res.status(500).json({ error: 'Erro interno' });
+                return res.status(500).json({ error: 'Erro interno ao buscar detalhes: ' + error.message });
             }
         }
 

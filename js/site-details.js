@@ -32,7 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadSiteDetails(siteId) {
     try {
         const response = await fetch(`/api/sites?id=${siteId}&detailed=true`);
-        if (!response.ok) throw new Error('Falha ao carregar detalhes');
+        
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || 'Falha ao carregar detalhes');
+        }
         
         const site = await response.json();
         
@@ -43,9 +47,50 @@ async function loadSiteDetails(siteId) {
         
     } catch (error) {
         console.error(error);
-        alert('Erro ao carregar dados do site.');
+        const container = document.querySelector('.main-content');
+        container.innerHTML = `
+            <div style="text-align: center; padding: 50px; color: #e53e3e;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                <h2>Erro ao carregar site</h2>
+                <p>${error.message}</p>
+                 <br>
+                <button onclick="repairDatabase()" class="action-btn" style="background: #e53e3e; color: white; display: inline-flex; margin-top: 20px;">
+                    <i class="fas fa-tools"></i> Tentar Reparar Banco de Dados
+                </button>
+                <br><br>
+                <a href="sites.html" class="back-link" style="justify-content: center;">Voltar para Sites</a>
+            </div>
+        `;
     }
 }
+
+window.repairDatabase = async function() {
+    if(!confirm("Isso tentará rodar as migrações pendentes para corrigir tabelas. Continuar?")) return;
+    try {
+        const btn = document.querySelector('button[onclick="repairDatabase()"]');
+        if(btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reparando...';
+            btn.disabled = true;
+        }
+        
+        const res = await fetch('/api/migrate');
+        const data = await res.json();
+        
+        if (res.ok) {
+            alert('Reparo concluído: ' + data.message);
+            window.location.reload();
+        } else {
+            throw new Error(data.error || 'Erro desconhecido');
+        }
+    } catch(e) {
+        alert('Erro ao tentar reparar: ' + e.message);
+        const btn = document.querySelector('button[onclick="repairDatabase()"]');
+        if(btn) {
+            btn.innerHTML = '<i class="fas fa-tools"></i> Tentar Novamente';
+            btn.disabled = false;
+        }
+    }
+};
 
 function renderHeader(site) {
     document.getElementById('siteDomainTitle').textContent = site.domain;
