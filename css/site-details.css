@@ -416,6 +416,7 @@
     background: transparent;
     padding: 4px 8px;
     width: 100%;
+    min-width: 0;
     font-family: 'Consolas', monospace;
     font-size: 14px;
     color: #334155;
@@ -453,21 +454,22 @@
 .field-group { margin-bottom: 20px; }
 .field-group label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.input-copy-wrapper { display: flex; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.input-copy-wrapper { display: flex; align-items: center; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 .input-copy-wrapper:hover { border-color: #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.input-copy-wrapper input { flex: 1; border: none; padding: 10px 12px; font-family: 'Consolas', monospace; font-size: 14px; color: #334155; width: 100%; outline: none; background: transparent; }
-.input-copy-wrapper button { border: none; background: #f8fafc; padding: 0 15px; color: #94a3b8; cursor: pointer; border-left: 1px solid #e2e8f0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.input-icon { padding-left: 12px; color: #94a3b8; display: flex; align-items: center; } 
+.input-copy-wrapper input { flex: 1; border: none; padding: 10px 12px; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; color: #334155; width: 100%; min-width: 0; outline: none; background: transparent; }
+.input-copy-wrapper button { height: 100%; min-height: 42px; border: none; background: #f8fafc; padding: 0 15px; color: #94a3b8; cursor: pointer; border-left: 1px solid #e2e8f0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .input-copy-wrapper button:hover { background: #f1f5f9; color: #2563eb; }
 .input-copy-wrapper button i { font-size: 14px; }
 
 .row-split { display: flex; gap: 20px; }
 .row-split .field-group { flex: 1; }
-.static-input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f1f5f9; color: #64748b; font-family: sans-serif; font-size: 14px; }
+.static-input { display: block; width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f1f5f9; color: #64748b; font-family: sans-serif; font-size: 14px; }
 
-.password-box-modern { display: flex; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
-.password-box-modern input { flex: 1; border: none; padding: 12px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; background: transparent; }
-.pass-actions { display: flex; }
-.pass-actions button { border: none; background: white; padding: 0 12px; border-left: 1px solid #f1f5f9; color: #94a3b8; cursor: pointer; transition: color 0.2s; }
+.password-box-modern { display: flex; align-items: center; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+.password-box-modern input { flex: 1; border: none; padding: 12px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; background: transparent; min-width: 0; }
+.pass-actions { display: flex; height: 42px; }
+.pass-actions button { border: none; background: white; padding: 0 15px; border-left: 1px solid #f1f5f9; color: #94a3b8; cursor: pointer; transition: color 0.2s; display: flex; align-items: center; }
 .pass-actions button:hover { color: #2563eb; background: #f8fafc; }
 
 .btn-reset-pass { width: 100%; padding: 10px; border: 1px dashed #cbd5e1; background: transparent; border-radius: 6px; color: #64748b; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
