@@ -125,6 +125,41 @@ export default async function handler(req, res) {
             console.error('Erro ao buscar sites:', error);
             res.status(500).json({ error: 'Erro interno ao buscar sites: ' + error.message });
         }
+    } else if (req.method === 'PATCH') {
+        const { id, action, password, type } = req.body;
+        
+        if (action === 'update_password') {
+            try {
+                // Obter dados do site e do servidor
+                const { rows } = await db.query(`
+                    SELECT s.*, sc.ip_address 
+                    FROM sites s
+                    JOIN servers_cache sc ON s.server_id = sc.id
+                    WHERE s.id = $1
+                `, [id]);
+
+                if (rows.length === 0) return res.status(404).json({ error: 'Site não encontrado' });
+                
+                const site = rows[0];
+
+                if (type === 'sftp') {
+                    // Atualizar senha do sistema via SSH
+                    await updateSitePassword(site.ip_address, site.system_user, password);
+                    
+                    // Atualizar no banco
+                    await db.query('UPDATE sites SET system_password = $1 WHERE id = $2', [password, id]);
+                } else if (type === 'db') {
+                    // TODO: Implementar rotação de senha de banco
+                    throw new Error("Alteração de senha de banco de dados ainda não implementada.");
+                }
+
+                return res.status(200).json({ message: 'Senha atualizada com sucesso' });
+
+            } catch (error) {
+                 console.error('Erro ao alterar senha:', error);
+                 return res.status(500).json({ error: 'Erro ao atualizar senha: ' + error.message });
+            }
+        }
     } else if (req.method === 'POST') {
         // Criar site
         let { serverId, domain, enableTempUrl, platform, phpVersion, cache, wpTitle, wpAdminUser, wpAdminPass, wpAdminEmail, wpLang } = req.body;
