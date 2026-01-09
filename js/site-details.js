@@ -188,12 +188,26 @@ function togglePass(elementId) {
     const el = document.getElementById(elementId);
     if (!el) return;
     
+    // Encontrar o ícone dentro do wrapper
+    const wrapper = el.closest('.modern-input-wrapper');
+    const icon = wrapper ? wrapper.querySelector('.input-actions button i') : null;
+    
     if (el.type === 'password') {
         el.type = 'text';
         el.classList.remove('blur');
+        // Muda para ícone de "Ocultar"
+        if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
     } else {
         el.type = 'password';
-        // el.classList.add('blur');
+        el.classList.add('blur');
+        // Muda para ícone de "Visualizar"
+        if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
     }
 }
 
