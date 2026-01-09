@@ -212,21 +212,41 @@ function togglePass(btn, elementId) {
     }
 }
 
-function copyToClipboard(selector) {
+function copyToClipboard(btn, selector) {
     const el = document.querySelector(selector);
     if (!el) return;
     
+    // Se o elemento estiver vazio ou com o valor padrão de carregamento, não copie
     const text = el.value || el.textContent;
+    if (!text || text === '-' || text === '********') return;
     
+    // Fallback para navegadores sem API Clipboard (opcional, mas boa prática)
+    if (!navigator.clipboard) {
+        el.select();
+        document.execCommand('copy');
+        showCopyFeedback(btn);
+        return;
+    }
+
     navigator.clipboard.writeText(text).then(() => {
-        // Visual feedback could be improved but simple alert for now or updated icon
-        const btn = document.querySelector(`button[onclick="copyToClipboard('${selector}')"]`);
-        if (btn) {
-            const original = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
-            setTimeout(() => { btn.innerHTML = original; }, 1500);
-        }
+        showCopyFeedback(btn);
+    }).catch(err => {
+        console.error('Erro ao copiar:', err);
     });
+}
+
+function showCopyFeedback(btn) {
+    if (!btn) return;
+    const originalHtml = btn.innerHTML;
+    const originalTitle = btn.title;
+    
+    btn.innerHTML = '<i class="fas fa-check" style="color: #22c55e;"></i>';
+    btn.title = "Copiado!";
+    
+    setTimeout(() => { 
+        btn.innerHTML = originalHtml;
+        btn.title = originalTitle;
+    }, 1500);
 }
 
 // Modal Functions

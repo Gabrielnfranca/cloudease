@@ -114,7 +114,7 @@
                                     <div class="input-icon"><i class="fas fa-server"></i></div>
                                     <input type="text" readonly id="sftpHost" value="-">
                                     <div class="input-actions">
-                                        <button onclick="copyToClipboard('#sftpHost')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#sftpHost')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -125,7 +125,7 @@
                                     <div class="input-icon"><i class="fas fa-user"></i></div>
                                     <input type="text" readonly id="sftpUser" value="-">
                                     <div class="input-actions">
-                                        <button onclick="copyToClipboard('#sftpUser')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#sftpUser')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@
                                     <input type="text" class="blur" id="sftpPass" readonly value="********">
                                     <div class="input-actions">
                                         <button onclick="togglePass(this, 'sftpPass')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                        <button onclick="copyToClipboard('#sftpPass')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#sftpPass')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                                 <button class="btn-reset-pass" onclick="openPasswordModal('sftp')">
@@ -187,7 +187,7 @@
                                     <input type="text" class="blur" readonly id="dbHost" value="localhost">
                                     <div class="input-actions">
                                         <button onclick="togglePass(this, 'dbHost')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                        <button onclick="copyToClipboard('#dbHost')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#dbHost')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -198,7 +198,7 @@
                                     <div class="input-icon"><i class="fas fa-database"></i></div>
                                     <input type="text" readonly id="dbName" value="-">
                                     <div class="input-actions">
-                                        <button onclick="copyToClipboard('#dbName')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#dbName')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -210,7 +210,7 @@
                                     <input type="text" class="blur" readonly id="dbUser" value="-">
                                     <div class="input-actions">
                                         <button onclick="togglePass(this, 'dbUser')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                        <button onclick="copyToClipboard('#dbUser')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#dbUser')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +225,7 @@
                                     <input type="text" class="blur" id="dbPass" readonly value="********">
                                     <div class="input-actions">
                                         <button onclick="togglePass(this, 'dbPass')" title="Visualizar"><i class="far fa-eye"></i></button>
-                                        <button onclick="copyToClipboard('#dbPass')" title="Copiar"><i class="far fa-copy"></i></button>
+                                        <button onclick="copyToClipboard(this, '#dbPass')" title="Copiar"><i class="far fa-copy"></i></button>
                                     </div>
                                 </div>
                                 <button class="btn-reset-pass" onclick="openPasswordModal('db')">
