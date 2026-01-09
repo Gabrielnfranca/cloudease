@@ -228,6 +228,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            // Adiciona classe para estilização e evento de clique na linha
+            tr.classList.add('clickable-row');
+            tr.onclick = (e) => {
+                // Previne navegação se o clique foi em um botão ou link dentro da linha
+                if (e.target.closest('a') || e.target.closest('button')) return;
+                window.location.href = `site-details.html?id=${site.id}`;
+            };
+
             tr.innerHTML = `
                 <td>
                     <div style="display: flex; align-items: center;">
@@ -237,13 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td>
                     <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <a href="http://${site.domain}${site.platform === 'wordpress' ? '/wp-admin' : ''}" target="_blank" style="color: #4299e1; text-decoration: none; font-weight: 500;">
-                            ${site.domain} <i class="fas fa-external-link-alt" style="font-size: 12px;"></i>
-                        </a>
+                        <span style="font-weight: 600; color: #2d3748;">${site.domain}</span>
                         ${site.tempUrl ? `
-                            <a href="${site.tempUrl}${site.platform === 'wordpress' ? '/wp-admin' : ''}" target="_blank" title="Link Provisório (Acesso sem DNS)" style="font-size: 11px; color: #718096; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                                <i class="fas fa-link"></i> Link Provisório
-                            </a>
+                            <span style="font-size: 11px; color: #718096; display: flex; align-items: center; gap: 4px;">
+                                <i class="fas fa-link"></i> Link Provisório Ativo
+                            </span>
                         ` : ''}
                     </div>
                 </td>
@@ -259,13 +265,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td>${site.created_at}</td>
                 <td class="actions">
-                    ${retryBtn}
-                     <!-- Botão Detalhes Principal -->
-                    <button class="action-btn" title="Detalhes do Site" onclick="window.location.href='site-details.html?id=${site.id}'" style="background-color: #3182ce; color: white;">
-                        <i class="fas fa-info-circle"></i> Detalhes
-                    </button>
-                    <!-- Mantém botões antigos, mas talvez menos destacados -->
-                    <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')"><i class="fas fa-trash"></i></button>
+                    <div style="display: flex; gap: 5px; justify-content: flex-end;">
+                        ${retryBtn}
+                        <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
