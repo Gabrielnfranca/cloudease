@@ -137,11 +137,21 @@ function renderAccess(site) {
     if (hostInput) hostInput.value = site.ip || '-';
     
     const userInput = document.getElementById('sftpUser');
-    if (userInput) userInput.value = site.system_user || 'root (não recomendado)'; 
+    if (userInput) {
+        if (site.system_user && site.system_user !== 'root') {
+             userInput.value = site.system_user;
+        } else {
+             // Se não tiver usuário ou for root, sugerimos um novo ou mostramos root
+             userInput.value = site.system_user || 'root';
+        }
+    }
     
     // Using value for inputs
     const passInput = document.getElementById('sftpPass');
-    if (passInput) passInput.value = site.system_password || '********';
+    if (passInput) {
+        passInput.value = site.system_password || '********';
+        passInput.type = 'password'; // Start as password type
+    }
     
     const btn = document.getElementById('webFileManagerBtn');
     if(btn) btn.href = `http://${site.ip}:8080/filemanager?root=/var/www/${site.domain}`; 
@@ -156,7 +166,10 @@ function renderDatabase(site) {
         if (dbUserInput) dbUserInput.value = site.application.db_user;
         
         const dbPassInput = document.getElementById('dbPass');
-        if (dbPassInput) dbPassInput.value = site.application.db_pass;
+        if (dbPassInput) {
+            dbPassInput.value = site.application.db_pass;
+            dbPassInput.type = 'password';
+        }
         
         const dbHostInput = document.getElementById('dbHost');
         if (dbHostInput) dbHostInput.value = site.application.db_host || 'localhost';
@@ -175,12 +188,12 @@ function togglePass(elementId) {
     const el = document.getElementById(elementId);
     if (!el) return;
     
-    if (el.classList.contains('blur')) {
+    if (el.type === 'password') {
+        el.type = 'text';
         el.classList.remove('blur');
-        // el.type = 'text'; // It's already text input, just removing blur
     } else {
-        el.classList.add('blur');
-        // el.type = 'password';
+        el.type = 'password';
+        // el.classList.add('blur');
     }
 }
 
