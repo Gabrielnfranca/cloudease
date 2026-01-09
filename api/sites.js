@@ -26,9 +26,11 @@ export default async function handler(req, res) {
                         s.*,
                         sc.name as server_name,
                         sc.ip_address,
+                        p.provider_name,
                         a.db_name, a.db_user, a.db_pass
                     FROM sites s
                     LEFT JOIN servers_cache sc ON s.server_id = sc.id
+                    LEFT JOIN providers p ON sc.provider_id = p.id
                     LEFT JOIN applications a ON s.id = a.site_id
                     WHERE s.id = $1
                 `;
@@ -48,6 +50,7 @@ export default async function handler(req, res) {
                     server_id: site.server_id,
                     server_name: site.server_name,
                     ip: site.ip_address,
+                    provider_name: site.provider_name,
                     php_version: site.php_version,
                     enable_temp_url: site.enable_temp_url,
                     system_user: site.system_user,

@@ -94,10 +94,38 @@ function renderHeader(site) {
     visitBtn.href = url;
 }
 
+function getProviderIcon(name) {
+    if (!name) return '<i class="fas fa-cloud" style="color: #4a5568;"></i> Desconhecido';
+    
+    const lower = name.toLowerCase();
+    if (lower.includes('digitalocean') || lower.includes('digital ocean')) 
+        return '<i class="fab fa-digital-ocean" style="color: #0080FF;"></i> DigitalOcean';
+    if (lower.includes('aws') || lower.includes('amazon')) 
+        return '<i class="fab fa-aws" style="color: #FF9900;"></i> AWS';
+    if (lower.includes('google') || lower.includes('gcp')) 
+        return '<i class="fab fa-google" style="color: #4285F4;"></i> Google Cloud';
+    if (lower.includes('azure') || lower.includes('microsoft')) 
+        return '<i class="fab fa-microsoft" style="color: #00BCF2;"></i> Azure';
+    if (lower.includes('vultr')) 
+        return '<i class="fas fa-server" style="color: #007BFC;"></i> Vultr';
+    if (lower.includes('linode') || lower.includes('akamai')) 
+        return '<i class="fas fa-cubes" style="color: #02b159;"></i> Linode';
+    if (lower.includes('hetzner')) 
+        return '<i class="fas fa-box" style="color: #d50c2d;"></i> Hetzner';
+    
+    return `<i class="fas fa-cloud"></i> ${name}`;
+}
+
 function renderDetails(site) {
     document.getElementById('detailDomain').textContent = site.domain;
     document.getElementById('detailIp').textContent = site.ip || 'Não atribuído';
     document.getElementById('detailServerName').textContent = site.server_name || site.server || 'Desconhecido';
+    
+    const providerEl = document.getElementById('detailProvider');
+    if (providerEl) {
+        providerEl.innerHTML = getProviderIcon(site.provider_name);
+    }
+
     document.getElementById('detailPlatform').textContent = site.platformLabel || site.platform;
     document.getElementById('detailPhp').textContent = site.php_version || 'N/A';
     document.getElementById('detailRootPath').textContent = `/var/www/${site.domain}`;
