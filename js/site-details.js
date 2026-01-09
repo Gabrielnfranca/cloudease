@@ -240,13 +240,14 @@ function showCopyFeedback(btn) {
     const originalHtml = btn.innerHTML;
     const originalTitle = btn.title;
     
-    btn.innerHTML = '<i class="fas fa-check" style="color: #22c55e;"></i>';
+    // Adiciona texto de feedback
+    btn.innerHTML = '<i class="fas fa-check" style="color: #22c55e;"></i> <span style="font-weight: 600; color: #22c55e; margin-left: 6px; font-size: 13px;">Copiado!</span>';
     btn.title = "Copiado!";
     
     setTimeout(() => { 
         btn.innerHTML = originalHtml;
         btn.title = originalTitle;
-    }, 1500);
+    }, 2000);
 }
 
 // Modal Functions
