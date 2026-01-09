@@ -184,13 +184,12 @@ function renderDatabase(site) {
     }
 }
 
-function togglePass(elementId) {
+function togglePass(btn, elementId) {
     const el = document.getElementById(elementId);
     if (!el) return;
     
-    // Encontrar o ícone dentro do wrapper
-    const wrapper = el.closest('.modern-input-wrapper');
-    const icon = wrapper ? wrapper.querySelector('.input-actions button i') : null;
+    // O botão (btn) é passado diretamente, buscamos o ícone dentro dele
+    const icon = btn.querySelector('i');
     
     if (el.type === 'password') {
         el.type = 'text';
@@ -200,6 +199,7 @@ function togglePass(elementId) {
             icon.classList.remove('fa-eye');
             icon.classList.add('fa-eye-slash');
         }
+        btn.title = "Ocultar"; // Atualiza o tooltip
     } else {
         el.type = 'password';
         el.classList.add('blur');
@@ -208,6 +208,7 @@ function togglePass(elementId) {
             icon.classList.remove('fa-eye-slash');
             icon.classList.add('fa-eye');
         }
+        btn.title = "Visualizar"; // Atualiza o tooltip
     }
 }
 
