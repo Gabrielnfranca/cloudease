@@ -246,15 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <span style="font-weight: 600; color: #2d3748;">${site.domain}</span>
-                        ${site.tempUrl ? `
-                            <a href="${site.tempUrl}/wp-admin/" target="_blank" style="font-size: 11px; color: #4299e1; display: flex; align-items: center; gap: 4px; text-decoration: none;" onclick="event.stopPropagation()">
-                                <i class="fas fa-external-link-alt"></i> Link Provisório
-                            </a>
-                        ` : `
-                             <a href="http://${site.domain}/wp-admin/" target="_blank" style="font-size: 11px; color: #718096; display: flex; align-items: center; gap: 4px; text-decoration: none;" onclick="event.stopPropagation()">
-                                <i class="fas fa-external-link-alt"></i> Acessar /wp-admin
-                            </a>
-                        `}
                     </div>
                 </td>
                 <td>

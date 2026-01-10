@@ -137,7 +137,12 @@ function renderDetails(site) {
     
     if (toggle) {
         toggle.checked = site.enable_temp_url || false;
-        statusText.textContent = site.enable_temp_url ? 'Ativado' : 'Desativado';
+        
+        if (site.enable_temp_url && site.tempUrl) {
+            statusText.innerHTML = `<span style="color: #22c55e; font-weight: 500;">Ativado</span> <br> <a href="${site.tempUrl}/wp-admin/" target="_blank" style="font-size: 12px; color: #3182ce; margin-top: 4px; display: inline-block;">${site.tempUrl} <i class="fas fa-external-link-alt"></i></a>`;
+        } else {
+            statusText.textContent = 'Desativado';
+        }
         
         // Se site não estiver ativo ou não tiver IP, desabilita
         if (site.status !== 'active' || !site.ip || site.ip === 'Pendente') {
