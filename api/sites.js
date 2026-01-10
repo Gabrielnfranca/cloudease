@@ -94,15 +94,32 @@ export default async function handler(req, res) {
                 return res.status(200).json([]);
             }
 
-            // Verificar status de sites em provisionamento (DESATIVADO PARA EVITAR TIMEOUT)
-            // O processo de verificação deve ser feito via Cron ou botão manual "Atualizar Status"
-            /*
+            // Verificar status de sites em provisionamento
             const provisioningSites = rows.filter(s => s.status === 'provisioning' && s.ip_address);
             
+            // Limitamos a verificar no máximo 2 sites por requisição para não estourar timeout da Vercel
             if (provisioningSites.length > 0) {
-                 // ... Código SSH original omitido para performance ...
+                 const sitesCheck = provisioningSites.slice(0, 2); 
+                 
+                 for (const site of sitesCheck) {
+                     try {
+                         const status = await checkProvisionStatus(site.ip_address, site.domain);
+                         if (status === 'active') {
+                             await db.query("UPDATE sites SET status = 'active' WHERE id = $1", [site.id]);
+                             // Atualizamos o objeto atual para retornar o dado fresco
+                             const idx = rows.findIndex(r => r.id === site.id);
+                             if (idx !== -1) rows[idx].status = 'active';
+                         } else if (status.startsWith('error:')) {
+                             const errorMsg = status.replace('error:', '');
+                             await db.query("UPDATE sites SET status = 'error', last_error = $1 WHERE id = $2", [errorMsg, site.id]);
+                             const idx = rows.findIndex(r => r.id === site.id);
+                             if (idx !== -1) { rows[idx].status = 'error'; rows[idx].last_error = errorMsg; }
+                         }
+                     } catch (err) {
+                         console.error(`Erro ao verificar ${site.domain}:`, err.message);
+                     }
+                 }
             }
-            */
 
 
             const sites = rows.map(site => ({
@@ -214,42 +231,45 @@ export default async function handler(req, res) {
                 enableTempUrl: enableTempUrl
             };
 
-            provisionWordPress(serverIp, domain, wpConfig)
-                .then(async (creds) => {
-                    console.log(`Site ${domain}: Provisionamento iniciado.`);
-                    
-                    // Criar registro de Job
-                    await db.query(`
-                        INSERT INTO jobs (server_id, site_id, type, status, log_output)
-                        VALUES ($1, $2, 'install_wordpress', 'running', 'Provisionamento iniciado via SSH')
-                    `, [serverId, siteId]);
+            // AGORA FAZEMOS AWAIT POIS É RÁPIDO (Fire and Forget)
+            try {
+                const creds = await provisionWordPress(serverIp, domain, wpConfig);
+                
+                console.log(`Site ${domain}: Provisionamento iniciado.`);
+                
+                // Criar registro de Job
+                await db.query(`
+                    INSERT INTO jobs (server_id, site_id, type, status, log_output)
+                    VALUES ($1, $2, 'install_wordpress', 'running', 'Provisionamento iniciado via SSH (Background)')
+                `, [serverId, siteId]);
 
-                    // Salvar Application Data e Dados de Sistema
-                    if (platform === 'wordpress' && creds && creds.dbName) {
-                         await db.query(`
-                            INSERT INTO applications (site_id, type, db_name, db_user, db_pass, admin_email, admin_user, installation_status)
-                            VALUES ($1, 'wordpress', $2, $3, $4, $5, $6, 'pending_verification')
-                        `, [siteId, creds.dbName, creds.dbUser, creds.dbPass, wpAdminEmail, wpAdminUser]);
-                    }
-
-                    // Atualizar Site com System User/Pass (SFTP)
-                    if (creds && creds.sysUser) {
+                // Salvar Application Data e Dados de Sistema
+                if (platform === 'wordpress' && creds && creds.dbName) {
                         await db.query(`
-                            UPDATE sites SET system_user = $1, system_password = $2 WHERE id = $3
-                        `, [creds.sysUser, creds.sysPass, siteId]);
-                    }
-                })
-                .catch(async (err) => {
-                    console.error(`Erro ao provisionar ${domain}:`, err);
-                    const errorMsg = err.message || 'Erro desconhecido';
-                    await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg, siteId]);
+                        INSERT INTO applications (site_id, type, db_name, db_user, db_pass, admin_email, admin_user, installation_status)
+                        VALUES ($1, 'wordpress', $2, $3, $4, $5, $6, 'pending_verification')
+                    `, [siteId, creds.dbName, creds.dbUser, creds.dbPass, wpAdminEmail, wpAdminUser]);
+                }
+
+                // Atualizar Site com System User/Pass (SFTP)
+                if (creds && creds.sysUser) {
+                    await db.query(`
+                        UPDATE sites SET system_user = $1, system_password = $2 WHERE id = $3
+                    `, [creds.sysUser, creds.sysPass, siteId]);
+                }
+
+                return res.status(201).json({ 
+                    success: true, 
+                    message: 'Instalação iniciada! O site estará disponível em alguns instantes.',
+                    siteId: siteId
                 });
 
-            return res.status(201).json({ 
-                success: true, 
-                message: 'Instalação iniciada! O site estará disponível em alguns instantes.',
-                siteId: siteId
-            });
+            } catch (err) {
+                console.error(`Erro ao provisionar ${domain}:`, err);
+                const errorMsg = err.message || 'Erro desconhecido';
+                await db.query('UPDATE sites SET status = $1, last_error = $2 WHERE id = $3', ['error', errorMsg, siteId]);
+                return res.status(500).json({ error: 'Erro ao iniciar provisionamento: ' + errorMsg });
+            }
 
         } catch (error) {
             console.error('Erro ao criar site:', error);
