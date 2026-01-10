@@ -87,9 +87,10 @@ function renderHeader(site) {
     
     const visitBtn = document.getElementById('visitSiteBtn');
     // Prefer temp url if set
+    // Adiciona /wp-admin para redirecionar diretamente ao login
     let url = (site.enable_temp_url && site.ip) 
-        ? `http://${site.domain}.${site.ip}.nip.io` 
-        : `http://${site.domain}`;
+        ? `http://${site.domain}.${site.ip}.nip.io/wp-admin/` 
+        : `http://${site.domain}/wp-admin/`;
     
     visitBtn.href = url;
 }
