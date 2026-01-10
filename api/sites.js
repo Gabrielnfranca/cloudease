@@ -313,12 +313,7 @@ export default async function handler(req, res) {
                     throw nginxErr;
                 }
             }
-                    return res.status(200).json({ message: 'Configuração do Nginx atualizada com sucesso.' });
-                } catch (err) {
-                    console.error('Erro ao atualizar Nginx:', err);
-                    return res.status(500).json({ error: 'Erro ao atualizar Nginx: ' + err.message });
-                }
-            }
+
             
             if (action === 'update_password') {
                 const { type, password } = req.body;
