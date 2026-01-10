@@ -140,7 +140,8 @@ function renderDetails(site) {
         toggle.checked = site.enable_temp_url || false;
         
         if (site.enable_temp_url && site.tempUrl) {
-            statusText.innerHTML = `<span style="color: #22c55e; font-weight: 500;">Ativado</span> <br> <a href="${site.tempUrl}/wp-admin/" target="_blank" style="font-size: 12px; color: #3182ce; margin-top: 4px; display: inline-block;">${site.tempUrl} <i class="fas fa-external-link-alt"></i></a>`;
+            // Updated link color to green (#22c55e) to match the "Activated" status
+            statusText.innerHTML = `<span style="color: #22c55e; font-weight: 500;">Ativado</span> <br> <a href="${site.tempUrl}/wp-admin/" target="_blank" style="font-size: 12px; color: #22c55e; margin-top: 4px; display: inline-block; font-weight: 500;">${site.tempUrl} <i class="fas fa-external-link-alt"></i></a>`;
         } else {
             statusText.textContent = 'Desativado';
         }
