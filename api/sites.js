@@ -254,7 +254,7 @@ export default async function handler(req, res) {
                 // Atualizar Site com System User/Pass (SFTP)
                 if (creds && creds.sysUser) {
                     await db.query(`
-                        UPDATE sites SET system_user = $1, system_password = $2 WHERE id = $3
+                        UPDATE sites SET "system_user" = $1, "system_password" = $2 WHERE id = $3
                     `, [creds.sysUser, creds.sysPass, siteId]);
                 }
 
