@@ -292,47 +292,6 @@ function showCopyFeedback(btn) {
     }, 2000);
 }
 
-window.deleteSite = async function() {
-    const domain = document.getElementById('detailDomain').textContent;
-    
-    if (!confirm(`ATENÇÃO: Operação Destrutiva!\n\nTem certeza que deseja excluir o site ${domain}?\n\nTodos os arquivos e banco de dados serão apagados permanentemente e não poderão ser recuperados.`)) {
-        return;
-    }
-
-    const btn = document.querySelector('button[onclick="deleteSite()"]');
-    const originalContent = btn ? btn.innerHTML : '';
-    
-    if (btn) {
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
-        btn.disabled = true;
-    }
-
-    try {
-        const response = await fetch(`/api/sites?id=${currentSiteId}`, {
-            method: 'DELETE'
-        });
-
-        if (response.ok) {
-            alert('Site excluído com sucesso!');
-            window.location.replace('sites.html'); // Substitui URL para evitar voltar
-        } else {
-            const data = await response.json();
-            alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
-            if (btn) {
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
-            }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro de conexão.');
-        if (btn) {
-            btn.innerHTML = originalContent;
-            btn.disabled = false;
-        }
-    }
-};
-
 // Modal Functions
 function openPasswordModal(type) {
     currentModalType = type;
