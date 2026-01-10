@@ -314,7 +314,7 @@ window.deleteSite = async function() {
 
         if (response.ok) {
             alert('Site excluído com sucesso!');
-            window.location.href = 'sites.html'; 
+            window.location.replace('sites.html'); // Substitui URL para evitar voltar
         } else {
             const data = await response.json();
             alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
