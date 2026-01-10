@@ -68,11 +68,17 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <label>Domínio</label>
-                            <span id="detailDomain" class="copyable">-</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="detailDomain" class="copyable">-</span>
+                                <button onclick="copyToClipboard(this, '#detailDomain')" style="background:none; border:none; cursor:pointer; color:#64748b; padding: 4px;" title="Copiar"><i class="far fa-copy"></i></button>
+                            </div>
                         </div>
                          <div class="info-item">
                             <label>IP do Servidor</label>
-                            <span id="detailIp" class="copyable">-</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="detailIp" class="copyable">-</span>
+                                <button onclick="copyToClipboard(this, '#detailIp')" style="background:none; border:none; cursor:pointer; color:#64748b; padding: 4px;" title="Copiar"><i class="far fa-copy"></i></button>
+                            </div>
                         </div>
                         <div class="info-item">
                             <label>Nome do Servidor</label>
@@ -92,7 +98,10 @@
                         </div>
                         <div class="info-item">
                             <label>Caminho Raiz (Root Path)</label>
-                            <span id="detailRootPath" class="copyable">-</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="detailRootPath" class="copyable">-</span>
+                                <button onclick="copyToClipboard(this, '#detailRootPath')" style="background:none; border:none; cursor:pointer; color:#64748b; padding: 4px;" title="Copiar"><i class="far fa-copy"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>

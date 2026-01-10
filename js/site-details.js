@@ -372,18 +372,4 @@ function togglePass(elementId) {
     }
 }
 
-function copyToClipboard(selector) {
-    const el = document.querySelector(selector);
-    const text = (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? el.value : el.textContent;
-    
-    if (!text || text === '-') return;
-
-    navigator.clipboard.writeText(text).then(() => {
-        // Optional: Visual feedback could be added here
-        // alert('Copiado para a área de transferência!');
-        
-        // Find the button that triggered this (if possible) or just show a global toast
-        // For now, silent success or console log avoids annoying alerts
-        console.log('Copiado:', text);
-    });
-}
+/* Função duplicada removida para usar a versão com feedback visual implementada acima */
