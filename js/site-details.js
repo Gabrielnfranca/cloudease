@@ -139,9 +139,8 @@ function renderDetails(site) {
     if (toggle) {
         toggle.checked = site.enable_temp_url || false;
         
-        if (site.enable_temp_url && site.tempUrl) {
-            // Updated link color to green (#22c55e) to match the "Activated" status
-            statusText.innerHTML = `<span style="color: #22c55e; font-weight: 500;">Ativado</span> <br> <a href="${site.tempUrl}/wp-admin/" target="_blank" style="font-size: 12px; color: #22c55e; margin-top: 4px; display: inline-block; font-weight: 500;">${site.tempUrl} <i class="fas fa-external-link-alt"></i></a>`;
+        if (site.enable_temp_url) {
+            statusText.innerHTML = '<span style="color: #22c55e; font-weight: 500;">Ativado</span>';
         } else {
             statusText.textContent = 'Desativado';
         }
