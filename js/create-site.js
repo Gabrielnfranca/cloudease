@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const formData = {
             serverId: serverSelect.value,
             domain: document.getElementById('domain').value,
-            enableTempUrl: document.getElementById('enableTempUrl').checked,
+            enableTempUrl: false, // Default is disabled, user can enable later in details
             platform: platform,
             phpVersion: document.getElementById('phpVersion').value,
             cache: document.getElementById('cache').value,
