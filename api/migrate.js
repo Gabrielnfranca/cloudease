@@ -19,8 +19,8 @@ export default async function handler(req, res) {
         } else {
             // Fallback: Executar comandos diretamente se arquivo não for encontrado
              console.log('Arquivo SQL não encontrado. Executando migration manual...');
-             await db.query(`ALTER TABLE sites ADD COLUMN IF NOT EXISTS system_user VARCHAR(50);`);
-             await db.query(`ALTER TABLE sites ADD COLUMN IF NOT EXISTS system_password VARCHAR(255);`);
+             await db.query(`ALTER TABLE sites ADD COLUMN IF NOT EXISTS "system_user" VARCHAR(50);`);
+             await db.query(`ALTER TABLE sites ADD COLUMN IF NOT EXISTS "system_password" VARCHAR(255);`);
              await db.query(`ALTER TABLE applications ADD COLUMN IF NOT EXISTS db_host VARCHAR(100) DEFAULT 'localhost';`);
              await db.query(`ALTER TABLE applications ADD COLUMN IF NOT EXISTS db_port INTEGER DEFAULT 3306;`);
         }

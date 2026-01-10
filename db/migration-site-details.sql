@@ -9,11 +9,11 @@ BEGIN
     
     -- Check system_user in sites
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='sites' AND column_name='system_user') THEN
-        ALTER TABLE sites ADD COLUMN system_user VARCHAR(50);
+        ALTER TABLE sites ADD COLUMN "system_user" VARCHAR(50);
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='sites' AND column_name='system_password') THEN
-        ALTER TABLE sites ADD COLUMN system_password VARCHAR(255);
+        ALTER TABLE sites ADD COLUMN "system_password" VARCHAR(255);
     END IF;
     
     -- Check db_host in applications (often localhost, but good to have)
