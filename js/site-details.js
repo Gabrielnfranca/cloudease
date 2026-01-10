@@ -184,33 +184,7 @@ function renderDatabase(site) {
     }
 }
 
-function togglePass(btn, elementId) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    
-    // O botão (btn) é passado diretamente, buscamos o ícone dentro dele
-    const icon = btn.querySelector('i');
-    
-    if (el.type === 'password') {
-        el.type = 'text';
-        el.classList.remove('blur');
-        // Muda para ícone de "Ocultar"
-        if (icon) {
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
-        btn.title = "Ocultar"; // Atualiza o tooltip
-    } else {
-        el.type = 'password';
-        el.classList.add('blur');
-        // Muda para ícone de "Visualizar"
-        if (icon) {
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-        btn.title = "Visualizar"; // Atualiza o tooltip
-    }
-}
+/* Duplicate togglePass removed as it is already defined correctly above */
 
 function copyToClipboard(btn, selector) {
     const el = document.querySelector(selector);
@@ -280,7 +254,7 @@ function generateStrongPassword() {
     password += "0123456789".charAt(Math.floor(Math.random() * 10));
     password += "!@#$%^&*".charAt(Math.floor(Math.random() * 8));
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 16; i++) {
         password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
     
@@ -363,12 +337,28 @@ async function saveNewPassword() {
 }
 
 // Utils
-function togglePass(elementId) {
+function togglePass(btn, elementId) {
     const el = document.getElementById(elementId);
-    if (el.classList.contains('blur')) {
+    if (!el) return;
+    
+    const icon = btn.querySelector('i');
+    
+    if (el.type === 'password') {
+        el.type = 'text';
         el.classList.remove('blur');
+        if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+        btn.title = "Ocultar";
     } else {
+        el.type = 'password';
         el.classList.add('blur');
+        if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+        btn.title = "Visualizar";
     }
 }
 
