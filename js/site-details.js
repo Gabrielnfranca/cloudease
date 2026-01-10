@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadSiteDetails(siteId) {
     try {
-        const response = await fetch(`/api/sites?id=${siteId}&detailed=true`);
+        // Adiciona timestamp para evitar cache do navegador
+        const response = await fetch(`/api/sites?id=${siteId}&detailed=true&t=${Date.now()}`);
         
         if (!response.ok) {
             const data = await response.json();
@@ -182,9 +183,11 @@ window.toggleTempUrl = async function(checkbox) {
         }
 
         // Sucesso
-        statusLabel.textContent = enable ? 'Ativado' : 'Desativado';
-        // Reload details to update links
-        loadSiteDetails(currentSiteId);
+        // Não definimos texto simples aqui, deixamos o loadSiteDetails renderizar o HTML rico com o link
+        // statusLabel.textContent = enable ? 'Ativado' : 'Desativado'; 
+        
+        // Reload details to update links (bypass cache)
+        await loadSiteDetails(currentSiteId);
 
     } catch (error) {
         alert('Erro ao alterar configuração: ' + error.message);
