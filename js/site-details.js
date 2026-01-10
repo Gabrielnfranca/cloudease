@@ -293,14 +293,13 @@ function showCopyFeedback(btn) {
 }
 
 window.deleteSite = async function() {
-    // Obter dados atuais do DOM para confirmação
     const domain = document.getElementById('detailDomain').textContent;
     
-    if (!confirm(`Tem certeza que deseja excluir o site ${domain}? \n\nTodos os arquivos e banco de dados serão apagados permanentemente.`)) {
+    if (!confirm(`ATENÇÃO: Operação Destrutiva!\n\nTem certeza que deseja excluir o site ${domain}?\n\nTodos os arquivos e banco de dados serão apagados permanentemente e não poderão ser recuperados.`)) {
         return;
     }
 
-    const btn = document.querySelector('.delete-header-btn');
+    const btn = document.querySelector('button[onclick="deleteSite()"]');
     const originalContent = btn ? btn.innerHTML : '';
     
     if (btn) {
@@ -315,7 +314,7 @@ window.deleteSite = async function() {
 
         if (response.ok) {
             alert('Site excluído com sucesso!');
-            window.location.href = 'sites.html'; // Redirecionar para listagem
+            window.location.href = 'sites.html'; 
         } else {
             const data = await response.json();
             alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
