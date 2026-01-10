@@ -97,6 +97,19 @@
                             <span id="detailPhp">-</span>
                         </div>
                         <div class="info-item">
+                            <label>Link Provisório</label>
+                            <div class="toggle-container" style="display: flex; align-items: center; gap: 10px;">
+                                <label class="switch">
+                                    <input type="checkbox" id="tempUrlToggle" onchange="toggleTempUrl(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span id="tempUrlStatus" style="font-size: 0.9em; color: #718096;">Desativado</span>
+                            </div>
+                            <small class="hint-text" style="display: block; margin-top: 5px; color: #a0aec0; font-size: 0.85em;">
+                                Ativa um link temporário (ex: domain.ip.nip.io) para acesso sem DNS propagado.
+                            </small>
+                        </div>
+                        <div class="info-item">
                             <label>Caminho Raiz (Root Path)</label>
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span id="detailRootPath" class="copyable">-</span>

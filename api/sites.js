@@ -295,9 +295,24 @@ export default async function handler(req, res) {
             const site = siteQuery.rows[0];
 
             if (action === 'update_nginx') {
-                // Apenas atualizar Nginx (para ativar link provisório)
+                const { enableTempUrl } = req.body;
+
+                // Atualizar no banco
+                await db.query('UPDATE sites SET enable_temp_url = $1 WHERE id = $2', [enableTempUrl, site.id]);
+
+                // Atualizar Nginx
+                // Passamos php_version para garantir config correta
                 try {
-                    await updateNginxConfig(site.ip_address, site.domain, site.enable_temp_url);
+                    await updateNginxConfig(site.ip_address, site.domain, enableTempUrl, site.php_version);
+                    return res.status(200).json({ message: 'Nginx atualizado com sucesso' });
+                } catch (nginxErr) {
+                    // Se falhar no servidor, reverta no banco? Ou mantenha e avise?
+                    // Melhor avisar erro mas manter estado inconsistente pode ser ruim.
+                    // Vamos tentar reverter.
+                    await db.query('UPDATE sites SET enable_temp_url = $1 WHERE id = $2', [!enableTempUrl, site.id]);
+                    throw nginxErr;
+                }
+            }
                     return res.status(200).json({ message: 'Configuração do Nginx atualizada com sucesso.' });
                 } catch (err) {
                     console.error('Erro ao atualizar Nginx:', err);

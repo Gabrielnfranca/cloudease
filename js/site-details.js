@@ -129,7 +129,66 @@ function renderDetails(site) {
     document.getElementById('detailPlatform').textContent = site.platformLabel || site.platform;
     document.getElementById('detailPhp').textContent = site.php_version || 'N/A';
     document.getElementById('detailRootPath').textContent = `/var/www/${site.domain}`;
+
+    // Temp URL State
+    const toggle = document.getElementById('tempUrlToggle');
+    const statusText = document.getElementById('tempUrlStatus');
+    
+    if (toggle) {
+        toggle.checked = site.enable_temp_url || false;
+        statusText.textContent = site.enable_temp_url ? 'Ativado' : 'Desativado';
+        
+        // Se site não estiver ativo ou não tiver IP, desabilita
+        if (site.status !== 'active' || !site.ip || site.ip === 'Pendente') {
+            toggle.disabled = true;
+            toggle.parentElement.title = "Aguarde o site ser ativado para alterar esta configuração.";
+        } else {
+             toggle.disabled = false;
+        }
+    }
 }
+
+window.toggleTempUrl = async function(checkbox) {
+    if (checkbox.disabled) return;
+    
+    const enable = checkbox.checked;
+    const statusLabel = document.getElementById('tempUrlStatus');
+    
+    // UI Feedback imediato (loading)
+    checkbox.disabled = true;
+    statusLabel.textContent = "Atualizando...";
+    
+    try {
+        const response = await fetch('/api/sites', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                siteId: currentSiteId,
+                action: 'update_nginx',
+                enableTempUrl: enable
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Erro ao atualizar');
+        }
+
+        // Sucesso
+        statusLabel.textContent = enable ? 'Ativado' : 'Desativado';
+        // Reload details to update links
+        loadSiteDetails(currentSiteId);
+
+    } catch (error) {
+        alert('Erro ao alterar configuração: ' + error.message);
+        // Revert UI
+        checkbox.checked = !enable;
+        statusLabel.textContent = !enable ? 'Ativado' : 'Desativado';
+    } finally {
+        checkbox.disabled = false;
+    }
+};
 
 function renderAccess(site) {
     // Inputs use .value, not .textContent
