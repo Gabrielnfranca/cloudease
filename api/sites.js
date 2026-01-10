@@ -50,6 +50,7 @@ export default async function handler(req, res) {
                     server_id: site.server_id,
                     server_name: site.server_name,
                     ip: site.ip_address,
+                    tempUrl: (site.ip_address && site.enable_temp_url) ? `http://${site.domain}.${site.ip_address}.nip.io` : null,
                     provider_name: site.provider_name,
                     php_version: site.php_version,
                     enable_temp_url: site.enable_temp_url,
