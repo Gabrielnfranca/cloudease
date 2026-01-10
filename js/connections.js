@@ -13,18 +13,34 @@ document.addEventListener('DOMContentLoaded', function() {
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando...</td></tr>';
             
             const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                window.location.href = 'index.html';
+                return;
+            }
+
             const response = await fetch('/api/providers', {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 }
             });
-            if (!response.ok) throw new Error('Falha ao buscar conexões');
+
+            if (response.status === 401) {
+                alert('Sessão expirada. Faça login novamente.');
+                localStorage.removeItem('authToken');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Erro HTTP ${response.status}`);
+            }
             
             const connections = await response.json();
             renderConnections(connections);
         } catch (error) {
             console.error('Erro:', error);
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: red;">Erro ao carregar conexões.</td></tr>';
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: red;">Erro ao carregar conexões: ${error.message}</td></tr>`;
         }
     }
 
