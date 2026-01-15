@@ -440,14 +440,14 @@ export default async function handler(req, res) {
 
             if (siteError) throw siteError;
 
-            // 2. If WordPress, add application details
+            // 2. If WordPress or PHP+MySQL, add application details
             let appData = null;
-            if (platform === 'wordpress') {
+            if (platform === 'wordpress' || platform === 'php-mysql') {
                 appData = {
                     site_id: siteData.id,
                     wp_admin_user: wpAdminUser,
-                    wp_admin_pass: wpAdminPass,
-                    // Store other metadata in separate logic if needed, simplify for now
+                    wp_admin_pass: wpAdminUser ? wpAdminPass : null, // Só salva se tiver user (WP)
+                    // Configuração de Banco de Dados Padrão (automática)
                     db_name: (domain || '').replace(/\./g, '_').substring(0, 10) + '_db',
                     db_user: (domain || '').replace(/\./g, '_').substring(0, 10) + '_user',
                     db_pass: Math.random().toString(36).slice(-12)
@@ -473,15 +473,20 @@ export default async function handler(req, res) {
                     
                     // Adicionado await para garantir que o comando SSH seja enviado antes da função terminar
                     // O provisionWordPress já usa nohup/background, então isso retorna rápido (2-5s)
-                    await provisionWordPress(server.ip_address, domain, {
+                    
+                    // Configs Específicas
+                    const provConfig = {
                         dbName: appData?.db_name,
                         dbUser: appData?.db_user,
                         dbPass: appData?.db_pass,
                         wpAdminUser: wpAdminUser,
                         wpAdminPass: wpAdminPass,
                         wpAdminEmail: wpAdminEmail,
-                        wpTitle: wpTitle // Passando Título
-                    });
+                        wpTitle: wpTitle,
+                        platform: platform // Passa a plataforma para decidir o que instalar no script
+                    };
+
+                    await provisionWordPress(server.ip_address, domain, provConfig);
                     
                     console.log('Provisioning command sent successfully');
 
