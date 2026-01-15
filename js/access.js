@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
             // O HTML usa 'username' mas a API espera 'email'
-            // Vamos assumir que o usu�rio digita o email no campo username
-            const email = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            // Vamos prevenir erros de espaços em branco comuns em copy-paste
+            const email = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value; // Senha não deve ter trim se o user quis espaço, mas geralmente não tem. Por segurança mantemos raw ou trim? Supabase ignora trailing space em senha? Melhor não arriscar.
 
             try {
                 const response = await fetch('/api/auth?action=login', {
