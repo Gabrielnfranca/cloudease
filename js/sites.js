@@ -281,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function pollSiteProgress(siteId, elementId) {
         let attempts = 0;
+        // Intervalo aumentado para 5s para evitar sobrecarga
         const interval = setInterval(async () => {
              const container = document.getElementById(elementId);
              
@@ -291,8 +292,9 @@ document.addEventListener('DOMContentLoaded', function() {
              }
              
              try {
-                // Recupera token (ajustar conforme sua autenticação)
-                const token = localStorage.getItem('supabase.auth.token') ? JSON.parse(localStorage.getItem('supabase.auth.token')).currentSession?.access_token : null;
+                // Tenta pegar o token do login customizado (authToken) ou o padrão do Supabase
+                const token = localStorage.getItem('authToken') || 
+                              (localStorage.getItem('supabase.auth.token') ? JSON.parse(localStorage.getItem('supabase.auth.token'))?.currentSession?.access_token : null);
                 
                 const headers = {};
                 if(token) headers['Authorization'] = `Bearer ${token}`;
@@ -312,25 +314,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (container && data.logs) container.title = data.logs;
 
                     // Se completou, recarrega a lista após breve delay
-                    if (data.status === 'active' || data.percent >= 100) {
+                    // Também recarrega se der erro, para mostrar o botão de retry/status real
+                    if (data.status === 'active' || data.percent >= 100 || data.status === 'error') {
                         clearInterval(interval);
-                        setTimeout(() => loadSites(true), 1500); 
+                        setTimeout(() => loadSites(true), 2000); 
                     }
-                    
-                    // Se deu erro
-                    if (data.status === 'error') {
-                        clearInterval(interval);
-                        setTimeout(() => loadSites(true), 1500);
-                    }
+                } else {
+                    // Erro de API (401, 500, etc)
+                    console.error('Erro no polling:', res.status);
+                    const text = container.querySelector('.prog-text');
+                    if (text && res.status === 401) text.textContent = "Sessão expirada";
+                    else if (text) text.textContent = `Erro ${res.status}`;
                 }
              } catch(e) { 
-                 console.error("Erro no polling:", e);
+                 console.error("Erro no polling (network):", e);
                  const text = container.querySelector('.prog-text');
                  if (text) text.textContent = "Erro de conexão..."; 
              }
              
-             // Para de tentar após ~10 minutos (200 * 3s = 600s)
-             if (++attempts > 200) clearInterval(interval);
-        }, 3000);
+             // Para de tentar após ~15 minutos (180 * 5s = 900s)
+             if (++attempts > 180) {
+                 clearInterval(interval);
+                 const text = container.querySelector('.prog-text');
+                 if (text) text.textContent = "Tempo esgotado (timeout)";
+             }
+        }, 5000);
     }
 });
