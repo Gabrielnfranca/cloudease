@@ -62,10 +62,13 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-        const { provider, name, token } = req.body;
+        let { provider, name, token } = req.body;
         
+        // Sanitize
+        if (token) token = token.trim();
+        if (name) name = name.trim();
+
         try {
-            // Validação agora lança erro com detalhes se falhar
             await validateToken(provider, token);
 
             const { data: newProvider, error } = await supabase
