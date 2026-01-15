@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td>
                     <div class="ip-address">
-                        ${server.ipv4 || '<span style="color: #cbd5e0;">Pendente</span>'}
+                        ${(server.ip_address && server.ip_address !== '0.0.0.0') ? server.ip_address : '<span style="color: #cbd5e0;">Pendente</span>'}
                     </div>
                 </td>
                 <td>
