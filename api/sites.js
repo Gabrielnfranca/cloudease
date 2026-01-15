@@ -452,26 +452,29 @@ export default async function handler(req, res) {
                 if (server && server.ip_address && server.ip_address !== '0.0.0.0') {
                     console.log(`Starting provisioning on ${server.ip_address}...`);
                     
-                    // Don't await to avoid timeout, but log start
-                    provisionWordPress(server.ip_address, domain, {
+                    // Adicionado await para garantir que o comando SSH seja enviado antes da função terminar
+                    // O provisionWordPress já usa nohup/background, então isso retorna rápido (2-5s)
+                    await provisionWordPress(server.ip_address, domain, {
                         dbName: appData?.db_name,
                         dbUser: appData?.db_user,
                         dbPass: appData?.db_pass,
                         wpAdminUser: wpAdminUser,
                         wpAdminPass: wpAdminPass,
                         wpAdminEmail: wpAdminEmail
-                    }).then(() => console.log('Provisioning Success via API'))
-                      .catch(async (e) => {
-                          console.error('Provisioning Error via API:', e);
-                          // Atualiza status para erro no DB
-                          await supabase.from('sites').update({ 
-                              status: 'error', 
-                              last_error: e.message || 'Erro ao iniciar provisionamento'
-                          }).eq('id', siteData.id);
-                      });
+                    });
+                    
+                    console.log('Provisioning command sent successfully');
+
                 }
             } catch (provErr) {
                 console.error('Provision trigger failed:', provErr);
+                // Não falhamos o request inteiro se o provision inicial falhar, 
+                // o usuário pode tentar "Re-instalar" depois.
+                // Mas atualizamos o status para erro
+                 await supabase.from('sites').update({ 
+                    status: 'error', 
+                    last_error: provErr.message 
+                }).eq('id', siteData.id);
             }
 
             return res.status(201).json({ success: true, site: siteData });
