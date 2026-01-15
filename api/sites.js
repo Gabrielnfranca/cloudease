@@ -1,6 +1,16 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
 import { provisionWordPress } from '../lib/provisioner.js';
+import { Client } from 'ssh2';
+import fs from 'fs';
+import path from 'path';
+
+function getPrivateKey() {
+    if (process.env.SSH_PRIVATE_KEY) return process.env.SSH_PRIVATE_KEY.replace(/\\n/g, '\n');
+    try {
+        return fs.readFileSync(path.join(process.cwd(), 'keys', 'cloudease_rsa'));
+    } catch (err) { return null; }
+}
 
 function formatPlatform(platform) {
     if (platform === 'wordpress') return 'WordPress';
@@ -43,7 +53,70 @@ export default async function handler(req, res) {
     const userId = user.id;
 
     if (req.method === 'GET') {
-        const { id, detailed } = req.query;
+        const { id, detailed, status_check } = req.query;
+
+        // STATUS CHECK (Progress Bar)
+        if (status_check && id) {
+             const { data: site } = await supabase
+                .from('sites')
+                .select(`id, domain, status, servers_cache (ip_address)`)
+                .eq('id', id)
+                .eq('user_id', userId)
+                .single();
+
+            if (!site) return res.status(404).json({ error: 'Site not found' });
+            if (site.status === 'active') return res.status(200).json({ percent: 100, step: 'Concluído', status: 'active' });
+            if (site.status === 'error') return res.status(200).json({ percent: 0, step: 'Erro', status: 'error', error: site.last_error });
+
+            // SSH Poll
+            if (!site.servers_cache?.ip_address) return res.status(200).json({ percent: 10, step: 'Aguardando Servidor...' });
+
+            const logFile = `/var/log/cloudease/${site.domain}.log`;
+            const privateKey = getPrivateKey();
+            if (!privateKey) return res.status(500).json({ error: 'SSH Key missing' });
+
+            return new Promise((resolve) => {
+                const conn = new Client();
+                conn.on('ready', () => {
+                    conn.exec(`tail -n 20 ${logFile}`, (err, stream) => {
+                        if (err) {
+                            conn.end();
+                            return resolve(res.status(200).json({ percent: 0, step: 'Conectando...' }));
+                        }
+                        let output = '';
+                        stream.on('data', (data) => { output += data.toString(); })
+                              .on('close', () => {
+                                  conn.end();
+                                  
+                                  // Parse Logs
+                                  let percent = 10;
+                                  let step = 'Iniciando...';
+                                  
+                                  if (output.includes('STARTING')) { percent = 10; step = 'Inicializando...'; }
+                                  if (output.includes('Atualizando sistema')) { percent = 20; step = 'Atualizando Sistema...'; }
+                                  if (output.includes('Instalando dependencias')) { percent = 30; step = 'Instalando Dependências...'; }
+                                  if (output.includes('Instalando Docker')) { percent = 40; step = 'Instalando Docker...'; }
+                                  if (output.includes('Baixando WordPress')) { percent = 60; step = 'Baixando WordPress...'; }
+                                  if (output.includes('Configurando Containers')) { percent = 70; step = 'Subindo Containers...'; }
+                                  if (output.includes('Configurando Nginx')) { percent = 80; step = 'Configurando Proxy em ' + site.servers_cache.ip_address + '...'; }
+                                  if (output.includes('SUCCESS')) { percent = 100; step = 'Concluído!'; }
+                                  if (output.includes('ERROR')) { percent = 0; step = 'Erro na Instalação'; }
+
+                                  resolve(res.status(200).json({ percent, step, status: site.status }));
+                              });
+                    });
+                }).on('error', (err) => {
+                    console.error('SSH Error:', err);
+                    resolve(res.status(200).json({ percent: 0, step: 'Erro de Conexão' }));
+                }).connect({
+                    host: site.servers_cache.ip_address,
+                    port: 22,
+                    username: 'root',
+                    privateKey: privateKey,
+                    readyTimeout: 5000
+                });
+            });
+        }
 
         // DETAILED VIEW
         if (id && detailed) {

@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const headers = {};
                 if(token) headers['Authorization'] = `Bearer ${token}`;
 
-                const res = await fetch(`/api/site-status?siteId=${siteId}`, { headers });
+                const res = await fetch(`/api/sites?id=${siteId}&status_check=true`, { headers });
                 
                 if (res.ok) {
                     const data = await res.json();
