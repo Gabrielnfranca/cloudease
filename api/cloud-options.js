@@ -1,8 +1,6 @@
-import { getProviderToken } from '../lib/db-utils.js';
+import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
+import { createClient } from '@supabase/supabase-js';
 import { fetchPlans, fetchRegions, fetchOS } from '../lib/providers.js';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
 
 export default async function handler(req, res) {
     // Autenticação JWT
@@ -12,14 +10,23 @@ export default async function handler(req, res) {
     }
 
     const tokenAuth = authHeader.split(' ')[1];
-    let userId;
+    
+    // Create authenticated client
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: {
+                Authorization: authHeader
+            }
+        }
+    });
 
-    try {
-        const decoded = jwt.verify(tokenAuth, JWT_SECRET);
-        userId = decoded.userId;
-    } catch (error) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
         return res.status(401).json({ error: 'Token inválido ou expirado' });
     }
+    
+    const userId = user.id;
 
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
@@ -29,11 +36,20 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Provider is required' });
     }
     try {
-        // Busca token do provedor para o usuário autenticado
-        const token = await getProviderToken(provider, userId);
-        if (!token) {
+        // Busca token do provedor para o usuário autenticado via Supabase RLS
+        const { data: providerData, error: providerError } = await supabase
+            .from('providers')
+            .select('api_key')
+            .eq('provider_name', provider)
+            .eq('user_id', userId)
+            .single();
+
+        if (providerError || !providerData) {
             return res.status(400).json({ error: 'Provedor não conectado.' });
         }
+        
+        const token = providerData.api_key;
+
         // Busca planos, regiões e OS
         const [plans, regions, os] = await Promise.all([
             fetchPlans(provider, token),
@@ -43,6 +59,6 @@ export default async function handler(req, res) {
         res.status(200).json({ plans, regions, os });
     } catch (error) {
         console.error('Erro ao buscar opções:', error);
-        res.status(500).json({ error: 'Erro ao buscar opções do provedor' });
+        res.status(500).json({ error: 'Erro ao buscar opções do provedor: ' + error.message });
     }
 }
