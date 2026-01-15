@@ -27,10 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
 
-                const data = await response.json();
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error(`Server status: ${response.status}`);
+                }
 
                 if (response.ok) {
-                    // Salva o token e dados do usu�rio
+                    // Salva o token e dados do usuário
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
@@ -40,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('Erro: ' + (data.error || 'Falha no login'));
                 }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conex�o. Tente novamente.');
+                console.error('Erro detalhado:', error);
+                alert('Erro: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
