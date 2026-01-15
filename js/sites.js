@@ -80,7 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    window.retryProvision = async function(siteId) {
+    window.retryProvision = async function(event, siteId) {
+        if (event) event.stopPropagation();
         if (!confirm('Deseja tentar instalar novamente?')) return;
         
         try {
@@ -131,12 +132,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    window.deleteSite = async function(siteId, domain) {
+    window.deleteSite = async function(event, siteId, domain) {
+        if (event) event.stopPropagation();
         if (!confirm(`Tem certeza que deseja excluir o site ${domain}? \n\nTodos os arquivos e banco de dados serão apagados permanentemente.`)) {
             return;
         }
 
-        const btn = document.querySelector(`button[onclick="deleteSite(${siteId}, '${domain}')"]`);
+        const btn = document.querySelector(`button[onclick*="deleteSite"][onclick*="${siteId}"]`);
         if (btn) {
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             btn.disabled = true;
@@ -229,8 +231,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (site.status === 'error') {
                 const errorMsg = (site.last_error || 'Erro desconhecido').replace(/"/g, '&quot;');
                 statusHtml = `<span class="ssl-badge danger" title="${errorMsg}"><i class="fas fa-exclamation-circle"></i> Erro</span>`;
-                retryBtn = `<button class="action-btn" title="Ver Erro" onclick="alert('${errorMsg.replace(/'/g, "\\'")}')" style="color: #e53e3e; margin-right: 5px;"><i class="fas fa-info-circle"></i></button>`;
-                retryBtn += `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
+                retryBtn = `<button class="action-btn" title="Ver Erro" onclick="event.stopPropagation(); alert('${errorMsg.replace(/'/g, "\\'")}')" style="color: #e53e3e; margin-right: 5px;"><i class="fas fa-info-circle"></i></button>`;
+                retryBtn += `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(event, ${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
             } else {
                 statusHtml = `<span class="ssl-badge active"><i class="fas fa-check-circle"></i> Ativo</span>`;
             }
@@ -269,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td class="actions">
                     <div style="display: flex; gap: 5px; justify-content: flex-end;">
                         ${retryBtn}
-                        <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(${site.id}, '${site.domain}')">
+                        <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(event, ${site.id}, '${site.domain}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
