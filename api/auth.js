@@ -20,6 +20,7 @@ export default async function handler(req, res) {
 
     if (action === 'login') {
         const { email, password } = req.body;
+        console.log('Tentativa de login para:', email);
 
         if (!email || !password) {
             return res.status(400).json({ error: 'Email e senha são obrigatórios' });
