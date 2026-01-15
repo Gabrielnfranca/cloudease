@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (bar) bar.style.width = `${data.percent}%`;
                     if (text && data.step) text.textContent = data.step;
                     if (perc) perc.textContent = `${data.percent}%`;
+                    if (container && data.logs) container.title = data.logs;
 
                     // Se completou, recarrega a lista após breve delay
                     if (data.status === 'active' || data.percent >= 100) {
@@ -323,7 +324,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
              } catch(e) { 
-                 console.error("Erro no polling:", e); 
+                 console.error("Erro no polling:", e);
+                 const text = container.querySelector('.prog-text');
+                 if (text) text.textContent = "Erro de conexão..."; 
              }
              
              // Para de tentar após ~10 minutos (200 * 3s = 600s)

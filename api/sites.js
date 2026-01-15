@@ -73,15 +73,19 @@ export default async function handler(req, res) {
 
             const logFile = `/var/log/cloudease/${site.domain}.log`;
             const privateKey = getPrivateKey();
-            if (!privateKey) return res.status(500).json({ error: 'SSH Key missing' });
+            if (!privateKey) {
+                console.error('SSH Key missing in status check');
+                return res.status(200).json({ percent: 0, step: 'Erro: Chave SSH não configurada', status: 'error' });
+            }
 
             return new Promise((resolve) => {
                 const conn = new Client();
                 conn.on('ready', () => {
-                    conn.exec(`tail -n 20 ${logFile}`, (err, stream) => {
+                     conn.exec(`tail -n 20 ${logFile}`, (err, stream) => {
                         if (err) {
                             conn.end();
-                            return resolve(res.status(200).json({ percent: 0, step: 'Conectando...' }));
+                            // Pode ser que o arquivo ainda não exista (muito cedo)
+                            return resolve(res.status(200).json({ percent: 5, step: 'Aguardando logs...' }));
                         }
                         let output = '';
                         stream.on('data', (data) => { output += data.toString(); })
@@ -92,22 +96,30 @@ export default async function handler(req, res) {
                                   let percent = 10;
                                   let step = 'Iniciando...';
                                   
-                                  if (output.includes('STARTING')) { percent = 10; step = 'Inicializando...'; }
-                                  if (output.includes('Atualizando sistema')) { percent = 20; step = 'Atualizando Sistema...'; }
-                                  if (output.includes('Instalando dependencias')) { percent = 30; step = 'Instalando Dependências...'; }
-                                  if (output.includes('Instalando Docker')) { percent = 40; step = 'Instalando Docker...'; }
-                                  if (output.includes('Baixando WordPress')) { percent = 60; step = 'Baixando WordPress...'; }
-                                  if (output.includes('Configurando Containers')) { percent = 70; step = 'Subindo Containers...'; }
-                                  if (output.includes('Configurando Nginx')) { percent = 80; step = 'Configurando Proxy em ' + site.servers_cache.ip_address + '...'; }
-                                  if (output.includes('SUCCESS')) { percent = 100; step = 'Concluído!'; }
-                                  if (output.includes('ERROR')) { percent = 0; step = 'Erro na Instalação'; }
+                                  if (!output) {
+                                      // Log vazio ou inexistente
+                                      percent = 5; 
+                                      step = 'Preparando ambiente...';
+                                  } else {
+                                      if (output.includes('STARTING')) { percent = 10; step = 'Inicializando...'; }
+                                      if (output.includes('Atualizando sistema')) { percent = 20; step = 'Atualizando Sistema...'; }
+                                      if (output.includes('Instalando dependencias')) { percent = 30; step = 'Instalando Dependências...'; }
+                                      if (output.includes('Instalando Docker')) { percent = 40; step = 'Instalando Docker...'; }
+                                      if (output.includes('Baixando WordPress')) { percent = 60; step = 'Baixando WordPress...'; }
+                                      if (output.includes('Configurando Containers')) { percent = 70; step = 'Subindo Containers...'; }
+                                      if (output.includes('Configurando Nginx')) { percent = 80; step = 'Configurando Proxy em ' + site.servers_cache.ip_address + '...'; }
+                                      if (output.includes('MySQL')) { percent = 25; step = 'Configurando MySQL...'; }
+                                      if (output.includes('PHP Detectado')) { percent = 35; step = 'Configurando PHP...'; }
+                                      if (output.includes('DONE')) { percent = 100; step = 'Concluído!'; }
+                                      if (output.includes('ERROR')) { percent = 0; step = 'Erro na Instalação: Verifique logs'; }
+                                  }
 
-                                  resolve(res.status(200).json({ percent, step, status: site.status }));
+                                  resolve(res.status(200).json({ percent, step, status: site.status, logs: output }));
                               });
                     });
                 }).on('error', (err) => {
-                    console.error('SSH Error:', err);
-                    resolve(res.status(200).json({ percent: 0, step: 'Erro de Conexão' }));
+                    console.error('SSH Connection Error:', err);
+                    resolve(res.status(200).json({ percent: 0, step: 'Erro de Conexão: ' + err.message }));
                 }).connect({
                     host: site.servers_cache.ip_address,
                     port: 22,
