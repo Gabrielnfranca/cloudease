@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Painel Administrativo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar embutida e customizada para Admin -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-shield-alt"></i>
+            <h1>Admin Panel</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="admin-panel.html" class="active"><i class="fas fa-tachometer-alt"></i> Visão Geral</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Usuários</a></li>
+            <li><a href="#"><i class="fas fa-server"></i> Infraestrutura</a></li>
+            <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+            <li><a href="#"><i class="fas fa-ticket-alt"></i> Suporte</a></li>
+            <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                <a href="dashboard.html" style="color: #90cdf4;"><i class="fas fa-arrow-left"></i> Voltar ao App</a>
+            </li>
+        </ul>
+        <div class="user-info">
+            <img src="https://ui-avatars.com/api/?name=Admin&background=fc8181&color=fff" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Administrador</span>
+                <span class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</span>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Painel Administrativo</h1>
+                <p style="color: #718096; margin-top: 4px;">Gerenciamento completo do sistema</p>
+            </div>
+            <div>
+                 <span class="status-badge active" style="font-size:14px; padding: 8px 16px;"><i class="fas fa-check-circle"></i> Sistema Operacional</span>
+            </div>
+        </header>
+
+        <section class="admin-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:30px;">
+            <div class="card">
+                <h3><i class="fas fa-users"></i> Usuários</h3>
+                <div id="admin-users-count">-</div>
+                <small style="color: #cbd5e0; font-size: 12px; margin-top: 8px;">Cadastrados na plataforma</small>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-coins"></i> Faturamento Mensal</h3>
+                <div id="admin-revenue">-</div>
+                <small style="color: #cbd5e0; font-size: 12px; margin-top: 8px;">Previsão atual</small>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-ticket-alt"></i> Chamados Abertos</h3>
+                <div id="admin-tickets">-</div>
+                <small style="color: #cbd5e0; font-size: 12px; margin-top: 8px;">Aguardando resposta</small>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-server"></i> Servidores Ativos</h3>
+                <div id="admin-servers-count">0</div>
+                 <small style="color: #cbd5e0; font-size: 12px; margin-top: 8px;">Instâncias rodando</small>
+            </div>
+        </section>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+            <section>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h2>Usuários Recentes</h2>
+                    <button class="action-btn" style="background:white; border:1px solid #e2e8f0;"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+                <table class="admin-table">
+                    <thead><tr><th>Nome</th><th>Email</th><th>Status</th><th>Último login</th><th>Ações</th></tr></thead>
+                    <tbody id="admin-users-tbody"><tr><td colspan="5" style="text-align:center">Carregando...</td></tr></tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Chamados Prioritários</h2>
+                <div id="quick-tickets" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <table class="admin-table" style="box-shadow:none;">
+                         <tbody id="admin-tickets-tbody"><tr><td style="text-align:center">Sem chamados</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/admin.js"></script>
+    <script>
+        function logout() {
+            if(confirm('Deseja sair do painel administrativo?')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
