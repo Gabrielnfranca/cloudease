@@ -348,7 +348,7 @@ export default async function handler(req, res) {
             const { data: site, error: fetchError } = await supabase
                 .from('sites')
                 .select(`
-                    id, domain, platform, 
+                    id, domain, platform, system_user, system_password,
                     servers_cache (ip_address),
                     applications (db_name, db_user, db_pass, admin_user, admin_email)
                 `)
@@ -374,15 +374,16 @@ export default async function handler(req, res) {
             
             console.log(`Reiniciando provisionamento para ${site.domain} em ${serverIp}...`);
             
-            // Adicionado await para garantir que o comando SSH seja enviado antes da função terminar
-            // O provisionWordPress já usa nohup/background, então isso retorna rápido (2-5s)
             await provisionWordPress(serverIp, site.domain, {
                 dbName: app.db_name,
                 dbUser: app.db_user,
                 dbPass: app.db_pass,
+                sysUser: site.system_user,
+                sysPass: site.system_password,
                 wpAdminUser: app.wp_admin_user || app.admin_user, 
                 wpAdminPass: app.wp_admin_pass, 
-                wpAdminEmail: app.admin_email
+                wpAdminEmail: app.admin_email,
+                platform: site.platform
             }).then(() => console.log('Re-Provisioning Success'))
               .catch(async (e) => {
                   console.error('Re-Provisioning Error:', e);
@@ -479,6 +480,8 @@ export default async function handler(req, res) {
                         dbName: appData?.db_name,
                         dbUser: appData?.db_user,
                         dbPass: appData?.db_pass,
+                        sysUser: newSite.system_user,
+                        sysPass: newSite.system_password,
                         wpAdminUser: wpAdminUser,
                         wpAdminPass: wpAdminPass,
                         wpAdminEmail: wpAdminEmail,
