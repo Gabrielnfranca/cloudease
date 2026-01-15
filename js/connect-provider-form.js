@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('Conexão realizada com sucesso!');
                     window.location.href = 'connections.html';
                 } else {
+                    if (response.status === 401 && (data.error === 'Sessão inválida' || data.error === 'Token inválido')) {
+                        alert('Sua sessão expirou. Você será redirecionado para o login.');
+                        window.location.href = 'index.html';
+                        return;
+                    }
                     alert('Erro: ' + (data.error || 'Falha desconhecida'));
                 }
             } catch (error) {
