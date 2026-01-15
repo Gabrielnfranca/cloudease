@@ -2,8 +2,9 @@
 -- Enable RLS updates/inserts for admin functionality
 
 -- 0. Ensure Profiles Table Exists
+-- Removida referência direta a auth.users para evitar erros de permissão de schema em conexões simplificadas
 CREATE TABLE IF NOT EXISTS profiles (
-  id uuid references auth.users not null primary key,
+  id uuid not null primary key,
   email text not null,
   name text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
