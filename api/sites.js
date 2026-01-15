@@ -1,6 +1,6 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
-import { provisionWordPress } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance } from '../lib/provisioner.js';
 import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';
@@ -239,6 +239,65 @@ export default async function handler(req, res) {
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Erro ao listar sites' });
+        }
+    }
+
+    if (req.method === 'DELETE') {
+        const { id } = req.query;
+        if (!id) return res.status(400).json({ error: 'ID do site é obrigatório' });
+
+        try {
+            // 1. Get site info to find server IP and Domain
+            const { data: site, error: fetchError } = await supabase
+                .from('sites')
+                .select(`
+                    domain, 
+                    server_id, 
+                    status,
+                    servers_cache (ip_address),
+                    applications (db_name, db_user)
+                `)
+                .eq('id', id)
+                .eq('user_id', userId)
+                .single();
+
+            if (fetchError || !site) {
+                return res.status(404).json({ error: 'Site não encontrado ou sem permissão' });
+            }
+
+            const serverIp = site.servers_cache?.ip_address;
+
+            // 2. Remove from Server (if server exists and IP is valid)
+            if (serverIp && serverIp !== '0.0.0.0' && site.status !== 'provisioning') {
+                 try {
+                     console.log(`Deletando site ${site.domain} do servidor ${serverIp}...`);
+                     
+                     // Get DB info if available
+                     const app = (site.applications && site.applications.length > 0) ? site.applications[0] : {};
+                     const dbConfig = {
+                         dbName: app.db_name,
+                         dbUser: app.db_user
+                     };
+
+                     await deleteSiteFromInstance(serverIp, site.domain, dbConfig);
+                 } catch (sshError) {
+                     console.error('Erro ao deletar do servidor (prosseguindo):', sshError);
+                 }
+            }
+
+            // 3. Remove from Database
+            const { error: delError } = await supabase
+                .from('sites')
+                .delete()
+                .eq('id', id);
+
+            if (delError) throw delError;
+
+            return res.status(200).json({ success: true });
+
+        } catch (error) {
+            console.error('Erro ao excluir site:', error);
+            return res.status(500).json({ error: 'Erro ao processar exclusão' });
         }
     }
 
