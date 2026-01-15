@@ -19,16 +19,15 @@ export default async function handler(req, res) {
     const { action } = req.query;
 
     if (action === 'login') {
-        // DIAGNÓSTICO DE CONFIGURAÇÃO VERCEL
-        if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-            console.error('ERRO CRÍTICO: Variáveis de ambiente SUPABASE ausentes.');
-            return res.status(500).json({ 
-                error: 'ERRO DE CONFIGURAÇÃO: As chaves do Supabase não foram configuradas no painel da Vercel.' 
-            });
-        }
-
         const { email, password } = req.body;
         console.log('Tentativa de login para:', email);
+
+        if (!supabase) {
+            console.error('ERRO CRÍTICO: Supabase client is null.');
+            return res.status(500).json({ 
+                error: 'ERRO DE CONFIGURAÇÃO: As chaves do Supabase não foram configuradas no painel da Vercel (Environment Variables).' 
+            });
+        }
 
         if (!email || !password) {
             return res.status(400).json({ error: 'Email e senha são obrigatórios' });
