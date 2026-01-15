@@ -285,6 +285,19 @@
         </div>
     </main>
 
+    <script>
+        function selectPlatform(value, card) {
+            const select = document.getElementById('platform');
+            select.value = value;
+            
+            // Atualiza Classes
+            document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            
+            // Dispara lógica de UI (toggle WP fields)
+            if(window.toggleWpFields) window.toggleWpFields();
+        }
+    </script>
     <script src="js/create-site.js"></script>
     <script src="js/sidebar.js"></script>
 </body>
