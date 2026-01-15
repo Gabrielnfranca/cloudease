@@ -1,0 +1,228 @@
+/* Layout Base - Admin Theme */
+.dashboard-body {
+    background: #f0f2f5;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Barra Lateral - Admin (Dark Red/Purple Theme) */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(165deg, #2d3748 0%, #1a202c 100%);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    border-right: 1px solid #4a5568;
+}
+
+.sidebar .brand {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar .brand h1 {
+    color: #fc8181; /* Red tint for Admin */
+    font-size: 20px;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.sidebar .brand i {
+    color: #fc8181;
+    font-size: 24px;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 16px 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.nav-links li {
+    margin-bottom: 4px;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    color: #cbd5e0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background: rgba(252, 129, 129, 0.1);
+    color: #fff;
+    border-left-color: #fc8181;
+}
+
+.nav-links i {
+    width: 24px;
+    margin-right: 12px;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Usuario Info */
+.user-info {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #fc8181;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.user-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.logout {
+    color: #fc8181;
+    font-size: 12px;
+    text-decoration: none;
+    margin-top: 4px;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.logout:hover {
+    color: #feb2b2;
+    text-decoration: underline;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    margin-left: 250px;
+    padding: 30px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-title h1 {
+    font-size: 28px;
+    color: #1a202c;
+    margin: 0;
+}
+
+/* Cards do Admin */
+.admin-cards .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 4px solid #fc8181;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.admin-cards .card h3 {
+    margin: 0 0 10px 0;
+    color: #718096;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-cards .card div {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* Tabelas */
+.admin-table {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+.admin-table th {
+    background: #edf2f7;
+    color: #4a5568;
+    font-weight: 600;
+    text-align: left;
+    padding: 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.admin-table td {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    color: #2d3748;
+    font-size: 14px;
+}
+
+.admin-table tr:hover {
+    background: #f7fafc;
+}
+
+/* Badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-badge.active { background: #c6f6d5; color: #22543d; }
+.status-badge.expired { background: #fed7d7; color: #822727; }
+.status-badge.pending { background: #feebc8; color: #744210; }
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #718096;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #edf2f7;
+    color: #fc8181;
+}
