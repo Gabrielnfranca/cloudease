@@ -409,7 +409,7 @@ export default async function handler(req, res) {
                 platform: platform || 'php',
                 php_version: phpVersion || '8.2',
                 status: 'provisioning',
-                system_user: domain.replace(/\./g, '').substring(0, 10), // Simple username gen
+                system_user: (domain || '').replace(/\./g, '').substring(0, 10), // Simple username gen
                 system_password: Math.random().toString(36).slice(-10) // Tmp password
             };
 
@@ -429,8 +429,8 @@ export default async function handler(req, res) {
                     wp_admin_user: wpAdminUser,
                     wp_admin_pass: wpAdminPass,
                     // Store other metadata in separate logic if needed, simplify for now
-                    db_name: domain.replace(/\./g, '_').substring(0, 10) + '_db',
-                    db_user: domain.replace(/\./g, '_').substring(0, 10) + '_user',
+                    db_name: (domain || '').replace(/\./g, '_').substring(0, 10) + '_db',
+                    db_user: (domain || '').replace(/\./g, '_').substring(0, 10) + '_user',
                     db_pass: Math.random().toString(36).slice(-12)
                 };
 
