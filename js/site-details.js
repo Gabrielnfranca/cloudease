@@ -43,7 +43,12 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadSiteDetails(siteId) {
     try {
         // Adiciona timestamp para evitar cache do navegador
-        const response = await fetch(`/api/sites?id=${siteId}&detailed=true&t=${Date.now()}`);
+        const authToken = localStorage.getItem('authToken');
+        const response = await fetch(`/api/sites?id=${siteId}&detailed=true&t=${Date.now()}`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         
         if (!response.ok) {
             const data = await response.json();
@@ -166,9 +171,13 @@ window.toggleTempUrl = async function(checkbox) {
     statusLabel.textContent = "Atualizando...";
     
     try {
+        const authToken = localStorage.getItem('authToken');
         const response = await fetch('/api/sites', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
             body: JSON.stringify({
                 siteId: currentSiteId,
                 action: 'update_nginx',
@@ -375,9 +384,13 @@ async function saveNewPassword() {
     btn.disabled = true;
 
     try {
+        const authToken = localStorage.getItem('authToken');
         const response = await fetch('/api/sites', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
             body: JSON.stringify({
                 action: 'update_password',
                 siteId: currentSiteId,

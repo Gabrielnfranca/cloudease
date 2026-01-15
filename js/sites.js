@@ -84,9 +84,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!confirm('Deseja tentar instalar novamente?')) return;
         
         try {
+            const authToken = localStorage.getItem('authToken');
             const response = await fetch('/api/sites', {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
                 body: JSON.stringify({ siteId })
             });
             
@@ -105,9 +109,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!confirm('Deseja atualizar a configuração do Nginx (ativar link provisório)?')) return;
         
         try {
+            const authToken = localStorage.getItem('authToken');
             const response = await fetch('/api/sites', {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
                 body: JSON.stringify({ siteId, action: 'update_nginx' })
             });
             
@@ -135,13 +143,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
+            const authToken = localStorage.getItem('authToken');
             const response = await fetch(`/api/sites?id=${siteId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
             });
 
             if (response.ok) {
                 alert('Site excluído com sucesso!');
-                loadSites();
+                // Pequeno delay para garantir que o BD processou
+                setTimeout(() => loadSites(true), 500);
             } else {
                 const data = await response.json();
                 alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
@@ -195,57 +208,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Status Badge
-            let statusClass = 'active';
-            let statusText = 'Ativo';
-            let statusIcon = '<i class="fas fa-check-circle"></i>';
+            let statusHtml = '';
             let retryBtn = '';
             
             if (site.status === 'provisioning') {
-                statusClass = 'warning';
-                statusText = 'Criando...';
-                statusIcon = '<i class="fas fa-spinner fa-spin"></i>';
-
-                // Verifica se está demorando muito (> 5 minutos)
-                if (site.created_at_iso) {
-                    const created = new Date(site.created_at_iso);
-                    const now = new Date();
-                    const diffMinutes = (now - created) / 1000 / 60;
-                    
-                    if (diffMinutes > 5) {
-                        statusClass = 'danger';
-                        statusText = 'Tempo Excedido';
-                        statusIcon = '<i class="fas fa-clock"></i>';
-                        // Garante que o botão de retry apareça mesmo em timeout
-                        retryBtn = `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
-                    }
-                }
+                const progId = `prog-${site.id}`;
+                statusHtml = `
+                    <div id="${progId}" class="progress-wrapper" style="width: 140px;">
+                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+                            <span class="prog-text">Instalando...</span>
+                            <span class="prog-perc">0%</span>
+                        </div>
+                        <div style="background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden;">
+                            <div class="prog-bar" style="width:5%; background:#4299e1; height:100%; transition:width 0.5s ease;"></div>
+                        </div>
+                    </div>
+                `;
+                // Inicia polling para este site
+                pollSiteProgress(site.id, progId);
             } else if (site.status === 'error') {
-                statusClass = 'danger';
-                statusText = 'Erro';
-                statusIcon = '<i class="fas fa-exclamation-circle"></i>';
-                retryBtn = `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
-                
-                if (site.last_error) {
-                    const errorMsg = site.last_error.replace(/"/g, '&quot;');
-                    statusText = `<span title="${errorMsg}" style="cursor: help; border-bottom: 1px dotted rgba(255,255,255,0.5);">Erro</span>`;
-                    // Adiciona um botão de info se houver erro
-                    retryBtn = `<button class="action-btn" title="${errorMsg}" onclick="alert('${errorMsg.replace(/'/g, "\\'")}')" style="color: #e53e3e; margin-right: 5px;"><i class="fas fa-info-circle"></i></button>` + retryBtn;
-                }
+                const errorMsg = (site.last_error || 'Erro desconhecido').replace(/"/g, '&quot;');
+                statusHtml = `<span class="ssl-badge danger" title="${errorMsg}"><i class="fas fa-exclamation-circle"></i> Erro</span>`;
+                retryBtn = `<button class="action-btn" title="Ver Erro" onclick="alert('${errorMsg.replace(/'/g, "\\'")}')" style="color: #e53e3e; margin-right: 5px;"><i class="fas fa-info-circle"></i></button>`;
+                retryBtn += `<button class="action-btn" title="Tentar Novamente" onclick="retryProvision(${site.id})" style="color: #e53e3e;"><i class="fas fa-redo"></i></button>`;
+            } else {
+                statusHtml = `<span class="ssl-badge active"><i class="fas fa-check-circle"></i> Ativo</span>`;
             }
 
             // Adiciona classe para estilização e evento de clique na linha
-            tr.classList.add('clickable-row');
-            tr.onclick = (e) => {
-                // Previne navegação se o clique foi em um botão ou link dentro da linha
-                if (e.target.closest('a') || e.target.closest('button')) return;
-                window.location.href = `site-details.html?id=${site.id}`;
-            };
+            if (site.status !== 'provisioning') {
+                tr.classList.add('clickable-row');
+                tr.onclick = (e) => {
+                    // Previne navegação se o clique foi em um botão ou link dentro da linha
+                    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('.action-btn')) return;
+                    window.location.href = `site-details.html?id=${site.id}`;
+                };
+            }
 
             tr.innerHTML = `
                 <td>
                     <div style="display: flex; align-items: center;">
                         ${iconHtml}
-                        ${site.platformLabel}
+                        ${site.platformLabel || (site.platform === 'wordpress' ? 'WordPress' : (site.platform === 'html' ? 'HTML' : 'PHP'))}
                     </div>
                 </td>
                 <td>
@@ -254,16 +258,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </td>
                 <td>
-                    <span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>
+                    ${site.status === 'active' ? '<span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>' : '<span class="ssl-badge warning"><i class="fas fa-unlock"></i> -</span>'}
                 </td>
-                <td>${site.server}</td>
-                <td>${site.ip}</td>
+                <td>${site.server_name || site.server || '-'}</td>
+                <td>${site.ip_address || site.ip || '-'}</td>
                 <td>
-                    <span class="ssl-badge ${statusClass}">
-                        ${statusIcon} ${statusText}
-                    </span>
+                    ${statusHtml}
                 </td>
-                <td>${site.created_at}</td>
+                <td>${site.created_at ? new Date(site.created_at).toLocaleDateString('pt-BR') : '-'}</td>
                 <td class="actions">
                     <div style="display: flex; gap: 5px; justify-content: flex-end;">
                         ${retryBtn}
@@ -275,5 +277,57 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             tbody.appendChild(tr);
         });
+    }
+
+    function pollSiteProgress(siteId, elementId) {
+        let attempts = 0;
+        const interval = setInterval(async () => {
+             const container = document.getElementById(elementId);
+             
+             // Se o elemento sumiu (usuário mudou de página ou recarregou lista), para o polling
+             if (!container) { 
+                 clearInterval(interval); 
+                 return; 
+             }
+             
+             try {
+                // Recupera token (ajustar conforme sua autenticação)
+                const token = localStorage.getItem('supabase.auth.token') ? JSON.parse(localStorage.getItem('supabase.auth.token')).currentSession?.access_token : null;
+                
+                const headers = {};
+                if(token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch(`/api/site-status?siteId=${siteId}`, { headers });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    const bar = container.querySelector('.prog-bar');
+                    const text = container.querySelector('.prog-text');
+                    const perc = container.querySelector('.prog-perc');
+                    
+                    if (bar) bar.style.width = `${data.percent}%`;
+                    if (text && data.step) text.textContent = data.step;
+                    if (perc) perc.textContent = `${data.percent}%`;
+
+                    // Se completou, recarrega a lista após breve delay
+                    if (data.status === 'active' || data.percent >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => loadSites(true), 1500); 
+                    }
+                    
+                    // Se deu erro
+                    if (data.status === 'error') {
+                        clearInterval(interval);
+                        setTimeout(() => loadSites(true), 1500);
+                    }
+                }
+             } catch(e) { 
+                 console.error("Erro no polling:", e); 
+             }
+             
+             // Para de tentar após ~10 minutos (200 * 3s = 600s)
+             if (++attempts > 200) clearInterval(interval);
+        }, 3000);
     }
 });
