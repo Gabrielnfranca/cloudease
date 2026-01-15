@@ -1,4 +1,5 @@
-import { supabase } from '../lib/supabase.js';
+import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
+import { createClient } from '@supabase/supabase-js';
 import { validateToken, fetchServers } from '../lib/providers.js';
 
 export default async function handler(req, res) {
@@ -18,7 +19,18 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Token não fornecido' });
     }
     const token = authHeader.split(' ')[1];
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    // Create authenticated client for RLS
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: {
+                Authorization: authHeader
+            }
+        }
+    });
+
+    // Verify user using the session
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
         return res.status(401).json({ error: 'Sessão inválida' });
