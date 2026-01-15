@@ -93,7 +93,9 @@
                         <i class="fas fa-info-circle"></i> Instruções:
                         <ol style="margin-left: 20px; margin-top: 5px;">
                             <li>Acesse <a href="https://my.vultr.com/settings/#settingsapi" target="_blank" style="color: #4299e1;">Vultr API Settings</a>.</li>
-                            <li>Em <strong>Access Control</strong>, clique em "Allow All IPv4" (necessário para conexão via Vercel).</li>
+                            <li>Verifique a lista <strong>Access Control</strong>. Ela DEVE conter a regra <code>0.0.0.0/0</code> (Todas as redes IPv4).</li>
+                            <li>Se não tiver o botão "Allow All IPv4", adicione manualmente a rede <code>0.0.0.0</code> com máscara <code>0</code>.</li>
+                            <li>Recomendado: Clique também em "Allow All IPv6" (<code>::/0</code>) para evitar bloqueios se a Vercel usar IPv6.</li>
                             <li>Copie a <strong>API Key</strong> e cole abaixo.</li>
                         </ol>
                     </div>
