@@ -41,9 +41,54 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             wpFields.style.display = 'none';
         }
+        updateCacheHelp(); // Atualiza ajuda do cache ao mudar plataforma
     };
+
+    // Cache Help Dynamic Logic
+    window.updateCacheHelp = function() {
+        const platform = document.getElementById('platform').value;
+        const cache = document.getElementById('cache').value;
+        const helpBox = document.getElementById('cache-help');
+        const color = "#2b6cb0";
+
+        let text = "";
+
+        if (cache === 'redis') {
+            text = `
+                <strong><i class="fas fa-bolt" style="color:${color}"></i> Redis (Banco de Dados em Memória):</strong>
+                Ideal para <strong>${platform === 'wordpress' ? 'WordPress' : 'Sistemas PHP+MySQL'}</strong>. 
+                Acelera consultas ao banco. Indispensável para lojas virtuais e sistemas dinâmicos.
+            `;
+            // Aviso para HTML/PHP Simples
+            if (platform === 'html' || platform === 'php') {
+                text += `<br><span style="color: #e53e3e; font-size: 0.9em;"><i class="fas fa-exclamation-circle"></i> Não recomendado para ${platform.toUpperCase()}. Use 'Sem Cache' ou 'FastCGI'.</span>`;
+            }
+        } else if (cache === 'fastcgi') {
+            text = `
+                <strong><i class="fas fa-tachometer-alt" style="color:${color}"></i> Nginx FastCGI (Página Estática):</strong>
+                Salva a página inteira em HTML. Ultra-rápido.
+                ${platform === 'wordpress' ? '<br>Excelente para Blogs e Sites Institucionais. <strong>Evite se tiver área de membros/login.</strong>' : ''}
+                ${platform === 'php' ? '<br>Bom para sites PHP institucionais sem login.' : ''}
+            `;
+             if (platform === 'html') {
+                text += `<br><span style="color: #718096; font-size: 0.9em;">Desnecessário para HTML puro (já é rápido).</span>`;
+            }
+        } else { // none
+            text = `
+                <strong><i class="fas fa-ban" style="color:#718096"></i> Sem Cache:</strong>
+                O conteúdo é gerado na hora.
+                ${platform === 'html' ? '<br><span style="color: #38a169; font-weight:600;">Recomendado para HTML Estático.</span>' : ''}
+                ${platform === 'php' ? '<br>Recomendado se seu script PHP tiver painel de login/sessões.' : ''}
+                <br>Mais seguro para evitar problemas de atualização de conteúdo.
+            `;
+        }
+
+        helpBox.innerHTML = text;
+    };
+
     // Inicializa estado
     toggleWpFields();
+    updateCacheHelp();
 
     // Funções para Senha
     window.togglePassword = function() {
