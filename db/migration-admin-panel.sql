@@ -42,8 +42,8 @@ CREATE TABLE IF NOT EXISTS invoices (
 ALTER TABLE tickets ENABLE ROW LEVEL SECURITY;
 
 -- Allow users to view/create their own tickets
-CREATE POLICY "Users can view own tickets" ON tickets FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can create tickets" ON tickets FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- CREATE POLICY "Users can view own tickets" ON tickets FOR SELECT USING (auth.uid() = user_id);
+-- CREATE POLICY "Users can create tickets" ON tickets FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Allow admins to view all tickets (This requires a logic where is_admin is checked)
 -- For simplicity in this 'fix', we might bypass RLS in the admin API by using the service key 
