@@ -1,4 +1,6 @@
-import { supabase } from '../lib/supabase.js';
+import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
+import { createClient } from '@supabase/supabase-js';
+import { provisionWordPress } from '../lib/provisioner.js';
 
 function formatPlatform(platform) {
     if (platform === 'wordpress') return 'WordPress';
@@ -24,8 +26,16 @@ export default async function handler(req, res) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Token não fornecido' });
     }
-    const token = authHeader.split(' ')[1];
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: {
+                Authorization: authHeader
+            }
+        }
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
         return res.status(401).json({ error: 'Sessão inválida' });
@@ -188,8 +198,9 @@ export default async function handler(req, res) {
             if (siteError) throw siteError;
 
             // 2. If WordPress, add application details
+            let appData = null;
             if (platform === 'wordpress') {
-                const appData = {
+                appData = {
                     site_id: siteData.id,
                     wp_admin_user: wpAdminUser,
                     wp_admin_pass: wpAdminPass,
@@ -206,9 +217,31 @@ export default async function handler(req, res) {
                 if (appError) console.error('Error creating app details:', appError);
             }
 
-            // 3. Trigger Provisioning (Placeholder)
-            // In a real scenario, this would call a provisioner service or server agent.
-            // For this demo, we just return success.
+            // 3. Trigger Automatic Provisioning
+            try {
+                const { data: server } = await supabase
+                    .from('servers_cache')
+                    .select('ip_address')
+                    .eq('id', serverId)
+                    .single();
+
+                if (server && server.ip_address && server.ip_address !== '0.0.0.0') {
+                    console.log(`Starting provisioning on ${server.ip_address}...`);
+                    
+                    // Don't await to avoid timeout, but log start
+                    provisionWordPress(server.ip_address, domain, {
+                        dbName: appData?.db_name,
+                        dbUser: appData?.db_user,
+                        dbPass: appData?.db_pass,
+                        wpAdminUser: wpAdminUser,
+                        wpAdminPass: wpAdminPass,
+                        wpAdminEmail: wpAdminEmail
+                    }).then(() => console.log('Provisioning Success via API'))
+                      .catch(e => console.error('Provisioning Error via API:', e));
+                }
+            } catch (provErr) {
+                console.error('Provision trigger failed:', provErr);
+            }
 
             return res.status(201).json({ success: true, site: siteData });
 
