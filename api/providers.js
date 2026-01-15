@@ -65,8 +65,8 @@ export default async function handler(req, res) {
         const { provider, name, token } = req.body;
         
         try {
-            const isValid = await validateToken(provider, token);
-            if (!isValid) return res.status(401).json({ error: 'Token inválido' });
+            // Validação agora lança erro com detalhes se falhar
+            await validateToken(provider, token);
 
             const { data: newProvider, error } = await supabase
                 .from('providers')
