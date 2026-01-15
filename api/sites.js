@@ -119,13 +119,13 @@ export default async function handler(req, res) {
                     });
                 }).on('error', (err) => {
                     console.error('SSH Connection Error:', err);
-                    resolve(res.status(200).json({ percent: 0, step: 'Erro de Conexão: ' + err.message }));
+                    resolve(res.status(200).json({ percent: 0, step: 'Erro de Conexão: ' + (err.message || 'Timeout') }));
                 }).connect({
                     host: site.servers_cache.ip_address,
                     port: 22,
                     username: 'root',
                     privateKey: privateKey,
-                    readyTimeout: 5000
+                    readyTimeout: 20000 // Aumentado para 20s
                 });
             });
         }
@@ -381,7 +381,14 @@ export default async function handler(req, res) {
                         wpAdminPass: wpAdminPass,
                         wpAdminEmail: wpAdminEmail
                     }).then(() => console.log('Provisioning Success via API'))
-                      .catch(e => console.error('Provisioning Error via API:', e));
+                      .catch(async (e) => {
+                          console.error('Provisioning Error via API:', e);
+                          // Atualiza status para erro no DB
+                          await supabase.from('sites').update({ 
+                              status: 'error', 
+                              last_error: e.message || 'Erro ao iniciar provisionamento'
+                          }).eq('id', siteData.id);
+                      });
                 }
             } catch (provErr) {
                 console.error('Provision trigger failed:', provErr);
