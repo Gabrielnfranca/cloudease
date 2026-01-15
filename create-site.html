@@ -259,23 +259,24 @@
                 <div class="form-group">
                     <label for="phpVersion">Versão do PHP</label>
                     <select id="phpVersion" class="form-control">
-                        <option value="8.1">PHP 8.1</option>
-                        <option value="8.2">PHP 8.2</option>
-                        <option value="8.0">PHP 8.0</option>
+                        <option value="8.3">PHP 8.3 (Estável/Rápido)</option>
+                        <option value="8.2" selected>PHP 8.2 (Padrão)</option>
+                        <option value="8.1">PHP 8.1 (Legado)</option>
+                        <option value="8.0">PHP 8.0 (Antigo)</option>
                     </select>
+                    <p class="helper-text">Recomendamos usar a versão mais recente compatível com seu código.</p>
                 </div>
 
                 <div class="form-group">
-                    <label for="cache">Cache</label>
-                    <select id="cache" class="form-control">
-                        <option value="redis">Redis (Recomendado para Banco de Dados/WP)</option>
-                        <option value="fastcgi">Nginx FastCGI (Cache de Página Inteira)</option>
+                    <label for="cache">Cache (Otimização)</label>
+                    <select id="cache" class="form-control" onchange="window.updateCacheHelp ? window.updateCacheHelp() : null">
+                        <option value="redis">Redis (Object Cache)</option>
+                        <option value="fastcgi">Nginx FastCGI (Page Cache)</option>
                         <option value="none">Sem Cache</option>
                     </select>
-                    <p class="helper-text">
-                        <strong>Redis:</strong> Armazena dados frequentes na memória para acelerar o banco de dados.<br>
-                        <strong>Nginx FastCGI:</strong> Salva páginas inteiras em HTML estático para altíssima velocidade (ideal para blogs/sites institucionais).
-                    </p>
+                    <div id="cache-help" class="helper-text" style="background: #f8fafc; padding: 10px; border-radius: 6px; margin-top: 8px; border-left: 3px solid #4a5568;">
+                        Selecione uma opção acima para ver detalhes.
+                    </div>
                 </div>
 
                 <button type="submit" class="connect-btn" style="width: 100%; margin-top: 20px;">
@@ -294,8 +295,9 @@
             document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             
-            // Dispara lógica de UI (toggle WP fields)
+            // Dispara lógica de UI (toggle WP fields e Cache Help)
             if(window.toggleWpFields) window.toggleWpFields();
+            if(window.updateCacheHelp) window.updateCacheHelp();
         }
     </script>
     <script src="js/create-site.js"></script>
