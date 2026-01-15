@@ -1,4 +1,5 @@
-import { supabase } from '../lib/supabase.js';
+import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
+import { createClient } from '@supabase/supabase-js';
 import { createInstance, fetchServers, deleteInstance } from '../lib/providers.js';
 import { discoverSites } from '../lib/provisioner.js';
 
@@ -18,8 +19,17 @@ export default async function handler(req, res) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Token não fornecido' });
     }
-    const token = authHeader.split(' ')[1];
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    // Authenticated Client
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: {
+                Authorization: authHeader
+            }
+        }
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
         return res.status(401).json({ error: 'Sessão inválida' });
