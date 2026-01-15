@@ -26,19 +26,23 @@ export default async function handler(req, res) {
     const userId = user.id;
 
     if (req.method === 'GET') {
+        // Simplified query to avoid Foreign Key issues causing 500 errors
         const { data: providers, error } = await supabase
             .from('providers')
-            .select('*, servers_cache(count)')
+            .select('*')
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
 
-        if (error) return res.status(500).json({ error: 'Erro ao buscar' });
+        if (error) {
+            console.error('Provider fetch error:', error);
+            return res.status(500).json({ error: 'Erro ao buscar conexões: ' + error.message });
+        }
         
         const formatted = providers.map(p => ({
             id: p.id,
             provider: p.provider_name,
             name: p.label,
-            total_servers: p.servers_cache ? p.servers_cache[0].count : 0, 
+            total_servers: 0, // Temporariamente 0 para evitar erro de join
             status: 'Ativo'
         }));
         return res.status(200).json(formatted);
