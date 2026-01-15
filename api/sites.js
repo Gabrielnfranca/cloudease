@@ -110,8 +110,23 @@ export default async function handler(req, res) {
                                       if (output.includes('Configurando Nginx')) { percent = 80; step = 'Configurando Proxy em ' + site.servers_cache.ip_address + '...'; }
                                       if (output.includes('MySQL')) { percent = 25; step = 'Configurando MySQL...'; }
                                       if (output.includes('PHP Detectado')) { percent = 35; step = 'Configurando PHP...'; }
-                                      if (output.includes('DONE')) { percent = 100; step = 'Concluído!'; }
-                                      if (output.includes('ERROR')) { percent = 0; step = 'Erro na Instalação: Verifique logs'; }
+                                      if (output.includes('DONE')) { 
+                                          percent = 100; 
+                                          step = 'Concluído!'; 
+                                          // Update DB status to active if not already
+                                          if (site.status !== 'active') {
+                                              supabase.from('sites').update({ status: 'active', last_error: null }).eq('id', id).then();
+                                          }
+                                      }
+                                      if (output.includes('ERROR')) { 
+                                          percent = 0; 
+                                          step = 'Erro na Instalação: Verifique logs'; 
+                                          // Update DB status to error
+                                          if (site.status !== 'error') {
+                                              const errorMsg = output.match(/ERROR:(.+)/)?.[1] || 'Erro desconhecido no script';
+                                              supabase.from('sites').update({ status: 'error', last_error: errorMsg.trim() }).eq('id', id).then();
+                                          }
+                                      }
                                   }
 
                                   resolve(res.status(200).json({ percent, step, status: site.status, logs: output }));
