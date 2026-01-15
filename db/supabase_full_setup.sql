@@ -59,7 +59,7 @@ create table if not exists public.sites (
   php_version text,
   status text default 'provisioning',
   enable_temp_url boolean default false,
-  system_user text,
+  "system_user" text,
   system_password text,
   last_error text,
   created_at timestamp with time zone default now()
