@@ -36,8 +36,8 @@ export default async function handler(req, res) {
     
     if (profileError || !profile || !profile.is_admin) {
         // Fallback for dev: check specific email or ID
-        const allowedAdmins = ['admin@cloudease.com', 'gabrielnfranca@cloudease.com'];
-        const allowedIds = ['cd4cdf58-ed33-4447-8202-f0d109948245']; // ID gerado pelo script
+        const allowedAdmins = ['admin@cloudease.com', 'gabrielnfranca@cloudease.com', 'gn.franca81@gmail.com'];
+        const allowedIds = ['cd4cdf58-ed33-4447-8202-f0d109948245']; // IDs legados
 
         const userEmail = user.email ? user.email.toLowerCase().trim() : '';
         
