@@ -8,6 +8,7 @@
     "start": "vercel dev"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
     "@vercel/postgres": "^0.5.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
