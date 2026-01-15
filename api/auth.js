@@ -1,76 +1,110 @@
-import db from '../lib/db.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
+import { supabase } from '../lib/supabase.js';
 
 export default async function handler(req, res) {
+    // Permite CORS para evitar problemas no frontend
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
+
     const { action } = req.query;
+
     if (action === 'login') {
         const { email, password } = req.body;
+
         if (!email || !password) {
             return res.status(400).json({ error: 'Email e senha são obrigatórios' });
         }
+
         try {
-            const { rows } = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-            const user = rows[0];
-            if (!user) {
-                return res.status(401).json({ error: 'Credenciais inválidas' });
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) {
+                return res.status(401).json({ error: error.message || 'Credenciais inválidas' });
             }
-            let passwordMatch = false;
-            if (user.password.startsWith('$2')) {
-                passwordMatch = await bcrypt.compare(password, user.password);
-            } else {
-                passwordMatch = (password === user.password);
-            }
-            if (!passwordMatch) {
-                return res.status(401).json({ error: 'Credenciais inválidas' });
-            }
-            const token = jwt.sign(
-                { userId: user.id, email: user.email, name: user.name },
-                JWT_SECRET,
-                { expiresIn: '24h' }
-            );
+
+            // Busca dados extras do perfil (nome)
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('name')
+                .eq('id', data.user.id)
+                .single();
+
             return res.status(200).json({
                 success: true,
-                token,
+                token: data.session.access_token, // Token oficial do Supabase
                 user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email
+                    id: data.user.id,
+                    name: profile?.name || data.user.user_metadata?.name || email.split('@')[0],
+                    email: data.user.email
                 }
             });
+
         } catch (error) {
             console.error('Erro no login:', error);
             return res.status(500).json({ error: 'Erro interno do servidor' });
         }
+
     } else if (action === 'register') {
         const { name, email, password } = req.body;
+
         if (!name || !email || !password) {
             return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
         }
+
+        if (password.length < 6) {
+            return res.status(400).json({ error: 'A senha deve ter pelo menos 6 caracteres' });
+        }
+
         try {
-            const userCheck = await db.query('SELECT id FROM users WHERE email = $1', [email]);
-            if (userCheck.rows.length > 0) {
-                return res.status(400).json({ error: 'Email já cadastrado' });
-            }
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-            const result = await db.query(
-                'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
-                [name, email, hashedPassword]
-            );
-            return res.status(201).json({
-                success: true,
-                message: 'Usuário criado com sucesso',
-                user: result.rows[0]
+            // O trigger handle_new_user no banco vai criar o perfil automaticamente
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { name: name } // Isso vai para user_metadata
+                }
             });
+
+            if (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            // Login automático após registro, se a sessão vier preenchida (confirmação email desligada)
+            if (data.session) {
+                return res.status(201).json({
+                    success: true,
+                    token: data.session.access_token,
+                    user: {
+                        id: data.user.id,
+                        name: name,
+                        email: email
+                    }
+                });
+            } else {
+                // Caso exija confirmação de email
+                return res.status(201).json({
+                    success: true,
+                    message: "Cadastro realizado! Verifique seu email.",
+                    user: null 
+                });
+            }
+
         } catch (error) {
             console.error('Erro no registro:', error);
-            return res.status(500).json({ error: 'Erro interno do servidor' });
+            return res.status(500).json({ error: 'Erro ao criar usuário' });
         }
     } else {
         res.status(400).json({ error: 'Ação inválida' });

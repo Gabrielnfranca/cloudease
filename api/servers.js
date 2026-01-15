@@ -1,266 +1,190 @@
-import db from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 import { createInstance, fetchServers, deleteInstance } from '../lib/providers.js';
 import { discoverSites } from '../lib/provisioner.js';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_super_segura';
 
 export default async function handler(req, res) {
-    // Autenticação JWT
+    // CORS
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Token de autenticação não fornecido' });
+        return res.status(401).json({ error: 'Token não fornecido' });
     }
-
     const token = authHeader.split(' ')[1];
-    let userId;
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        userId = decoded.userId;
-    } catch (error) {
-        return res.status(401).json({ error: 'Token inválido ou expirado' });
+    if (authError || !user) {
+        return res.status(401).json({ error: 'Sessão inválida' });
     }
+    const userId = user.id;
+
     if (req.method === 'GET') {
         const { sync } = req.query;
 
-        // Sincronização com Provedores (Apenas se solicitado)
+        // SYNC LOGIC
         if (sync === 'true') {
             try {
-                const { rows: providers } = await db.query('SELECT * FROM providers WHERE user_id = $1', [userId]);
+                const { data: providers } = await supabase.from('providers').select('*').eq('user_id', userId);
                 
                 for (const provider of providers) {
                     try {
-                        // Garante que o nome do provedor esteja em minúsculo para bater com a chave do objeto PROVIDERS
                         const providerKey = provider.provider_name.toLowerCase();
                         const remoteServers = await fetchServers(providerKey, provider.api_key);
                         
                         for (const server of remoteServers) {
-                            // Tenta encontrar servidor existente pelo ID externo
-                            let { rows: existing } = await db.query(
-                                'SELECT id FROM servers_cache WHERE provider_id = $1 AND external_id = $2',
-                                [provider.id, server.external_id]
-                            );
+                            // Upsert logic (Insert or Update) based on external_id + provider_id
+                            // First check existing to get ID
+                            const { data: existing } = await supabase
+                                .from('servers_cache')
+                                .select('id')
+                                .eq('provider_id', provider.id)
+                                .eq('external_id', server.external_id)
+                                .single(); // Might be null
 
-                            // Se não achou pelo ID, tenta achar um 'pending' com o mesmo nome (criado recentemente)
-                            if (existing.length === 0) {
-                                const { rows: pending } = await db.query(
-                                    "SELECT id FROM servers_cache WHERE provider_id = $1 AND external_id = 'pending' AND name = $2",
-                                    [provider.id, server.name]
-                                );
-                                if (pending.length > 0) {
-                                    existing = pending;
-                                }
-                            }
+                            const payload = {
+                                user_id: userId,
+                                provider_id: provider.id,
+                                external_id: server.external_id,
+                                name: server.name,
+                                ip_address: server.ip_address,
+                                status: server.status,
+                                specs: server.specs,
+                                last_synced: new Date()
+                            };
 
                             let serverId;
-                            if (existing.length > 0) {
-                                serverId = existing[0].id;
-                                // Atualiza
-                                await db.query(
-                                    `UPDATE servers_cache SET 
-                                        external_id = $1, 
-                                        ip_address = $2, 
-                                        status = $3, 
-                                        specs = $4, 
-                                        created_at = COALESCE($5, created_at),
-                                        last_synced = NOW() 
-                                    WHERE id = $6`,
-                                    [server.external_id, server.ip_address, server.status, server.specs, server.created_at, serverId]
-                                );
+                            if (existing) {
+                                await supabase.from('servers_cache').update(payload).eq('id', existing.id);
+                                serverId = existing.id;
                             } else {
-                                // Insere novo
-                                const insertResult = await db.query(
-                                    `INSERT INTO servers_cache (provider_id, external_id, name, ip_address, status, specs, created_at)
-                                    VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-                                    [provider.id, server.external_id, server.name, server.ip_address, server.status, server.specs, server.created_at || new Date()]
-                                );
-                                serverId = insertResult.rows[0].id;
+                                const { data: newServer } = await supabase.from('servers_cache').insert([payload]).select().single();
+                                serverId = newServer.id;
                             }
 
-                            // Sincronizar sites se o servidor estiver ativo
-                            if (server.status === 'active' && server.ip_address && server.ip_address !== '0.0.0.0') {
+                            // Site Discovery (simplified)
+                            if (server.status === 'active' && server.ip_address !== '0.0.0.0') {
                                 try {
-                                    const discoveredSites = await discoverSites(server.ip_address);
-                                    
-                                    if (discoveredSites === null) {
-                                        console.warn(`Falha na descoberta de sites para ${server.name} (${server.ip_address}). Verifique acesso SSH.`);
-                                        // Opcional: Marcar no banco que houve erro de conexão SSH
-                                    } else {
-                                        for (const domain of discoveredSites) {
-                                            const siteCheck = await db.query('SELECT id FROM sites WHERE domain = $1', [domain]);
-                                            if (siteCheck.rows.length === 0) {
-                                                await db.query(`
-                                                    INSERT INTO sites (server_id, domain, platform, status, created_at)
-                                                    VALUES ($1, $2, 'wordpress', 'active', NOW())
-                                                `, [serverId, domain]);
-                                            } else {
-                                                // Atualiza server_id se necessário
-                                                await db.query('UPDATE sites SET server_id = $1, status = $2 WHERE id = $3', [serverId, 'active', siteCheck.rows[0].id]);
+                                    const sites = await discoverSites(server.ip_address);
+                                    if (sites) {
+                                        for (const domain of sites) {
+                                            // Check site existence
+                                            const { data: existingSite } = await supabase.from('sites').select('id').eq('domain', domain).single();
+                                            if (!existingSite) {
+                                                await supabase.from('sites').insert([{
+                                                    user_id: userId,
+                                                    server_id: serverId,
+                                                    domain,
+                                                    status: 'active'
+                                                }]);
                                             }
                                         }
                                     }
-                                } catch (siteErr) {
-                                    console.error(`Erro ao sincronizar sites do servidor ${server.name}:`, siteErr);
-                                }
+                                } catch (e) { console.error('Site sync error', e); }
                             }
                         }
                     } catch (err) {
-                        console.error(`Erro sync ${provider.provider_name}:`, err);
-                        // Se falhar a sync, retorna erro para o cliente saber
-                        return res.status(500).json({ error: `Erro ao sincronizar com ${provider.provider_name}: ${err.message}` });
+                        console.error(`Sync error for ${provider.provider_name}:`, err);
                     }
                 }
+                return res.status(200).json({ success: true });
             } catch (error) {
-                console.error('Erro geral de sync:', error);
-                return res.status(500).json({ error: `Erro geral de sincronização: ${error.message}` });
+                return res.status(500).json({ error: 'Sync failed' });
             }
         }
 
-        // Listar servidores
-        try {
-            const query = `
-                SELECT 
-                    sc.*,
-                    p.provider_name,
-                    p.label as provider_label,
-                    COUNT(s.id) as sites_count
-                FROM servers_cache sc
-                JOIN providers p ON sc.provider_id = p.id
-                LEFT JOIN sites s ON sc.id = s.server_id
-                WHERE p.user_id = $1
-                GROUP BY sc.id, p.provider_name, p.label
-                ORDER BY sc.created_at DESC
-            `;
-            const { rows } = await db.query(query, [userId]);
-            if (rows.length === 0) {
-                return res.status(200).json([]);
-            }
-            const servers = rows.map(row => {
-                const specs = row.specs || {};
-                return {
-                    id: row.id,
-                    provider: formatProviderName(row.provider_name),
-                    name: row.name,
-                    logo: getProviderLogo(row.provider_name),
-                    cpu: specs.cpu || 'N/A',
-                    ram: specs.ram || 'N/A',
-                    storage: specs.storage || 'N/A',
-                    os: specs.os || 'Linux',
-                    region: specs.region || 'Unknown',
-                    plan: specs.plan || 'Standard',
-                    ipv4: row.ip_address,
-                    status: row.status,
-                    created_at: row.created_at,
-                    sites_count: parseInt(row.sites_count || 0)
-                };
-            });
-            res.status(200).json(servers);
-        } catch (error) {
-            console.error('Erro ao buscar servidores:', error);
-            res.status(500).json({ error: 'Erro interno ao buscar servidores' });
-        }
-    } else if (req.method === 'POST') {
-        // Criar servidor
+        // LIST LOGIC
+        const { data: servers, error } = await supabase
+            .from('servers_cache')
+            .select(`
+                *,
+                providers ( label, provider_name, created_at )
+            `)
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) return res.status(500).json({ error: 'Erro ao listar servidores' });
+
+        const formatted = servers.map(s => ({
+            id: s.id,
+            provider: formatProviderName(s.providers?.provider_name),
+            name: s.name,
+            logo: getProviderLogo(s.providers?.provider_name),
+            cpu: s.specs?.cpu || 'N/A',
+            ram: s.specs?.ram || 'N/A',
+            storage: s.specs?.storage || 'N/A',
+            os: s.specs?.os || 'Linux',
+            region: s.specs?.region || 'Unknown',
+            ipv4: s.ip_address,
+            status: s.status,
+            created_at: s.created_at
+        }));
+
+        return res.status(200).json(formatted);
+    }
+
+    if (req.method === 'POST') {
+        // Create Request
         const { provider, region, plan, app, name, os_id } = req.body;
-        if (!provider || !region || !plan || !name) {
-            return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
-        }
+        
+        const { data: provData } = await supabase
+            .from('providers')
+            .select('*')
+            .eq('provider_name', provider)
+            .eq('user_id', userId)
+            .single();
+
+        if (!provData) return res.status(400).json({ error: 'Provedor não conectado' });
+
         try {
-            // Buscar token do provedor no banco de dados
-            const { rows } = await db.query(
-                'SELECT api_key, id FROM providers WHERE provider_name = $1 AND user_id = $2 LIMIT 1',
-                [provider, userId]
-            );
-            if (rows.length === 0) {
-                return res.status(400).json({ error: 'Provedor não conectado. Vá em Conexões e conecte sua conta primeiro.' });
-            }
-            const { api_key: token, id: providerId } = rows[0];
-            // Chamar API do provedor para criar a máquina
-            console.log(`Criando servidor na ${provider} para usuário ${userId}...`);
-            const result = await createInstance(provider, token, {
-                region,
-                plan,
-                app,
-                name,
-                os_id
-            });
-            console.log('Resultado da criação:', JSON.stringify(result));
-
-            // Extrai ID corretamente baseado no provedor
-            let externalId = 'pending';
-            if (result.instance?.id) externalId = result.instance.id; // Vultr
-            else if (result.droplet?.id) externalId = result.droplet.id; // DigitalOcean
-            else if (result.id) externalId = result.id; // Linode/Genérico
-
-            console.log(`ID Externo extraído: ${externalId}`);
-
-            // Salvar referência no banco de dados local (Cache)
-            await db.query(`
-                INSERT INTO servers_cache (provider_id, external_id, name, status, specs)
-                VALUES ($1, $2, $3, 'creating', $4)
-            `, [
-                providerId, 
-                externalId,
-                name,
-                { app: app, plan: plan, region: region }
-            ]);
-            console.log('Servidor salvo no cache com sucesso.');
+            const result = await createInstance(provider, provData.api_key, { region, plan, app, name, os_id });
             
-            return res.status(201).json({ 
-                success: true, 
-                message: 'Servidor sendo criado! O processo de instalação pode levar alguns minutos.',
-                details: result
-            });
-        } catch (error) {
-            console.error('Erro ao criar servidor:', error);
-            return res.status(500).json({ error: error.message || 'Erro interno ao criar servidor' });
+            let externalId = 'pending';
+            if (result.instance?.id) externalId = result.instance.id;
+            else if (result.droplet?.id) externalId = result.droplet.id;
+            else if (result.id) externalId = result.id;
+
+            await supabase.from('servers_cache').insert([{
+                user_id: userId,
+                provider_id: provData.id,
+                external_id: externalId,
+                name,
+                status: 'creating',
+                specs: { app, plan, region }
+            }]);
+
+            return res.status(201).json({ success: true, message: 'Criando servidor...' });
+        } catch (e) {
+            return res.status(500).json({ error: e.message });
         }
-    } else if (req.method === 'DELETE') {
-        // Excluir servidor
+    }
+
+    if (req.method === 'DELETE') {
         const { id } = req.query;
-        if (!id) {
-            return res.status(400).json({ error: 'ID do servidor é obrigatório' });
-        }
+        // Fetch server to get external ID
+        const { data: server } = await supabase
+            .from('servers_cache')
+            .select(`*, providers(api_key, provider_name)`)
+            .eq('id', id)
+            .eq('user_id', userId)
+            .single();
 
-        try {
-            // Buscar informações do servidor (LEFT JOIN para permitir excluir mesmo se o provedor foi removido)
-            const { rows } = await db.query(`
-                SELECT sc.id, sc.external_id, p.provider_name, p.api_key 
-                FROM servers_cache sc
-                LEFT JOIN providers p ON sc.provider_id = p.id
-                WHERE sc.id = $1
-            `, [id]);
-
-            if (rows.length === 0) {
-                return res.status(404).json({ error: 'Servidor não encontrado.' });
-            }
-
-            const server = rows[0];
-
-            // Se tiver dados do provedor e ID externo válido, tenta excluir na API
-            if (server.provider_name && server.api_key && server.external_id && server.external_id !== 'pending') {
+        if (server) {
+            if (server.providers && server.external_id && server.external_id !== 'pending') {
                 try {
-                    await deleteInstance(server.provider_name.toLowerCase(), server.api_key, server.external_id);
-                } catch (providerError) {
-                    console.error('Erro ao excluir no provedor (ignorando para limpar DB):', providerError);
-                }
+                    await deleteInstance(server.providers.provider_name.toLowerCase(), server.providers.api_key, server.external_id);
+                } catch (e) { console.error('Remote delete failed', e); }
             }
-
-            // Excluir sites associados primeiro (FK constraint)
-            await db.query('DELETE FROM sites WHERE server_id = $1', [id]);
-
-            // Excluir do banco de dados local
-            await db.query('DELETE FROM servers_cache WHERE id = $1', [id]);
-
-            return res.status(200).json({ success: true, message: 'Servidor excluído com sucesso.' });
-
-        } catch (error) {
-            console.error('Erro ao excluir servidor:', error);
-            return res.status(500).json({ error: error.message || 'Erro interno ao excluir servidor' });
+            await supabase.from('servers_cache').delete().eq('id', id);
         }
-    } else {
-        res.status(405).json({ error: 'Method not allowed' });
+        return res.status(200).json({ success: true });
     }
 }
 
