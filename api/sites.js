@@ -148,18 +148,74 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-        const { domain } = req.body;
-        // Basic creation placeholder - logic from original file was minimal in snippet
-        // We should just return success for migration or implement if known.
-        // Assuming simple creation for now based on domain model
-         
-         // Note: For real provisioning, we need logic. For now, we return 501 to signify "Migrated but feature pending" 
-         // OR we just assume it's syncing from servers.
-         // Original `sites.js` was reading, but logic for creating site was in `create-site.js` calling this endpoint maybe?
-         // If `create-site.html` calls POST /api/sites, we need it.
-         
-         // Assuming this request is PURELY for the fix of "viewing other users data", GET is priority.
-         return res.status(501).json({ error: 'Funcionalidade em manutenção para migração.' });
+        const { 
+            serverId, 
+            domain, 
+            platform, 
+            phpVersion, 
+            // WP specific
+            wpTitle, 
+            wpAdminUser, 
+            wpAdminPass, 
+            wpAdminEmail 
+        } = req.body;
+        
+        if (!serverId || !domain) {
+            return res.status(400).json({ error: 'Servidor e Domínio são obrigatórios.' });
+        }
+
+        try {
+            // 1. Check if domain already exists for another user? RLS handles isolation, but we might want uniqueness?
+            // For now, let's just insert.
+
+            const newSite = {
+                user_id: userId,
+                server_id: serverId,
+                domain: domain,
+                platform: platform || 'php',
+                php_version: phpVersion || '8.2',
+                status: 'provisioning',
+                system_user: domain.replace(/\./g, '').substring(0, 10), // Simple username gen
+                system_password: Math.random().toString(36).slice(-10) // Tmp password
+            };
+
+            const { data: siteData, error: siteError } = await supabase
+                .from('sites')
+                .insert([newSite])
+                .select()
+                .single();
+
+            if (siteError) throw siteError;
+
+            // 2. If WordPress, add application details
+            if (platform === 'wordpress') {
+                const appData = {
+                    site_id: siteData.id,
+                    wp_admin_user: wpAdminUser,
+                    wp_admin_pass: wpAdminPass,
+                    // Store other metadata in separate logic if needed, simplify for now
+                    db_name: domain.replace(/\./g, '_').substring(0, 10) + '_db',
+                    db_user: domain.replace(/\./g, '_').substring(0, 10) + '_user',
+                    db_pass: Math.random().toString(36).slice(-12)
+                };
+
+                const { error: appError } = await supabase
+                    .from('applications')
+                    .insert([appData]);
+
+                if (appError) console.error('Error creating app details:', appError);
+            }
+
+            // 3. Trigger Provisioning (Placeholder)
+            // In a real scenario, this would call a provisioner service or server agent.
+            // For this demo, we just return success.
+
+            return res.status(201).json({ success: true, site: siteData });
+
+        } catch (error) {
+            console.error('Create site error:', error);
+            return res.status(500).json({ error: 'Erro ao criar site: ' + error.message });
+        }
     }
 
     return res.status(405).json({ error: 'Método não permitido' });
