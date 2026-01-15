@@ -189,8 +189,12 @@ export default async function handler(req, res) {
         if (server) {
             if (server.providers && server.external_id && server.external_id !== 'pending') {
                 try {
+                    console.log(`Deletando servidor remoto: ${server.providers.provider_name} #${server.external_id}`);
                     await deleteInstance(server.providers.provider_name.toLowerCase(), server.providers.api_key, server.external_id);
-                } catch (e) { console.error('Remote delete failed', e); }
+                } catch (e) { 
+                    console.error('Remote delete failed', e);
+                    return res.status(500).json({ error: 'Erro ao deletar no provedor: ' + e.message }); 
+                }
             }
             await supabase.from('servers_cache').delete().eq('id', id);
         }
