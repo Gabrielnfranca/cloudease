@@ -1,6 +1,14 @@
 -- Admin & Tickets Migration
 -- Enable RLS updates/inserts for admin functionality
 
+-- 0. Ensure Profiles Table Exists
+CREATE TABLE IF NOT EXISTS profiles (
+  id uuid references auth.users not null primary key,
+  email text not null,
+  name text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 -- 1. Updates to Profiles
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active'; -- active, banned
