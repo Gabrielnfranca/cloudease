@@ -65,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
             row.innerHTML = `
                 <td><i class="fas ${providerIcon}"></i> ${providerName}</td>
                 <td>${conn.name}</td>
-                <td>${conn.ip_address}</td>
-                <td>${conn.total_servers}</td>
+                <td>-</td> <!-- Provedores não tem IP direto -->
+                <td>${conn.total_servers || 0}</td>
                 <td>${date}</td>
                 <td><span class="status-badge active">${conn.status}</span></td>
                 <td>
