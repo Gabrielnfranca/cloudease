@@ -32,7 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Carregando sites...</td></tr>';
             }
 
-            const response = await fetch('/api/sites');
+            const authToken = localStorage.getItem('authToken');
+            const response = await fetch('/api/sites', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
             if (!response.ok) {
                 const errData = await response.json();
                 throw new Error(errData.error || 'Falha na API: ' + response.status);

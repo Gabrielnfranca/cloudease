@@ -35,8 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('user');
+                // Limpeza completa para evitar mistura de dados entre usuários
+                localStorage.clear();
+                sessionStorage.clear();
                 window.location.href = 'index.html';
             });
         }

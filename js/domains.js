@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos do DOM
     const searchInput = document.querySelector('.search-bar input');
-    const filterBtn = document.querySelector('.filter-btn');
     const newDomainBtn = document.querySelector('.new-site-btn');
     const modal = document.getElementById('newDomainModal');
     const closeModalBtn = document.querySelector('.close-modal');
@@ -9,134 +7,124 @@ document.addEventListener('DOMContentLoaded', function() {
     const domainForm = document.getElementById('newDomainForm');
     const domainsTable = document.querySelector('.domains-table tbody');
 
+    // Carregar domínios ao iniciar
+    loadDomains();
+
     // Funções de busca
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const rows = domainsTable.querySelectorAll('tr');
-
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = domainsTable.querySelectorAll('tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
         });
-    });
-
-    // Funções do modal
-    function openModal() {
-        modal.style.display = 'block';
     }
 
-    function closeModal() {
-        modal.style.display = 'none';
-        domainForm.reset();
+    // Modal
+    if (newDomainBtn && modal) {
+        function openModal() { modal.style.display = 'block'; }
+        function closeModal() { 
+            modal.style.display = 'none'; 
+            domainForm.reset(); 
+        }
+
+        newDomainBtn.addEventListener('click', openModal);
+        if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
     }
 
-    newDomainBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
+    // Criar Domínio
+    if (domainForm) {
+        domainForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = domainForm.querySelector('.btn-primary');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Salvando...';
+            submitBtn.disabled = true;
 
-    // Fechar modal ao clicar fora dele
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+            const domainData = {
+                domain: document.getElementById('domainName').value,
+                registrar: document.getElementById('registrar').value,
+                // dns: document.getElementById('dnsProvider').value, // API doesn't support yet, saving mainly domain
+            };
 
-    // Manipulação do formulário
-    domainForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const newDomain = {
-            name: document.getElementById('domainName').value,
-            registrar: document.getElementById('registrar').value,
-            dns: document.getElementById('dnsProvider').value,
-            expiry: new Date(document.getElementById('expiryDate').value)
-        };
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await fetch('/api/domains', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(domainData)
+                });
 
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
-        console.log('Novo domínio:', newDomain);
-
-        // Calcular status baseado na data de expiração
-        const today = new Date();
-        const daysUntilExpiry = Math.ceil((newDomain.expiry - today) / (1000 * 60 * 60 * 24));
-        let status, statusClass;
-
-        if (daysUntilExpiry > 30) {
-            status = 'Ativo';
-            statusClass = 'active';
-        } else if (daysUntilExpiry > 0) {
-            status = 'Expirando';
-statusClass = 'warning';  // Mantido como 'warning' para indicar estado de alerta
-        } else {
-            status = 'Expirado';
-            statusClass = 'expired';
-        }
-
-        // Adicionar nova linha na tabela
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>${newDomain.name}</td>
-            <td>${newDomain.registrar}</td>
-            <td>${newDomain.dns}</td>
-            <td>${newDomain.expiry.toLocaleDateString()}</td>
-            <td><span class="status-badge ${statusClass}">${status}</span></td>
-            <td class="actions">
-                <button class="action-btn" title="DNS"><i class="fas fa-network-wired"></i></button>
-                <button class="action-btn" title="Renovar"><i class="fas fa-sync"></i></button>
-                <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-            </td>
-        `;
-
-        domainsTable.appendChild(newRow);
-        closeModal();
-    });
-
-    // Ações dos domínios
-    domainsTable.addEventListener('click', function(e) {
-        const actionBtn = e.target.closest('.action-btn');
-        if (!actionBtn) return;
-
-        const action = actionBtn.title;
-        const row = actionBtn.closest('tr');
-        const domainName = row.querySelector('td:first-child').textContent;
-
-        switch(action) {
-            case 'DNS':
-                console.log(`Abrindo configurações DNS para ${domainName}`);
-                break;
-            case 'Renovar':
-                if (confirm(`Deseja renovar o domínio ${domainName}?`)) {
-                    console.log(`Renovando ${domainName}`);
-                    const statusBadge = row.querySelector('.status-badge');
-                    statusBadge.textContent = 'Ativo';
-                    statusBadge.className = 'status-badge active';
+                if (response.ok) {
+                    await loadDomains();
+                    closeModal();
+                } else {
+                    const error = await response.json();
+                    alert('Erro ao criar domínio: ' + (error.error || 'Erro desconhecido'));
                 }
-                break;
-            case 'Configurações':
-                console.log(`Abrindo configurações para ${domainName}`);
-                break;
-        }
-    });
-
-    // Verificar status dos domínios periodicamente
-    function checkDomainStatus() {
-        const rows = domainsTable.querySelectorAll('tr');
-        rows.forEach(row => {
-            const expiryDate = new Date(row.querySelector('td:nth-child(4)').textContent);
-            const today = new Date();
-            const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-            
-            const statusBadge = row.querySelector('.status-badge');
-            if (daysUntilExpiry <= 0) {
-                statusBadge.textContent = 'Expirado';
-                statusBadge.className = 'status-badge expired';
-            } else if (daysUntilExpiry <= 30) {
-                statusBadge.textContent = 'Expirando';
-                statusBadge.className = 'status-badge warning';
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
     }
 
-    // Verificar status dos domínios a cada hora
-    checkDomainStatus();
-    setInterval(checkDomainStatus, 3600000);
+    // Carregar da API
+    async function loadDomains() {
+        if (!domainsTable) return;
+        
+        domainsTable.innerHTML = '<tr><td colspan="6" style="text-align:center">Carregando...</td></tr>';
+
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const response = await fetch('/api/domains', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+
+            if (response.ok) {
+                const domains = await response.json();
+                renderDomains(domains);
+            } else {
+                domainsTable.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Erro ao carregar domínios</td></tr>';
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            domainsTable.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Erro de conexão</td></tr>';
+        }
+    }
+
+    function renderDomains(domains) {
+        domainsTable.innerHTML = '';
+        if (domains.length === 0) {
+            domainsTable.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">Nenhum domínio cadastrado.</td></tr>';
+            return;
+        }
+
+        domains.forEach(d => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${d.domain}</td>
+                <td>${d.registrar || '-'}</td>
+                <td>-</td>
+                <td>${new Date(d.created_at).toLocaleDateString()}</td>
+                <td><span class="status-badge active">Ativo</span></td>
+                <td class="actions">
+                    <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                </td>
+            `;
+            domainsTable.appendChild(tr);
+        });
+    }
 });
