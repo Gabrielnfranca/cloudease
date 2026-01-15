@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
             
             if (res.status === 403) {
-                alert('Acesso negado. Você não é administrador.');
+                const data = await res.json();
+                alert(data.error || 'Acesso negado. Você não é administrador.');
                 window.location.href = 'dashboard.html';
                 return;
             }

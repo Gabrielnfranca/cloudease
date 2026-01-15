@@ -35,10 +35,15 @@ export default async function handler(req, res) {
         .single();
     
     if (profileError || !profile || !profile.is_admin) {
-        // Fallback for dev: if specific email, allow
+        // Fallback for dev: check specific email or ID
         const allowedAdmins = ['admin@cloudease.com', 'gabrielnfranca@cloudease.com'];
-        if (!allowedAdmins.includes(user.email)) {
-            return res.status(403).json({ error: 'Acesso negado. Apenas administradores.' });
+        const allowedIds = ['cd4cdf58-ed33-4447-8202-f0d109948245']; // ID gerado pelo script
+
+        const userEmail = user.email ? user.email.toLowerCase().trim() : '';
+        
+        if (!allowedAdmins.includes(userEmail) && !allowedIds.includes(user.id)) {
+            console.warn(`Tentativa de acesso admin negada para: ${userEmail} (${user.id})`);
+            return res.status(403).json({ error: `Acesso negado. O usuário ${userEmail} não possui permissão de administrador.` });
         }
     }
 
