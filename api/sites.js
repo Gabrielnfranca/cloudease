@@ -1,6 +1,6 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
-import { provisionWordPress, deleteSiteFromInstance } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance, updateNginxConfig } from '../lib/provisioner.js';
 import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';
@@ -317,11 +317,34 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT') {
-        const { siteId } = req.body;
+        const { siteId, action, enableTempUrl } = req.body;
         if (!siteId) return res.status(400).json({ error: 'ID do site é obrigatório' });
 
         try {
-            // 1. Fetch site details
+            // HANDLE NGINX CONFIG UPDATE (Temp URL)
+            if (action === 'update_nginx') {
+                const { data: site, error: fetchError } = await supabase
+                    .from('sites')
+                    .select('id, domain, servers_cache (ip_address), php_version')
+                    .eq('id', siteId)
+                    .eq('user_id', userId)
+                    .single();
+
+                if (fetchError || !site) return res.status(404).json({ error: 'Site não encontrado' });
+                
+                const serverIp = site.servers_cache?.ip_address;
+                if (!serverIp) return res.status(400).json({ error: 'Servidor inválido' });
+
+                await updateNginxConfig(serverIp, site.domain, enableTempUrl, site.php_version);
+                
+                // Update DB state
+                await supabase.from('sites').update({ enable_temp_url: enableTempUrl }).eq('id', siteId);
+                
+                return res.status(200).json({ success: true });
+            }
+
+
+            // 1. Fetch site details (Retry Provision Logic)
             const { data: site, error: fetchError } = await supabase
                 .from('sites')
                 .select(`
@@ -351,18 +374,14 @@ export default async function handler(req, res) {
             
             console.log(`Reiniciando provisionamento para ${site.domain} em ${serverIp}...`);
             
-            // Note: DB columns in applications table might be wp_admin_user or admin_user. 
-            // In POST it uses wp_admin_user. In migration-fix-sync.sql it defined admin_user.
-            // Let's check what was inserted.
-            // In POST: wp_admin_user: wpAdminUser.
-            // Let's check definitions in schema.
-            
-            provisionWordPress(serverIp, site.domain, {
+            // Adicionado await para garantir que o comando SSH seja enviado antes da função terminar
+            // O provisionWordPress já usa nohup/background, então isso retorna rápido (2-5s)
+            await provisionWordPress(serverIp, site.domain, {
                 dbName: app.db_name,
                 dbUser: app.db_user,
                 dbPass: app.db_pass,
                 wpAdminUser: app.wp_admin_user || app.admin_user, 
-                wpAdminPass: app.wp_admin_pass, // If we saved it? Usually we don't save pass in plaintext if well designed, but schema shows it might.
+                wpAdminPass: app.wp_admin_pass, 
                 wpAdminEmail: app.admin_email
             }).then(() => console.log('Re-Provisioning Success'))
               .catch(async (e) => {
@@ -377,7 +396,7 @@ export default async function handler(req, res) {
 
         } catch (error) {
             console.error('Retry error:', error);
-            return res.status(500).json({ error: 'Erro ao tentar novamente' });
+            return res.status(500).json({ error: 'Erro ao tentar novamente: ' + error.message });
         }
     }
 
