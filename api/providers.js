@@ -55,6 +55,7 @@ export default async function handler(req, res) {
             provider: p.provider_name,
             name: p.label,
             total_servers: 0, // Temporariamente 0 para evitar erro de join
+            created_at: p.created_at,
             status: 'Ativo'
         }));
         return res.status(200).json(formatted);
