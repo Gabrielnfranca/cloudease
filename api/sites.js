@@ -479,7 +479,8 @@ export default async function handler(req, res) {
                         dbPass: appData?.db_pass,
                         wpAdminUser: wpAdminUser,
                         wpAdminPass: wpAdminPass,
-                        wpAdminEmail: wpAdminEmail
+                        wpAdminEmail: wpAdminEmail,
+                        wpTitle: wpTitle // Passando Título
                     });
                     
                     console.log('Provisioning command sent successfully');

@@ -115,7 +115,8 @@ export default async function handler(req, res) {
             .from('servers_cache')
             .select(`
                 *,
-                providers ( label, provider_name, created_at )
+                providers ( label, provider_name, created_at ),
+                sites (count)
             `)
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
@@ -134,7 +135,8 @@ export default async function handler(req, res) {
             region: s.specs?.region || 'Unknown',
             ipv4: s.ip_address,
             status: s.status,
-            created_at: s.created_at
+            created_at: s.created_at,
+            sites_count: s.sites?.[0]?.count || 0
         }));
 
         return res.status(200).json(formatted);
