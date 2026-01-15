@@ -24,6 +24,14 @@ export default async function handler(req, res) {
              await db.query(`ALTER TABLE applications ADD COLUMN IF NOT EXISTS db_host VARCHAR(100) DEFAULT 'localhost';`);
              await db.query(`ALTER TABLE applications ADD COLUMN IF NOT EXISTS db_port INTEGER DEFAULT 3306;`);
         }
+
+        // Migration 3: Admin Panel
+        const migrationAdminPath = path.join(process.cwd(), 'db', 'migration-admin-panel.sql');
+        if (fs.existsSync(migrationAdminPath)) {
+            const migrationAdminSql = fs.readFileSync(migrationAdminPath, 'utf8');
+            console.log('Executando migration admin-panel...');
+            await db.query(migrationAdminSql);
+        }
         
         res.status(200).json({ message: 'Migrações executadas com sucesso!' });
     } catch (error) {
