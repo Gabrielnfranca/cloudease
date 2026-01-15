@@ -38,10 +38,12 @@ export default async function handler(req, res) {
     const userId = user.id;
 
     if (req.method === 'GET') {
-        // Simplified query to avoid Foreign Key issues causing 500 errors
         const { data: providers, error } = await supabase
             .from('providers')
-            .select('*')
+            .select(`
+                *,
+                servers_cache (count)
+            `)
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
 
@@ -54,7 +56,7 @@ export default async function handler(req, res) {
             id: p.id,
             provider: p.provider_name,
             name: p.label,
-            total_servers: 0, // Temporariamente 0 para evitar erro de join
+            total_servers: p.servers_cache ? p.servers_cache[0].count : 0,
             created_at: p.created_at,
             status: 'Ativo'
         }));
