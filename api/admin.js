@@ -36,7 +36,8 @@ export default async function handler(req, res) {
     
     if (profileError || !profile || !profile.is_admin) {
         // Fallback for dev: if specific email, allow
-        if (user.email !== 'admin@cloudease.com') { // Replace with your admin email
+        const allowedAdmins = ['admin@cloudease.com', 'gabrielnfranca@cloudease.com'];
+        if (!allowedAdmins.includes(user.email)) {
             return res.status(403).json({ error: 'Acesso negado. Apenas administradores.' });
         }
     }
