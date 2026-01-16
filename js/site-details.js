@@ -141,6 +141,16 @@ function renderDetails(site) {
     const statusText = document.getElementById('tempUrlStatus');
     
     if (toggle) {
+        // HIDE OPTION IF SSL ACTIVE
+        const container = toggle.closest('.info-item');
+        if (container) {
+             if (site.ssl_active) {
+                 container.style.display = 'none';
+             } else {
+                 container.style.display = 'flex';
+             }
+        }
+
         toggle.checked = site.enable_temp_url || false;
         
         if (site.enable_temp_url) {
