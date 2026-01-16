@@ -53,37 +53,48 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         if (type === 'dashboard') {
             try {
-                // Fetch Users
+                // Fetch Users (Plan & Status for Finance)
                 const { data: users, error: errUsers } = await supabase
                     .from('profiles')
-                    .select('id, name, email, status, last_login, created_at')
+                    .select('id, name, email, status, last_login, created_at, plan, subscription_status')
                     .order('created_at', { ascending: false });
 
                 // Fetch Tickets
-                // We need to fetch user names manually if relation isn't perfect or use foreign key
-                // Note: The select query assumes 'tickets' has foreign key to 'profiles'
                 const { data: tickets, error: errTickets } = await supabase
                     .from('tickets')
                     .select('*, profiles(name, email)') 
                     .order('created_at', { ascending: false })
                     .limit(10);
                 
-                // Fetch Revenue (Mock or Real Table)
-                let revenue = [];
-                let totalRevenue = 0;
+                // Fetch Revenue (Enhanced for Finance)
+                // Get invoices with profile relation
                 const { data: invoices, error: errInv } = await supabase
                     .from('invoices')
-                    .select('*')
+                    .select('*, profiles(email, plan)')
                     .order('created_at', { ascending: false })
-                    .limit(10);
+                    .limit(20);
                 
+                let revenue = invoices || [];
+                let totalRevenue = 0;
+                let projectedRevenue = 0;
+                let overdueCount = 0;
+                let payingUsersCount = 0;
+
+                // Calculate Totals & Stats
+                if (users) {
+                     // Determine paying users status (mock logic if columns empty)
+                     payingUsersCount = users.filter(u => (u.plan && u.plan !== 'free') || (u.subscription_status === 'active')).length;
+                     // Simple projection: paying users * fixed price assumption (e.g. 29.90)
+                     projectedRevenue = payingUsersCount * 29.90;
+                     overdueCount = users.filter(u => u.subscription_status === 'overdue').length;
+                }
+
                 if (invoices) {
-                    revenue = invoices;
-                    // Calculate total
-                    const { data: allInv } = await supabase.from('invoices').select('amount');
-                    if (allInv) {
+                     // Total revenue from paid invoices
+                     const { data: allInv } = await supabase.from('invoices').select('amount').eq('status', 'paid');
+                     if (allInv) {
                         totalRevenue = allInv.reduce((sum, inv) => sum + Number(inv.amount), 0);
-                    }
+                     }
                 }
 
                 if (errUsers) throw errUsers;
@@ -91,12 +102,17 @@ export default async function handler(req, res) {
                 return res.status(200).json({
                     users: users || [],
                     tickets: tickets || [],
-                    revenue: revenue || [],
-                    totalRevenue: totalRevenue
+                    revenue: revenue, // Old field compatibility
+                    invoices: invoices || [], // New field
+                    totalRevenue: totalRevenue.toFixed(2),
+                    projectedRevenue: projectedRevenue.toFixed(2),
+                    payingUsersCount,
+                    overdueCount
                 });
 
             } catch (error) {
                 console.error('Admin Dashboard Error:', error);
+                // Fallback: return partial data or error
                 return res.status(500).json({ error: error.message });
             }
         } 
@@ -110,7 +126,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-        const { action, id } = req.body;
+        const { action, id, invoice_id } = req.body;
         
         // Admin Actions
         if (action === 'delete_user') {
@@ -121,6 +137,40 @@ export default async function handler(req, res) {
                 await supabase.from('profiles').update({ status: 'banned' }).eq('id', id);
                 return res.status(200).json({ success: true });
             } catch (e) { return res.status(500).json({error: e.message}); }
+        }
+
+        if (action === 'run_billing') {
+            try {
+                // Mock: Find users who should pay
+                const { data: payUsers } = await supabase.from('profiles').select('*').neq('plan', 'free');
+                let generated = 0;
+
+                if (payUsers) {
+                    for (const user of payUsers) {
+                        const amount = user.plan === 'enterprise' ? 99.90 : 29.90;
+                        const {error: invErr} = await supabase.from('invoices').insert({
+                            user_id: user.id,
+                            amount: amount,
+                            status: 'pending',
+                            due_date: new Date(new Date().setDate(new Date().getDate() + 5)),
+                            pdf_url: `https://cloudease.com.br/invoices/nf-${Date.now()}.pdf`,
+                            sent_email: true
+                        });
+                        if (!invErr) generated++;
+                    }
+                }
+                return res.json({ success: true, generated });
+            } catch (e) {
+                return res.status(500).json({ error: e.message });
+            }
+        }
+
+        if (action === 'send_invoice_email') {
+            // Mock email sending
+            await new Promise(r => setTimeout(r, 500)); 
+            // Update invoice to say sent
+            await supabase.from('invoices').update({ sent_email: true }).eq('id', invoice_id);
+            return res.json({ success: true });
         }
 
         if (action === 'update_ticket') {
