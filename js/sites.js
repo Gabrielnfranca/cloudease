@@ -247,6 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
             }
 
+            const isSslActive = site.ssl_active === true;
+            
             tr.innerHTML = `
                 <td>
                     <div style="display: flex; align-items: center;">
@@ -260,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </td>
                 <td>
-                    ${site.status === 'active' ? '<span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>' : '<span class="ssl-badge warning"><i class="fas fa-unlock"></i> -</span>'}
+                    ${isSslActive ? '<span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>' : '<span class="ssl-badge warning" title="SSL não ativado"><i class="fas fa-unlock"></i> Pendente</span>'}
                 </td>
                 <td>${site.server_name || site.server || '-'}</td>
                 <td>${site.ip_address || site.ip || '-'}</td>
