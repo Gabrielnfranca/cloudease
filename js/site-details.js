@@ -437,7 +437,7 @@ function togglePass(btn, elementId) {
 }
 
 function renderSSL(site) {
-    // Fill References
+    // Fill References with Badges
     document.querySelectorAll('.domain-ref').forEach(el => el.textContent = site.domain);
     document.querySelectorAll('.ip-ref').forEach(el => el.textContent = site.ip);
 
@@ -446,53 +446,68 @@ function renderSSL(site) {
 }
 
 function updateSSLStatusURI(isActive) {
+    const hero = document.getElementById('sslHero');
     const icon = document.getElementById('sslStatusIcon');
     const title = document.getElementById('sslStatusTitle');
     const desc = document.getElementById('sslStatusDesc');
 
-    if (!icon || !title || !desc) return; // Prevent errors if elements missing
+    if (!hero) return; // Safety
 
-    icon.className = 'status-icon ' + (isActive ? 'secure' : 'insecure');
+    // Reset classes
+    hero.classList.remove('secure', 'insecure');
     
     if (isActive) {
+        hero.classList.add('secure');
         icon.innerHTML = '<i class="fas fa-lock"></i>';
-        title.textContent = 'SSL Instalado e Ativo';
-        desc.textContent = 'Seu site está protegido com HTTPS.';
+        title.textContent = 'SSL Ativo e Seguro';
+        desc.textContent = 'Seu site está protegido com criptografia HTTPS.';
         
-        const stepInstall = document.getElementById('stepInstall');
-        if (stepInstall) stepInstall.classList.add('disabled');
-        
+        // Mark steps as completed visually if we want, or just hide/disable them
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('completed');
+        document.getElementById('step1Num').innerHTML = '<i class="fas fa-check"></i>';
+        document.getElementById('step2Num').innerHTML = '<i class="fas fa-check"></i>';
+
         const btnInstall = document.getElementById('btnInstallSSL');
         if (btnInstall) {
-             btnInstall.textContent = 'Reinstalar / Renovar Forçado';
+             btnInstall.textContent = 'Reinstalar Certificado';
              btnInstall.disabled = false;
         }
+        
+        // Unlock step 2 just in case they want to reinstall
+        document.getElementById('step2').classList.remove('disabled');
 
-        // Permite re-verificar DNS e reinstalar se quiser
-        if (stepInstall) stepInstall.classList.remove('disabled');
     } else {
+        hero.classList.add('insecure');
         icon.innerHTML = '<i class="fas fa-unlock"></i>';
-        title.textContent = 'Não Seguro / Não Instalado';
-        desc.textContent = 'O certificado SSL não está ativo. Verifique o DNS e instale.';
+        title.textContent = 'Não Seguro';
+        desc.textContent = 'O certificado SSL não está ativo. Configure abaixo para ativar.';
         
-        const stepInstall = document.getElementById('stepInstall');
-        if (stepInstall) stepInstall.classList.add('disabled');
-        
+        document.getElementById('step1').classList.remove('completed');
+        document.getElementById('step2').classList.remove('completed');
+        document.getElementById('step1Num').textContent = '1';
+        document.getElementById('step2Num').textContent = '2';
+
         const btnInstall = document.getElementById('btnInstallSSL');
-        if (btnInstall) btnInstall.textContent = 'Instalar SSL';
+        if (btnInstall) btnInstall.textContent = 'Instalar Certificado SSL';
+        
+        // Ensure locked
+        document.getElementById('step2').classList.add('disabled');
     }
 }
 
 async function verifyDNS() {
-    const btn = document.querySelector('.btn-verify');
+    const btn = document.getElementById('btnVerifyDNS');
     const resultDiv = document.getElementById('dnsResult');
-    const stepInstall = document.getElementById('stepInstall');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
     const btnInstall = document.getElementById('btnInstallSSL');
     
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
-    resultDiv.textContent = '';
-    resultDiv.className = 'verification-result';
+    
+    resultDiv.style.display = 'none';
+    resultDiv.className = 'dns-check-result';
 
     try {
         const authToken = localStorage.getItem('authToken');
@@ -503,19 +518,31 @@ async function verifyDNS() {
         
         const data = await response.json();
         
+        resultDiv.style.display = 'flex'; // Show result box
+
         if (data.ok) {
-            resultDiv.innerHTML = '<i class="fas fa-check-circle"></i> DNS verificado com sucesso! IP corresponde.';
+            resultDiv.innerHTML = '<i class="fas fa-check-circle"></i> Sucesso! O domínio está apontando corretamente para o IP e não há proxy detectado.';
             resultDiv.classList.add('success');
-            if (stepInstall) stepInstall.classList.remove('disabled');
+            
+            // Advance Wizard
+            step1.classList.add('completed');
+            document.getElementById('step1Num').innerHTML = '<i class="fas fa-check"></i>';
+            
+            step2.classList.remove('disabled');
+            step2.classList.add('active'); // Highlight next step
+            
             if (btnInstall) btnInstall.disabled = false;
         } else {
-            resultDiv.innerHTML = `<i class="fas fa-times-circle"></i> Erro: ${data.message || 'DNS não propagado ou incorreto'}`;
+            resultDiv.innerHTML = `<i class="fas fa-times-circle"></i> Falha: ${data.message || 'DNS não propagado ou incorreto'}`;
             resultDiv.classList.add('error');
-            if (stepInstall) stepInstall.classList.add('disabled');
+            
+            step2.classList.add('disabled');
+            step2.classList.remove('active');
             if (btnInstall) btnInstall.disabled = true;
         }
     } catch (e) {
-        resultDiv.textContent = 'Erro ao conectar API: ' + e.message;
+        resultDiv.style.display = 'flex';
+        resultDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> Erro de API: ${e.message}`;
         resultDiv.classList.add('error');
     } finally {
         btn.disabled = false;
@@ -524,11 +551,11 @@ async function verifyDNS() {
 }
 
 async function installSSL() {
-    if (!confirm('Tem certeza? A instalação do SSL requer que o DNS esteja apontado corretamente.')) return;
+    if (!confirm('Tem certeza? A instalação do SSL irá solicitar um certificado Let\'s Encrypt para seu domínio.')) return;
 
     const btn = document.getElementById('btnInstallSSL');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Instalando... (Isso demora um pouco)';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Solicitando Certificado...';
 
     try {
         const authToken = localStorage.getItem('authToken');
@@ -540,15 +567,15 @@ async function installSSL() {
         const data = await response.json();
         
         if (data.ok) {
-            alert('SSL instalado com sucesso!');
+            alert('Certificado SSL instalado com sucesso! A página será recarregada.');
             location.reload();
         } else {
-            alert('Erro ao instalar SSL: ' + (data.detail || data.error));
+            alert('Erro na instalação: ' + (data.detail || data.error));
         }
     } catch (e) {
         alert('Erro de conexão: ' + e.message);
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-download"></i> Instalar SSL';
+        btn.innerHTML = '<i class="fas fa-download"></i> Instalar Certificado SSL';
     }
 }
