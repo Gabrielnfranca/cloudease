@@ -87,13 +87,13 @@
             <div class="form-container" style="margin-top: 20px;">
                 <form id="connectHostForm">
                     <label for="hostName">Nome do Host:</label>
-                    <input type="text" id="hostName" required>
+                    <input type="text" id="hostName" required autocomplete="off">
                     
                     <label for="token">Token (Personal Access Token):</label>
                     <div class="token-help" style="margin-bottom:8px; color:#4a5568; font-size:13px;">
                         <i class="fas fa-info-circle"></i> Acesse <a href="https://cloud.digitalocean.com/account/api/tokens" target="_blank">DigitalOcean API</a>, gere um Personal Access Token e cole aqui.
                     </div>
-                    <input type="text" id="token" required>
+                    <input type="text" id="token" required autocomplete="off">
                     
                     <button type="submit" class="connect-btn"><i class="fas fa-plug"></i> Conectar</button>
                 </form>
