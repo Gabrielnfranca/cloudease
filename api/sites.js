@@ -4,6 +4,7 @@ import { provisionWordPress, deleteSiteFromInstance, updateNginxConfig, provisio
 import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';
+import dns from 'dns';
 
 function getPrivateKey() {
     if (process.env.SSH_PRIVATE_KEY) return process.env.SSH_PRIVATE_KEY.replace(/\\n/g, '\n');
@@ -402,6 +403,60 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
+        const { action, id } = req.query;
+
+        // VERIFICAR DNS
+        if (action === 'verify-dns') {
+            if (!id) return res.status(400).json({ error: 'ID do site obrigatório' });
+            
+             const { data: site, error: fetchError } = await supabase
+                .from('sites')
+                .select('domain, servers_cache (ip_address)')
+                .eq('id', id)
+                .eq('user_id', userId)
+                .single();
+
+            if (fetchError || !site) return res.status(404).json({ error: 'Site não encontrado' });
+            const serverIp = site.servers_cache?.ip_address;
+
+            return new Promise((resolve) => {
+                dns.resolve4(site.domain, (err, addresses) => {
+                    if (err) {
+                        return resolve(res.status(200).json({ ok: false, error: 'Não encontrado/Propagando (' + err.code + ')' }));
+                    }
+                    if (addresses.includes(serverIp)) {
+                        return resolve(res.status(200).json({ ok: true }));
+                    } else {
+                        return resolve(res.status(200).json({ ok: false, error: `Domínio aponta para ${addresses[0]}, aguarde propagação.` }));
+                    }
+                });
+            });
+        }
+
+        // INSTALAR SSL
+        if (action === 'install-ssl') {
+            if (!id) return res.status(400).json({ error: 'ID do site obrigatório' });
+
+            const { data: site, error: fetchError } = await supabase
+                .from('sites')
+                .select('domain, servers_cache (ip_address)')
+                .eq('id', id)
+                .eq('user_id', userId)
+                .single();
+
+             if (fetchError || !site) return res.status(404).json({ error: 'Site não encontrado' });
+             const serverIp = site.servers_cache?.ip_address;
+
+             try {
+                await provisionSSL(serverIp, site.domain);
+                await supabase.from('sites').update({ ssl_active: true }).eq('id', id);
+                return res.status(200).json({ ok: true });
+             } catch (err) {
+                 console.error('SSL Error:', err);
+                 return res.status(500).json({ ok: false, error: err.message, detail: err.stderr });
+             }
+        }
+
         const { 
             serverId, 
             domain, 
