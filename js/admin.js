@@ -87,7 +87,10 @@ async function loadDashboard() {
             });
         }
 
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error('Dashboard Load Error:', e);
+        // alert('Erro ao carregar dados do V2. Mais detalhes no console.');
+    }
 }
 
 function safeSetText(id, val) {
