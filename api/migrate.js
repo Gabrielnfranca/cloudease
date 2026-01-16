@@ -95,6 +95,13 @@ export default async function handler(req, res) {
         // Migration 3: Admin Panel
         console.log('Executando migration admin-panel...');
         await db.query(MIGRATION_ADMIN_PANEL);
+
+        // Migration 4: Ensure SSL Column & Reload Schema
+        console.log('Executando migration ssl-fix...');
+        await db.query(`
+            ALTER TABLE sites ADD COLUMN IF NOT EXISTS ssl_active BOOLEAN DEFAULT FALSE;
+            NOTIFY pgrst, 'reload schema';
+        `);
         
         console.log('Todas as migrações concluídas.');
         res.status(200).json({ message: 'Migrações executadas com sucesso!' });
