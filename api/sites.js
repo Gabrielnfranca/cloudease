@@ -224,7 +224,6 @@ export default async function handler(req, res) {
                     status, 
                     created_at,
                     enable_temp_url,
-                    ssl_active,
                     last_error,
                     server_id,
                     servers_cache (
@@ -255,8 +254,9 @@ export default async function handler(req, res) {
             return res.status(200).json(flattenedSites);
 
         } catch (error) {
-            console.error(error);
-            return res.status(500).json({ error: 'Erro ao listar sites' });
+            console.error('API Error:', error);
+            // Retorna o detalhe do erro para facilitar debug no frontend
+            return res.status(500).json({ error: error.message || 'Erro ao listar sites' });
         }
     }
 
