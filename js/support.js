@@ -32,44 +32,84 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate Services Dropdown
     async function loadServices() {
         const token = localStorage.getItem('authToken');
-        if (!token) return;
+        const serverGroup = document.getElementById('serverOptions');
+        const siteGroup = document.getElementById('siteOptions');
+
+        if (!serverGroup || !siteGroup) return;
+
+        // Reset with loading state if needed, though usually fast
+        // serverGroup.innerHTML = '<option disabled>Carregando...</option>'; 
+
+        if (!token) {
+            console.warn('No auth token found');
+            return;
+        }
+
         const headers = { 'Authorization': `Bearer ${token}` };
 
         try {
+            console.log('Fetching services...');
             const [serversRes, sitesRes] = await Promise.all([
                 fetch('/api/servers', { headers }),
                 fetch('/api/sites', { headers })
             ]);
 
-            const serverGroup = document.getElementById('serverOptions');
-            const siteGroup = document.getElementById('siteOptions');
-            
+            // Clear previous content
             serverGroup.innerHTML = '';
             siteGroup.innerHTML = '';
 
+            // --- SERVERS ---
             if (serversRes.ok) {
                 const servers = await serversRes.json();
                 const list = Array.isArray(servers) ? servers : (servers.servers || []);
-                list.forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = `server:${s.id}`;
-                    opt.textContent = `Servidor: ${s.name} (${s.ipv4})`;
-                    serverGroup.appendChild(opt);
-                });
+                
+                if (list.length === 0) {
+                     const opt = document.createElement('option');
+                     opt.disabled = true;
+                     opt.textContent = "(Nenhum servidor encontrado)";
+                     serverGroup.appendChild(opt);
+                } else {
+                    list.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = `server:${s.id}`;
+                        // Add status icon if possible or just text
+                        const statusLabel = s.status === 'active' ? '🟢' : '🔴';
+                        opt.textContent = `${statusLabel} ${s.name} (${s.ipv4})`;
+                        serverGroup.appendChild(opt);
+                    });
+                }
+            } else {
+                console.error('Servers fetch failed', serversRes.status);
             }
 
+            // --- SITES ---
             if (sitesRes.ok) {
                 const sites = await sitesRes.json();
-                sites.forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = `site:${s.id}`;
-                    opt.textContent = `Site: ${s.domain}`;
-                    siteGroup.appendChild(opt);
-                });
+                const list = Array.isArray(sites) ? sites : [];
+                
+                if (list.length === 0) {
+                     const opt = document.createElement('option');
+                     opt.disabled = true;
+                     opt.textContent = "(Nenhum site encontrado)";
+                     siteGroup.appendChild(opt);
+                } else {
+                    list.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = `site:${s.id}`;
+                        const statusLabel = s.status === 'active' ? '🟢' : '🔴';
+                        opt.textContent = `${statusLabel} ${s.domain}`;
+                        siteGroup.appendChild(opt);
+                    });
+                }
+            } else {
+                console.error('Sites fetch failed', sitesRes.status);
             }
 
         } catch (error) {
-            console.error('Erro ao carregar serviços:', error);
+            console.error('Erro crítico ao carregar serviços:', error);
+            // Optionally show error in dropdown
+            serverGroup.innerHTML = '<option disabled>Erro ao carregar</option>';
+            siteGroup.innerHTML = '<option disabled>Erro ao carregar</option>';
         }
     }
 
