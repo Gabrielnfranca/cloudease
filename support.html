@@ -16,38 +16,125 @@
     <main class="main-content">
         <header class="dashboard-header">
             <div class="header-title">
-                <h1>Suporte</h1>
+                <h1>Central de Suporte</h1>
+                <p>Estamos aqui para ajudar você a resolver seus problemas.</p>
             </div>
+            <button class="new-site-btn" id="openTicketModal">
+                <i class="fas fa-plus"></i>
+                Novo Chamado
+            </button>
         </header>
-        <div class="form-group" style="max-width:600px; margin:30px 0;">
-            <form id="supportForm" style="display:flex; flex-direction:column; gap:10px;">
-                <input type="text" name="subject" placeholder="Assunto do chamado" required style="padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-                <textarea name="description" placeholder="Descreva o problema" required style="padding:10px; border-radius:6px; border:1px solid #e2e8f0; min-height:80px;"></textarea>
-                <select name="urgency" required style="padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-                    <option value="">Selecione a urgência</option>
-                    <option value="Baixa">Baixa</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Alta">Alta</option>
-                    <option value="Crítica">Crítica</option>
-                </select>
-                <button type="submit" class="new-site-btn"><i class="fas fa-plus"></i> Abrir chamado</button>
-            </form>
+
+        <!-- Stats Cards -->
+        <div class="support-stats">
+            <div class="stat-card">
+                <div class="icon blue"><i class="fas fa-ticket-alt"></i></div>
+                <div class="info">
+                    <span class="value" id="total-tickets">0</span>
+                    <span class="label">Total de Chamados</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon orange"><i class="fas fa-clock"></i></div>
+                <div class="info">
+                    <span class="value" id="pending-tickets">0</span>
+                    <span class="label">Em Aberto</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="info">
+                    <span class="value" id="solved-tickets">0</span>
+                    <span class="label">Resolvidos</span>
+                </div>
+            </div>
         </div>
-        <table class="tickets-table" style="width:100%; margin-top:20px;">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Assunto</th>
-                    <th>Urgência</th>
-                    <th>Status</th>
-                    <th>Data</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Preenchido via JS -->
-            </tbody>
-        </table>
+
+        <div class="content-wrapper">
+             <div class="table-container">
+                <div class="table-header-control">
+                    <h3>Meus Chamados</h3>
+                </div>
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Assunto</th>
+                            <th>Serviço Relacionado</th>
+                            <th>Departamento</th>
+                            <th>Status</th>
+                            <th>Última Atualização</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Preenchido via JS -->
+                    </tbody>
+                </table>
+             </div>
+        </div>
     </main>
+
+    <!-- Modal Novo Chamado -->
+    <div class="modal" id="ticketModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Abrir Novo Chamado</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="supportForm">
+                    <div class="form-row">
+                         <div class="form-group">
+                            <label>Departamento</label>
+                            <select name="department" id="departmentSelect" required>
+                                <option value="technical">Suporte Técnico</option>
+                                <option value="billing">Financeiro</option>
+                                <option value="sales">Vendas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Urgência</label>
+                            <select name="urgency" required>
+                                <option value="Baixa">Baixa</option>
+                                <option value="Normal" selected>Normal</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Crítica">Crítica</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Serviço Relacionado (Opcional)</label>
+                        <select name="related_service" id="relatedService">
+                            <option value="">Nenhum / Geral</option>
+                            <optgroup label="Servidores" id="serverOptions">
+                                <!-- JS Populates -->
+                            </optgroup>
+                            <optgroup label="Sites" id="siteOptions">
+                                <!-- JS Populates -->
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assunto</label>
+                        <input type="text" name="subject" placeholder="Resumo do problema" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição Detalhada</label>
+                        <textarea name="description" placeholder="Descreva o problema com o máximo de detalhes possível..." required rows="5"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn">Cancelar</button>
+                        <button type="submit" class="submit-btn">Enviar Solicitação</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <script src="js/support.js"></script>
     <script src="js/sidebar.js"></script>
 </body>
