@@ -27,6 +27,42 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('admin-users-count').textContent = data.users.length;
             document.getElementById('admin-revenue').textContent = 'R$ ' + (data.totalRevenue || '0.00');
             document.getElementById('admin-tickets').textContent = data.tickets.length;
+            document.getElementById('admin-overdue').textContent = data.overdueCount || '0';
+
+            // Finance Stats
+            if(document.getElementById('finance-paying-users')) {
+                document.getElementById('finance-paying-users').textContent = data.payingUsersCount || 0;
+                document.getElementById('finance-overdue-users').textContent = data.overdueCount || 0;
+                document.getElementById('finance-forecast').textContent = 'R$ ' + (data.projectedRevenue || '0.00');
+            }
+
+            // Invoices Table
+            const invTbody = document.getElementById('admin-invoices-tbody');
+            if (invTbody && data.invoices) {
+                invTbody.innerHTML = '';
+                if (data.invoices.length === 0) {
+                    invTbody.innerHTML = '<tr><td colspan="7">Nenhuma fatura encontrada.</td></tr>';
+                }
+                data.invoices.forEach(inv => {
+                    const statusClass = inv.status === 'paid' ? 'active' : (inv.status === 'overdue' ? 'expired' : 'warning');
+                    const statusLabel = inv.status === 'paid' ? 'Pago' : (inv.status === 'overdue' ? 'Atrasado' : 'Pendente');
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>#${inv.id}</td>
+                        <td>${inv.profiles?.email || 'N/A'}</td>
+                        <td>${inv.profiles?.plan || 'Free'}</td>
+                        <td>R$ ${inv.amount}</td>
+                        <td>${inv.due_date ? new Date(inv.due_date).toLocaleDateString() : 'N/A'}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                        <td>
+                            <button onclick="sendInvoiceEmail(${inv.id})" class="action-btn" title="Reenviar Email"><i class="fas fa-envelope"></i></button>
+                            ${inv.pdf_url ? `<a href="${inv.pdf_url}" target="_blank" class="action-btn" title="Ver NF"><i class="fas fa-file-pdf"></i></a>` : ''}
+                        </td>
+                    `;
+                    invTbody.appendChild(tr);
+                });
+            }
 
             // Users Table
             const usersTbody = document.getElementById('admin-users-tbody');
@@ -104,6 +140,58 @@ document.addEventListener('DOMContentLoaded', async function() {
                 loadAdminData();
             } else {
                 alert('Erro ao banir usuário.');
+            }
+        } catch(e) {
+            alert('Erro de conexão.');
+        }
+    };
+
+    window.runMonthlyBilling = async function() {
+        if(!confirm('Deseja processar as cobranças de todos os usuários pagantes para este mês? Isso gerará faturas e enviará emails.')) return;
+        const btn = document.querySelector('button[onclick="runMonthlyBilling()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/admin', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ action: 'run_billing' })
+            });
+            const data = await res.json();
+            if(res.ok) {
+                alert(`Sucesso! ${data.generated} faturas geradas e enviadas.`);
+                loadAdminData();
+            } else {
+                alert('Erro: ' + (data.error || 'Erro desconhecido'));
+            }
+        } catch(e) {
+            alert('Erro ao processar cobranças.');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    window.sendInvoiceEmail = async function(invoiceId) {
+        if(!confirm('Reenviar email da fatura para o cliente?')) return;
+        try {
+            const res = await fetch('/api/admin', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ action: 'send_invoice_email', invoice_id: invoiceId })
+            });
+            if(res.ok) {
+                alert('Email enviado com sucesso!');
+            } else {
+                alert('Erro ao enviar email.');
             }
         } catch(e) {
             alert('Erro de conexão.');
