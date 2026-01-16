@@ -75,14 +75,19 @@ async function loadDashboard() {
             const tbody = document.getElementById('admin-invoices-tbody');
             tbody.innerHTML = '';
             data.recentInvoices.forEach(inv => {
+                 let statusClass = 'badge-neutral';
+                 if(inv.status === 'paid') statusClass = 'badge-success';
+                 if(inv.status === 'pending') statusClass = 'badge-warning';
+                 if(inv.status === 'overdue') statusClass = 'badge-danger';
+
                  tbody.innerHTML += `<tr>
-                    <td>#${inv.id}</td>
-                    <td>${inv.profiles?.email || 'N/A'}</td>
+                    <td><span style="font-family:monospace; color:#6b7280">#${inv.id}</span></td>
+                    <td><div style="font-weight:500">${inv.profiles?.email || 'N/A'}</div></td>
                     <td>${inv.profiles?.plan || 'Standard'}</td>
                     <td>R$ ${inv.amount}</td>
                     <td>${new Date(inv.due_date).toLocaleDateString()}</td>
-                    <td>${inv.status}</td>
-                    <td>-</td>
+                    <td><span class="badge badge-pill ${statusClass}">${inv.status}</span></td>
+                    <td><button class="btn-icon-only"><i class="fas fa-ellipsis-v"></i></button></td>
                  </tr>`;
             });
         }
@@ -340,21 +345,96 @@ function getColor(type) {
     return '#3b82f6';
 }
 
-// --- USERS & FINANCE (Simplified Reuse) ---
+// --- CREATE USER ---
+window.openCreateUserModal = function() {
+    document.getElementById('modal-create-user').style.display = 'flex';
+}
+
+window.submitCreateUser = async function(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const oldText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Criando...';
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    try {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                action: 'create_user',
+                ...data
+            })
+        });
+
+        const json = await res.json();
+        
+        if(res.ok && json.success) {
+            alert('Usuário criado com sucesso!');
+            document.getElementById('modal-create-user').style.display = 'none';
+            e.target.reset();
+            loadUsers();
+        } else {
+            alert('Erro: ' + (json.error || json.message));
+        }
+
+    } catch(err) {
+        console.error('Erro detalhado:', err);
+        alert('Erro ao processar: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = oldText;
+    }
+}
+
+// --- USERS & FINANCE ---
 async function loadUsers() {
-    const res = await fetch(`${API_URL}?type=users`, { headers: getHeaders() });
-    const users = await res.json();
     const tbody = document.getElementById('admin-users-tbody');
-    if(tbody) {
+    if(!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Carregando...</td></tr>';
+
+    try {
+        const res = await fetch(`${API_URL}?type=users`, { headers: getHeaders() });
+        
+        let users;
+        try {
+            users = await res.json();
+        } catch (jsonError) {
+            throw new Error(`Resposta inválida do servidor: ${res.status}`);
+        }
+
+        if (!res.ok) {
+            throw new Error(users.error || `Erro ${res.status}`);
+        }
+        
         tbody.innerHTML = '';
+        if(!Array.isArray(users) || users.length === 0) {
+             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nenhum usuário encontrado</td></tr>';
+             return;
+        }
+
         users.forEach(u => {
+            const planBadge = u.plan === 'pro' ? 'badge-info' : (u.plan === 'enterprise' ? 'badge-primary' : 'badge-neutral');
+            const roleBadge = u.is_admin ? '<span class="badge badge-warning">ADMIN</span>' : '<span class="badge badge-neutral">USER</span>';
+
             tbody.innerHTML += `<tr>
-                <td>${u.name || '-'}</td>
+                <td style="font-weight:500"><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:24px;height:24px;font-size:10px;background:#e2e8f0;color:#64748b">${u.name?u.name[0].toUpperCase():'U'}</div> ${u.name || 'Sem Nome'}</div></td>
                 <td>${u.email}</td>
-                <td><span class="status-badge">${u.status || 'active'}</span></td>
-                <td>${u.last_login ? new Date(u.last_login).toLocaleDateString() : '-'}</td>
+                <td><span class="badge ${planBadge}">${u.plan || 'free'}</span></td>
+                <td>${roleBadge}</td>
+                <td style="color:#64748b;font-size:12px">${u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : '-'}</td>
+                <td style="text-align:right">
+                    <button class="btn-icon-only"><i class="fas fa-ellipsis-h"></i></button>
+                </td>
             </tr>`;
         });
+    } catch(e) { 
+        console.error('Erro ao carregar usuários:', e); 
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red;text-align:center;padding:20px;">Erro: ${e.message}</td></tr>`;
     }
 }
 
