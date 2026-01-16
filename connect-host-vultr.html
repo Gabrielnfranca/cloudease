@@ -85,9 +85,9 @@
         <section class="form-section" style="margin-top: 40px;">
             <h2>Configurações de Conexão</h2>
             <div class="form-container" style="margin-top: 20px;">
-                <form id="connectHostForm">
+                <form id="connectHostForm" autocomplete="off">
                     <label for="hostName">Nome do Host:</label>
-                    <input type="text" id="hostName" name="name" required>
+                    <input type="text" id="hostName" name="name" required autocomplete="off">
                     
                     <label for="token">Token (API Key):</label>
                     <div class="token-help" style="margin-bottom:8px; color:#4a5568; font-size:13px; line-height: 1.5;">
@@ -100,7 +100,7 @@
                             <li>Copie a <strong>API Key</strong> e cole abaixo.</li>
                         </ol>
                     </div>
-                    <input type="text" id="token" name="token" required>
+                    <input type="text" id="token" name="token" required autocomplete="off">
                     
                     <button type="submit" class="connect-btn"><i class="fas fa-plug"></i> Conectar</button>
                 </form>
