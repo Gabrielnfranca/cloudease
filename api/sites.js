@@ -1,6 +1,6 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
-import { provisionWordPress, deleteSiteFromInstance, updateNginxConfig } from '../lib/provisioner.js';
+import { provisionWordPress, deleteSiteFromInstance, updateNginxConfig, provisionSSL } from '../lib/provisioner.js';
 import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';

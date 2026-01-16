@@ -61,6 +61,9 @@
                 <button class="tab-btn" data-tab="database">
                     <i class="fas fa-database"></i> Banco de Dados
                 </button>
+                <button class="tab-btn" data-tab="ssl">
+                    <i class="fas fa-lock"></i> SSL / HTTPS
+                </button>
             </div>
 
             <div class="tab-content active" id="details">
@@ -261,6 +264,56 @@
                                     <i class="fas fa-table"></i>
                                     <span>Acessar phpMyAdmin</span>
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SSL Tab -->
+            <div class="tab-content" id="ssl">
+                <div class="info-card">
+                    <div class="card-header-simple">
+                        <h3><i class="fas fa-lock"></i> Certificado SSL (Let's Encrypt)</h3>
+                        <p class="header-desc">Proteja seu site com HTTPS gratuito e renovação automática.</p>
+                    </div>
+
+                    <div class="ssl-status-container" id="sslStatusContainer">
+                        <div class="ssl-status-box">
+                            <div class="status-icon" id="sslStatusIcon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="status-info">
+                                <h4 id="sslStatusTitle">Verificando...</h4>
+                                <p id="sslStatusDesc">Aguarde enquanto verificamos o status do SSL.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ssl-steps">
+                        <h4><i class="fas fa-list-ol"></i> Etapas para Instalação</h4>
+                        
+                        <div class="step-item" id="stepDns">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h5>Verificação de DNS</h5>
+                                <p>O domínio <strong><span class="domain-ref">-</span></strong> deve apontar para o IP <strong><span class="ip-ref">-</span></strong>.</p>
+                                <div class="step-note"><i class="fas fa-info-circle"></i> Se usar Cloudflare, desative o proxy (nuvem laranja) temporariamente.</div>
+                                <div id="dnsResult" class="verification-result"></div>
+                                <button class="btn-verify" onclick="verifyDNS()">
+                                    <i class="fas fa-globe"></i> Verificar DNS
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="step-item disabled" id="stepInstall">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h5>Instalação do Certificado</h5>
+                                <p>Gera e instala o certificado Let's Encrypt no servidor Nginx.</p>
+                                <button class="btn-install" id="btnInstallSSL" onclick="installSSL()" disabled>
+                                    <i class="fas fa-download"></i> Instalar SSL
+                                </button>
                             </div>
                         </div>
                     </div>
