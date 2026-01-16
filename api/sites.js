@@ -224,6 +224,7 @@ export default async function handler(req, res) {
                     status, 
                     created_at,
                     enable_temp_url,
+                    ssl_active,
                     last_error,
                     server_id,
                     servers_cache (
