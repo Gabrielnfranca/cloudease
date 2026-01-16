@@ -46,6 +46,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (response.ok) {
+                    // Save new session data if available (auto-login)
+                    if (data.token && data.user) {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                    }
+                    
                     alert('Conta criada com sucesso! Redirecionando para o painel...');
                     window.location.href = 'dashboard.html';
                 } else {
