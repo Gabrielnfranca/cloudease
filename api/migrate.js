@@ -43,6 +43,10 @@ const MIGRATION_SITE_DETAILS = `
             ALTER TABLE sites ADD COLUMN "system_password" VARCHAR(255);
         END IF;
         
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='sites' AND column_name='ssl_active') THEN
+            ALTER TABLE sites ADD COLUMN "ssl_active" BOOLEAN DEFAULT FALSE;
+        END IF;
+
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='applications' AND column_name='db_host') THEN
             ALTER TABLE applications ADD COLUMN db_host VARCHAR(100) DEFAULT 'localhost';
         END IF;
