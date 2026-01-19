@@ -215,7 +215,8 @@ export default async function handler(req, res) {
 
         // LIST VIEW
         try {
-            const { data: sites, error } = await supabase
+            // Tenta buscar com a nova coluna ssl_active
+            let { data: sites, error } = await supabase
                 .from('sites')
                 .select(`
                     id, 
@@ -226,7 +227,7 @@ export default async function handler(req, res) {
                     created_at,
                     enable_temp_url,
                     ssl_active,
-                    last_error,
+                    last_error, 
                     server_id,
                     servers_cache (
                         name,
@@ -235,6 +236,33 @@ export default async function handler(req, res) {
                 `)
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false });
+
+            // Fallback: Se der erro (provavelmente coluna inexistente), tenta query antiga
+            if (error && (error.code === 'PGRST204' || error.message.includes('ssl_active'))) {
+                console.warn('Schema desatualizado (falta ssl_active), usando fallback...');
+                const retryResponse = await supabase
+                    .from('sites')
+                    .select(`
+                        id, 
+                        domain, 
+                        platform, 
+                        php_version, 
+                        status, 
+                        created_at,
+                        enable_temp_url,
+                        last_error, 
+                        server_id,
+                        servers_cache (
+                            name,
+                            ip_address
+                        )
+                    `)
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+                
+                sites = retryResponse.data;
+                error = retryResponse.error;
+            }
 
             if (error) throw error;
 
@@ -247,7 +275,7 @@ export default async function handler(req, res) {
                 status: s.status,
                 created_at: s.created_at,
                 enable_temp_url: s.enable_temp_url,
-                ssl_active: s.ssl_active,
+                ssl_active: s.ssl_active || false, // Fallback para false
                 last_error: s.last_error,
                 server_name: s.servers_cache?.name,
                 ip_address: s.servers_cache?.ip_address
