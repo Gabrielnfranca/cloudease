@@ -172,6 +172,14 @@ export default async function handler(req, res) {
                     .eq('user_id', userId)
                     .single();
 
+                // BYPASS CACHE: Garante leitura do SSL Active diretamente do DB
+                if (site && typeof site.ssl_active === 'undefined') {
+                     try {
+                        const res = await db.query('SELECT ssl_active FROM sites WHERE id = $1', [id]);
+                        if (res.rows.length > 0) site.ssl_active = res.rows[0].ssl_active;
+                     } catch(e) { }
+                }
+
                 if (error || !site) {
                     console.error('Site fetch error:', error);
                     return res.status(404).json({ error: 'Site não encontrado' });
