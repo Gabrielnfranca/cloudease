@@ -281,6 +281,56 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             tbody.appendChild(tr);
         });
+
+        // Executa verificação silenciosa de SSL para sites pendentes
+        checkPendingSSL(sites);
+    }
+
+    async function checkPendingSSL(sites) {
+        // Filtra sites ativos mas com SSL pendente
+        const pendingSites = sites.filter(s => s.status === 'active' && !s.ssl_active);
+        
+        for (const site of pendingSites) {
+            try {
+                // Tenta fazer um HEAD request rápido ou fetch mode: no-cors apenas para testar conectividade HTTPS
+                // Note: no-cors não permite saber o status code exato, mas se não jogar erro de rede, o certificado é válido (geralmente).
+                // Mas fetch em HTTPS com cert inválido joga erro. 
+                // Então: sucesso = SSL existe. Erro = Pode ser sem SSL ou outro erro de rede.
+                
+                await fetch(`https://${site.domain}`, { 
+                    method: 'HEAD', 
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                });
+                
+                console.log(`SSL detectado para ${site.domain}. Atualizando status...`);
+                
+                // Se chegou aqui, o SSL respondeu sem erro de certificado
+                const authToken = localStorage.getItem('authToken');
+                await fetch('/api/sites', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ siteId: site.id, action: 'update_ssl_status' })
+                });
+
+                // Atualiza UI localmente sem recarregar tudo
+                const rows = document.querySelectorAll('.sites-table tbody tr');
+                rows.forEach(row => {
+                    if (row.textContent.includes(site.domain)) {
+                        const sslBadge = row.querySelector('.ssl-badge.warning');
+                        if (sslBadge) {
+                            sslBadge.className = 'ssl-badge active';
+                            sslBadge.innerHTML = '<i class="fas fa-lock"></i> Seguro';
+                            sslBadge.title = 'SSL Ativo (Detectado)';
+                        }
+                    }
+                });
+
+            } catch (e) {
+                // SSL provavelmente não instalado ou inválido. Ignora.
+                // console.log(`Sem SSL para ${site.domain}:`, e);
+            }
+        }
     }
 
     function pollSiteProgress(siteId, elementId) {
