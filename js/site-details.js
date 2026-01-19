@@ -535,6 +535,12 @@ function updateSSLStatusURI(isActive) {
         // Ensure locked
         document.getElementById('step2').classList.add('disabled');
     }
+
+    // Toggle Link Provisório visibility
+    const tempUrlContainer = document.getElementById('tempUrlContainer');
+    if (tempUrlContainer) {
+        tempUrlContainer.style.display = isActive ? 'none' : 'flex';
+    }
 }
 
 async function verifyDNS() {
