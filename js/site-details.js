@@ -577,8 +577,19 @@ async function installSSL() {
         const data = await response.json();
         
         if (data.ok) {
-            alert('Certificado SSL instalado com sucesso! A página será recarregada.');
-            location.reload();
+            // Atualiza UI para sucesso!
+            updateSSLStatusURI(true);
+            
+            // Remove botão loading
+            btn.innerHTML = '<i class="fas fa-check"></i> SSL Instalado com Sucesso';
+            btn.classList.add('btn-success'); // Assumindo que exista ou o CSS lide com isso
+            
+            // Opcional: Recarregar após breve delay apenas se não estiver em HTTPS
+            if (location.protocol !== 'https:') {
+                setTimeout(() => {
+                    location.protocol = 'https:';
+                }, 2000);
+            }
         } else {
             alert('Erro na instalação: ' + (data.detail || data.error));
         }
