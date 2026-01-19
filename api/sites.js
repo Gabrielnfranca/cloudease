@@ -275,6 +275,20 @@ export default async function handler(req, res) {
 
             if (error) throw error;
 
+            // FIX: Se ssl_active veio undefined (cache schema old), faz fetch direto
+            if (sites && sites.length > 0 && typeof sites[0].ssl_active === 'undefined') {
+                try {
+                   const { rows } = await db.query('SELECT id, ssl_active FROM sites WHERE user_id = $1', [userId]);
+                   if (rows && rows.length > 0) {
+                       const sslMap = {};
+                       rows.forEach(r => sslMap[r.id] = r.ssl_active);
+                       sites.forEach(s => {
+                           if (sslMap[s.id] !== undefined) s.ssl_active = sslMap[s.id];
+                       });
+                   }
+                } catch (e) { console.error('Enrichment error', e); }
+            }
+
             // Transform data (flatten structure)
             const flattenedSites = sites.map(s => ({
                 id: s.id,
