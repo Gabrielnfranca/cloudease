@@ -453,6 +453,37 @@ function renderSSL(site) {
 
     // Initial Status Check
     updateSSLStatusURI(site.ssl_active);
+
+    // Auto-Discovery: Se não estiver ativo, verifica se o site responde em HTTPS
+    if (!site.ssl_active && site.status === 'active') {
+        checkAutoSSL(site.id, site.domain);
+    }
+}
+
+async function checkAutoSSL(siteId, domain) {
+    try {
+        await fetch(`https://${domain}`, { 
+            method: 'HEAD', 
+            mode: 'no-cors',
+            cache: 'no-cache'
+        });
+        
+        console.log(`SSL Auto-Discovery: Detectado para ${domain}!`);
+        
+        // Atualiza backend
+        const authToken = localStorage.getItem('authToken');
+        await fetch('/api/sites', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+            body: JSON.stringify({ siteId, action: 'update_ssl_status' })
+        });
+        
+        // Atualiza UI
+        updateSSLStatusURI(true);
+        
+    } catch (e) {
+        // Ignora silenciosamente
+    }
 }
 
 function updateSSLStatusURI(isActive) {
