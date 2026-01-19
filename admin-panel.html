@@ -48,18 +48,22 @@
                         <h3>Receita Mensal</h3>
                         <div class="value" id="dash-revenue">R$ 0,00</div>
                         <div class="trend positive"><i class="fas fa-arrow-up"></i> Estimado</div>
+                        <i class="fas fa-dollar-sign stat-icon-bg"></i>
                     </div>
                     <div class="stat-card">
                         <h3>Novos Usuários</h3>
                         <div class="value" id="dash-users">0</div>
+                        <i class="fas fa-users stat-icon-bg"></i>
                     </div>
                     <div class="stat-card">
                         <h3>Chamados Abertos</h3>
                         <div class="value" id="dash-tickets">0</div>
+                         <i class="fas fa-headset stat-icon-bg"></i>
                     </div>
                      <div class="stat-card">
                         <h3>Faturas Atrasadas</h3>
                         <div class="value" id="dash-overdue">0</div>
+                        <i class="fas fa-exclamation-circle stat-icon-bg" style="color:var(--danger)"></i>
                     </div>
                 </div>
                 <div class="charts-row">
@@ -87,10 +91,17 @@
 
             <!-- TAB: USERS -->
             <section id="tab-users" class="admin-section" style="display:none;">
-                <div class="stat-card" style="margin-bottom:20px;">
-                    <table class="admin-table" style="width:100%;">
-                        <thead><tr><th>Nome</th><th>Email</th><th>Status</th><th>Último login</th></tr></thead>
-                        <tbody id="admin-users-tbody"><tr><td colspan="4">Carregando...</td></tr></tbody>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h3>Gerenciamento de Usuários</h3>
+                    <button onclick="openCreateUserModal()" class="btn-primary" style="background:#4f46e5;">
+                        <i class="fas fa-plus"></i> Novo Usuário
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead><tr><th>Nome</th><th>Email</th><th>Plano</th><th>Acesso</th><th>Último login</th><th style="text-align:right">Ações</th></tr></thead>
+                        <tbody id="admin-users-tbody"><tr><td colspan="6">Carregando...</td></tr></tbody>
                     </table>
                 </div>
             </section>
@@ -164,7 +175,38 @@
             
         </div>
     </main>
-
+    <!-- MODAL NOVO USUÁRIO -->
+    <div id="modal-create-user" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:white; padding:24px; border-radius:12px; width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0">Novo Usuário</h3>
+            <form id="form-create-user" onsubmit="submitCreateUser(event)">
+                <div style="margin-bottom:12px">
+                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px">Nome</label>
+                    <input type="text" name="name" required style="width:100%; padding:8px; border:1px solid #e2e8f0; border-radius:6px;">
+                </div>
+                <div style="margin-bottom:12px">
+                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px">Email</label>
+                    <input type="email" name="email" required style="width:100%; padding:8px; border:1px solid #e2e8f0; border-radius:6px;">
+                </div>
+                <div style="margin-bottom:12px">
+                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px">Senha</label>
+                    <input type="password" name="password" required minlength="6" style="width:100%; padding:8px; border:1px solid #e2e8f0; border-radius:6px;">
+                </div>
+                <div style="margin-bottom:20px">
+                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px">Plano</label>
+                    <select name="plan" style="width:100%; padding:8px; border:1px solid #e2e8f0; border-radius:6px;">
+                        <option value="free">Free</option>
+                        <option value="pro">Pro</option>
+                        <option value="enterprise">Enterprise</option>
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" onclick="document.getElementById('modal-create-user').style.display='none'" style="background:transparent; border:1px solid #ccc; padding:8px 16px; border-radius:6px; cursor:pointer;">Cancelar</button>
+                    <button type="submit" class="btn-primary">Criar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script src="js/admin.js?v=2.2"></script>
 </body>
 </html>
