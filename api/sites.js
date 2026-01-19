@@ -1,6 +1,7 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
 import { provisionWordPress, deleteSiteFromInstance, updateNginxConfig, provisionSSL } from '../lib/provisioner.js';
+import db from '../lib/db.js'; // Acesso direto ao DB para correções críticas
 import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';
@@ -481,7 +482,27 @@ export default async function handler(req, res) {
 
              try {
                 await provisionSSL(serverIp, site.domain);
-                await supabase.from('sites').update({ ssl_active: true }).eq('id', id);
+                
+                // Tenta atualizar via Supabase
+                const { error: updateError } = await supabase.from('sites').update({ ssl_active: true }).eq('id', id);
+                
+                // Se falhar, tenta corrigir o banco e tenta de novo (Auto-Healing)
+                if (updateError) {
+                    console.error('Erro ao salvar status SSL:', updateError);
+                    
+                    if (updateError.message && updateError.message.includes('ssl_active')) {
+                        console.log('Tentando corrigir coluna ssl_active...');
+                        try {
+                           await db.query('ALTER TABLE sites ADD COLUMN IF NOT EXISTS ssl_active BOOLEAN DEFAULT FALSE;');
+                           // Retenta o update
+                           await supabase.from('sites').update({ ssl_active: true }).eq('id', id);
+                        } catch (fixErr) {
+                            console.error('Falha crítica ao tentar corrigir DB:', fixErr);
+                            // Se falhar a correção, não impede o sucesso da instalação, mas o UI pode ficar desatualizado
+                        }
+                    }
+                }
+
                 return res.status(200).json({ ok: true });
              } catch (err) {
                  console.error('SSL Error:', err);
