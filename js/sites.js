@@ -200,21 +200,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const tr = document.createElement('tr');
             
             // Ícone da plataforma
-            let iconHtml = '';
+            let platformIcon = 'fa-globe';
+            let platformClass = 'icon-php';
+            let platformName = 'PHP';
+            
             if (site.platform === 'wordpress') {
-                iconHtml = `<i class="fab fa-wordpress" style="color: #21759b; font-size: 20px; margin-right: 8px;"></i>`;
-            } else if (site.platform === 'html') {
-                iconHtml = `<i class="fab fa-html5" style="color: #e34f26; font-size: 20px; margin-right: 8px;"></i>`;
-            } else {
-                iconHtml = `<i class="fab fa-php" style="color: #777bb3; font-size: 20px; margin-right: 8px;"></i>`;
+                platformIcon = 'fa-wordpress';
+                platformClass = 'icon-wordpress';
+                platformName = 'WordPress';
+            } else if (site.platform === 'laravel') {
+                platformIcon = 'fa-laravel';
+                platformClass = 'icon-laravel';
+                platformName = 'Laravel';
+            } else if (site.platform === 'nodejs') {
+                platformIcon = 'fa-node-js';
+                platformClass = 'icon-nodejs';
+                platformName = 'Node.js';
             }
 
-            // Status Badge
+            // Status Badge Logic
             let statusHtml = '';
+            let statusClass = 'status-active';
+            let statusText = 'Ativo';
             let retryBtn = '';
             
             if (site.status === 'provisioning') {
                 const progId = `prog-${site.id}`;
+                // Keep provisioning layout as is, it's custom
                 statusHtml = `
                     <div id="${progId}" class="progress-wrapper" style="width: 140px;">
                         <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
@@ -260,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${site.domain}
                 </td>
                 <td style="text-align: center;">
-                    ${isSslActive ? '<span class="ssl-badge ssl-active" title="SSL Ativo"><i class="fas fa-lock"></i></span>' : '<span class="ssl-badge ssl-warning" title="SSL Pendente"><i class="fas fa-unlock"></i></span>'}
+                    ${isSslActive ? '<span class="ssl-badge ssl-active"><i class="fas fa-lock"></i> Seguro</span>' : '<span class="ssl-badge ssl-warning"><i class="fas fa-unlock"></i> Pendente</span>'}
                 </td>
                 <td style="text-align: center;">${site.server_name || site.server || '-'}</td>
                 <td style="color: #6b7280; font-family: monospace; text-align: center;">${site.ip_address || site.ip || '-'}</td>

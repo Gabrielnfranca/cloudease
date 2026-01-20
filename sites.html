@@ -101,16 +101,29 @@
         /* Site Badges */
         .ssl-badge {
             display: inline-flex;
-            width: 20px;
-            height: 20px;
             align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-size: 10px;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
         }
-        .ssl-active { background: #d1fae5; color: #065f46; }
-        .ssl-inactive { background: #fee2e2; color: #991b1b; }
+        .ssl-active { background: #def7ec; color: #03543f; }
+        .ssl-inactive { background: #fde8e8; color: #9b1c1c; }
         .ssl-warning { background: #fef3c7; color: #92400e; }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-active { background-color: #def7ec; color: #03543f; }
+        .status-provisioning { background-color: #e1effe; color: #1e429f; }
+        .status-error { background-color: #fde8e8; color: #9b1c1c; }
 
         .temp-url-btn {
              font-size: 11px;
