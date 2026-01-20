@@ -263,9 +263,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             tr.innerHTML = `
                 <td>
-                    <div style="display: flex; align-items: center;">
-                        ${iconHtml}
-                        ${site.platformLabel || (site.platform === 'wordpress' ? 'WordPress' : (site.platform === 'html' ? 'HTML' : 'PHP'))}
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fab ${platformIcon} ${platformClass}" style="font-size: 16px;"></i>
+                        <span style="font-size: 13px;">${platformName}</span>
                     </div>
                 </td>
                 <td style="font-weight: 500;">
