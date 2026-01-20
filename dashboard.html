@@ -3,40 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudEase - Dashboard</title>
+    <title>CloudEase - Dashboard V4</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css"> <!-- Keep for sidebar -->
+    <link rel="stylesheet" href="css/dashboard-v4.css"> <!-- New V4 Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body dashboard-page-body">
     <nav class="sidebar">
         <div class="brand">
             <i class="fas fa-cloud"></i>
             <h1>CloudEase</h1>
         </div>
         <ul class="nav-links">
-            <li class="active">
-                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-            </li>
-            <li>
-                <a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a>
-            </li>
-            <li>
-                <a href="servers.html"><i class="fas fa-server"></i> Servidores</a>
-            </li>
-            <li>
-                <a href="sites.html"><i class="fas fa-globe"></i> Sites</a>
-            </li>
-            <li>
-                <a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a>
-            </li>
-            <li>
-                <a href="support.html"><i class="fas fa-headset"></i> Suporte</a>
-            </li>
-            <li>
-                <a href="settings.html"><i class="fas fa-cog"></i> Configurações</a>
-            </li>
+            <li class="active"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a></li>
+            <li><a href="servers.html"><i class="fas fa-server"></i> Servidores</a></li>
+            <li><a href="sites.html"><i class="fas fa-globe"></i> Sites</a></li>
+            <li><a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a></li>
+            <li><a href="financial.html"><i class="fas fa-wallet"></i> Financeiro</a></li>
+            <li><a href="support.html"><i class="fas fa-headset"></i> Suporte</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Configurações</a></li>
         </ul>
         <div class="user-info">
             <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
@@ -47,207 +36,110 @@
         </div>
     </nav>
 
-    <div id="sidebar-include"></div>
-
     <main class="main-content">
-        <header class="dashboard-header">
-            <div class="header-title">
-                <h1>Bem-vindo ao CloudEase</h1>
+        <!-- Compact Header V4 -->
+        <header class="header-compact">
+            <div class="header-left">
+                <h2>Visão Geral</h2>
+                <div class="breadcrumbs">
+                    <span>CloudEase</span> <i class="fas fa-chevron-right"></i> <span class="active">Dashboard</span>
+                </div>
             </div>
-            <button class="new-site-btn">
-                <i class="fas fa-plus"></i>
-                Novo Servidor
-            </button>
+            <div class="header-actions">
+                <a href="create-server.html" class="btn-primary-compact">
+                    <i class="fas fa-plus"></i> Novo Servidor
+                </a>
+                <div class="user-menu-compact"><i class="far fa-bell"></i></div>
+            </div>
         </header>
 
-        <div class="dashboard-grid">
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-network-wired"></i> Conexões Ativas</h3>
-                </div>
-                <div class="card-content">
-                    <span class="number" id="total-connections">0</span>
-                    <span class="label">Total de Conexões</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-server"></i> Servidores Ativos</h3>
-                </div>
-                <div class="card-content">
-                    <span class="number" id="total-servers">0</span>
-                    <span class="label">Servidores</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-globe"></i> Sites Ativos</h3>
-                </div>
-                <div class="card-content">
-                    <span class="number" id="total-sites">0</span>
-                    <span class="label">Total de Sites</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-shield-alt"></i> Certificados SSL</h3>
-                </div>
-                <div class="card-content">
-                    <span class="number" id="total-ssl">0</span>
-                    <span class="label">Certificados Ativos</span>
-                </div>
-            </div>
-        </div>
-
-        <section class="tutorials-section">
-            <h2 class="section-title">Guia Rápido</h2>
-            <div class="tutorials-grid">
-                <div class="tutorial-card">
-                    <div class="video-thumbnail">
-                        <img src="https://via.placeholder.com/300x169" alt="Tutorial">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div class="tutorial-content">
-                        <h3>Configuração Inicial</h3>
-                        <p>Aprenda a configurar seu primeiro servidor em minutos.</p>
-                        <span class="duration"><i class="far fa-clock"></i> 5 min</span>
-                    </div>
-                </div>
-
-                <div class="tutorial-card">
-                    <div class="video-thumbnail">
-                        <img src="https://via.placeholder.com/300x169" alt="Tutorial">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div class="tutorial-content">
-                        <h3>Gerenciamento de SSL</h3>
-                        <p>Configure certificados SSL para seus domínios.</p>
-                        <span class="duration"><i class="far fa-clock"></i> 3 min</span>
-                    </div>
-                </div>
-
-                <div class="tutorial-card">
-                    <div class="video-thumbnail">
-                        <img src="https://via.placeholder.com/300x169" alt="Tutorial">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div class="tutorial-content">
-                        <h3>Backup Automático</h3>
-                        <p>Configure backups automáticos para seus servidores.</p>
-                        <span class="duration"><i class="far fa-clock"></i> 4 min</span>
-                    </div>
-                </div>
-            </div>
-            <button class="view-all-btn">
-                <i class="fas fa-play"></i>
-                Ver todos os tutoriais
-            </button>
-        </section>
-
-        <section class="tutorials-section">
-            <h2 class="section-title">Planos Disponíveis</h2>
+        <div class="dashboard-container-compact">
             
-            <!-- Tabs de Planos -->
-            <div class="plan-tabs">
-                <button class="plan-tab active">Mensal</button>
-                <button class="plan-tab">Anual</button>
-            </div>
-
-            <!-- Conteúdo dos Planos Mensais -->
-            <div class="plan-content active">
-                <div class="plans-grid">
-                    <!-- Plano Básico -->
-                    <div class="plan-card">
-                        <h3 class="plan-name">Básico</h3>
-                        <div class="plan-price">R$29<span>/mês</span></div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i>1 Servidor</li>
-                            <li><i class="fas fa-check"></i>5GB de Armazenamento</li>
-                            <li><i class="fas fa-check"></i>Backup Diário</li>
-                            <li class="inactive"><i class="fas fa-times"></i>Suporte 24/7</li>
-                        </ul>
-                        <a href="#" class="plan-button">Começar Agora</a>
+            <!-- Quick Stats Row (IDs kept for JS compatibility) -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon icon-connections"><i class="fas fa-network-wired"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Conexões</span>
+                        <h3 id="total-connections">0</h3>
                     </div>
-
-                    <!-- Plano Pro -->
-                    <div class="plan-card popular">
-                        <h3 class="plan-name">Pro</h3>
-                        <div class="plan-price">R$59<span>/mês</span></div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i>3 Servidores</li>
-                            <li><i class="fas fa-check"></i>15GB de Armazenamento</li>
-                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
-                            <li><i class="fas fa-check"></i>Suporte 24/7</li>
-                        </ul>
-                        <a href="#" class="plan-button">Começar Agora</a>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon icon-servers"><i class="fas fa-server"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Servidores</span>
+                        <h3 id="total-servers">0</h3>
                     </div>
+                </div>
 
-                    <!-- Plano Enterprise -->
-                    <div class="plan-card">
-                        <h3 class="plan-name">Enterprise</h3>
-                        <div class="plan-price">R$99<span>/mês</span></div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i>Servidores Ilimitados</li>
-                            <li><i class="fas fa-check"></i>50GB de Armazenamento</li>
-                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
-                            <li><i class="fas fa-check"></i>Suporte 24/7 Prioritário</li>
-                        </ul>
-                        <a href="#" class="plan-button">Começar Agora</a>
+                <div class="stat-card">
+                    <div class="stat-icon icon-sites"><i class="fas fa-globe"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Sites Ativos</span>
+                        <h3 id="total-sites">0</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-ssl"><i class="fas fa-shield-alt"></i></div>
+                    <div class="stat-info">
+                        <span class="label">SSL Ativos</span>
+                        <h3 id="total-ssl">0</h3>
                     </div>
                 </div>
             </div>
 
-            <!-- Conteúdo dos Planos Anuais -->
-            <div class="plan-content">
-                <div class="plans-grid">
-                    <!-- Plano Básico Anual -->
-                    <div class="plan-card">
-                        <h3 class="plan-name">Básico</h3>
-                        <div class="plan-price">R$290<span>/ano</span></div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i>1 Servidor</li>
-                            <li><i class="fas fa-check"></i>5GB de Armazenamento</li>
-                            <li><i class="fas fa-check"></i>Backup Diário</li>
-                            <li class="inactive"><i class="fas fa-times"></i>Suporte 24/7</li>
-                        </ul>
-                        <a href="#" class="plan-button">Começar Agora</a>
+            <!-- Main Grid Area -->
+            <div class="main-grid-compact">
+                <!-- Activity / Status Feed -->
+                <div class="card-compact">
+                    <div class="card-header-compact">
+                        <h4>Status da Infraestrutura</h4>
+                        <div style="font-size: 12px; color: #10b981; display: flex; align-items: center; gap: 6px;">
+                            <span class="status-dot"></span> Operacional
+                        </div>
                     </div>
-
-                    <!-- Plano Pro Anual -->
-                    <div class="plan-card popular">
-                        <h3 class="plan-name">Pro</h3>
-                        <div class="plan-price">R$590<span>/ano</span></div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i>3 Servidores</li>
-                            <li><i class="fas fa-check"></i>15GB de Armazenamento</li>
-                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
-                            <li><i class="fas fa-check"></i>Suporte 24/7</li>
-                        </ul>
-                        <a href="#" class="plan-button">Começar Agora</a>
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>Todos os sistemas operando normalmente.</p>
+                        <p style="font-size: 12px; margin-top: 4px; color: #9ca3af;">Nenhum alerta recente.</p>
                     </div>
+                </div>
 
-                    <!-- Plano Enterprise Anual -->
-                    <div class="plan-card">
-                        <h3 class="plan-name">Enterprise</h3>
-                        <div class="plan-price">R$990<span>/ano</span></div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i>Servidores Ilimitados</li>
-                            <li><i class="fas fa-check"></i>50GB de Armazenamento</li>
-                            <li><i class="fas fa-check"></i>Backup em Tempo Real</li>
-                            <li><i class="fas fa-check"></i>Suporte 24/7 Prioritário</li>
-                        </ul>
-                        <a href="#" class="plan-button">Começar Agora</a>
+                <!-- Quick Actions / Shortcuts -->
+                <div class="side-panel-compact">
+                    <div class="card-compact">
+                        <div class="card-header-compact">
+                            <h4>Ações Rápidas</h4>
+                        </div>
+                        <div class="actions-panel">
+                            <a href="create-site.html" class="action-btn-tile">
+                                <i class="fas fa-laptop-code"></i>
+                                <span>Novo Site</span>
+                            </a>
+                            <a href="domains.html" class="action-btn-tile">
+                                <i class="fas fa-globe-americas"></i>
+                                <span>Domínio</span>
+                            </a>
+                            <a href="financial.html" class="action-btn-tile">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span>Faturas</span>
+                            </a>
+                            <a href="support.html" class="action-btn-tile">
+                                <i class="fas fa-headset"></i>
+                                <span>Ajuda</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+        </div>
     </main>
-    <script src="js/plans.js"></script>
+
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>
-    <script src="js/dashboard.js?v=2"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
