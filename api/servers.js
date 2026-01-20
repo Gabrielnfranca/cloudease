@@ -133,7 +133,7 @@ export default async function handler(req, res) {
             storage: s.specs?.storage || 'N/A',
             os: s.specs?.os || 'Linux',
             region: s.specs?.region || 'Unknown',
-            ipv4: s.ip_address,
+            ip_address: s.ip_address,
             status: s.status,
             created_at: s.created_at,
             sites_count: s.sites?.[0]?.count || 0
