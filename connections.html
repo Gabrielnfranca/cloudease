@@ -109,13 +109,11 @@
 
         /* Custom Column Alignments for Connections Table */
         .connections-table th:nth-child(3),
-        .connections-table td:nth-child(3), /* IP */
+        .connections-table td:nth-child(3), /* Servidores */
         .connections-table th:nth-child(4),
-        .connections-table td:nth-child(4), /* Servidores */
+        .connections-table td:nth-child(4), /* Data */
         .connections-table th:nth-child(5),
-        .connections-table td:nth-child(5), /* Data */
-        .connections-table th:nth-child(6),
-        .connections-table td:nth-child(6)  /* Status */ {
+        .connections-table td:nth-child(5)  /* Status */ {
             text-align: center;
         }
     </style>
@@ -186,7 +184,6 @@
                         <tr>
                             <th>Provedor</th>
                             <th>Nome</th>
-                            <th>IP</th>
                             <th>Servidores</th>
                             <th>Data Criação</th>
                             <th>Status</th>
@@ -196,7 +193,7 @@
                     <tbody>
                         <!-- Populated by JS -->
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 32px; color: #6b7280;">
+                            <td colspan="6" style="text-align: center; padding: 32px; color: #6b7280;">
                                 <i class="fas fa-circle-notch fa-spin" style="margin-right: 8px;"></i> Carregando conexões...
                             </td>
                         </tr>
