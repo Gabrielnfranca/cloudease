@@ -7,71 +7,107 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/dashboard-v4.css">
     <link rel="stylesheet" href="css/support.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/theme.js"></script>
 </head>
-<body class="dashboard-body">
-    <div id="sidebar-include"></div>
-
-    <main class="main-content">
-        <header class="dashboard-header">
-            <div class="header-title">
-                <h1>Central de Suporte</h1>
-                <p>Estamos aqui para ajudar você a resolver seus problemas.</p>
-            </div>
-            <button class="new-site-btn" id="openTicketModal">
-                <i class="fas fa-plus"></i>
-                Novo Chamado
-            </button>
-        </header>
-
-        <!-- Stats Cards -->
-        <div class="support-stats">
-            <div class="stat-card">
-                <div class="icon blue"><i class="fas fa-ticket-alt"></i></div>
-                <div class="info">
-                    <span class="value" id="total-tickets">0</span>
-                    <span class="label">Total de Chamados</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon orange"><i class="fas fa-clock"></i></div>
-                <div class="info">
-                    <span class="value" id="pending-tickets">0</span>
-                    <span class="label">Em Aberto</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon green"><i class="fas fa-check-circle"></i></div>
-                <div class="info">
-                    <span class="value" id="solved-tickets">0</span>
-                    <span class="label">Resolvidos</span>
-                </div>
+<body class="dashboard-body dashboard-page-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a></li>
+            <li><a href="servers.html"><i class="fas fa-server"></i> Servidores</a></li>
+            <li><a href="sites.html"><i class="fas fa-globe"></i> Sites</a></li>
+            <li><a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a></li>
+            <li><a href="financial.html"><i class="fas fa-wallet"></i> Financeiro</a></li>
+            <li class="active"><a href="support.html"><i class="fas fa-headset"></i> Suporte</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Configurações</a></li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
         </div>
+    </nav>
 
-        <div class="content-wrapper">
-             <div class="table-container">
-                <div class="table-header-control">
-                    <h3>Meus Chamados</h3>
+    <main class="main-content">
+        <!-- Compact Header V4 -->
+        <header class="header-compact">
+            <div class="header-left">
+                <h2>Central de Suporte</h2>
+                <div class="breadcrumbs">
+                    <span>CloudEase</span> <i class="fas fa-chevron-right"></i> <span class="active">Suporte</span>
                 </div>
-                <table class="tickets-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Assunto</th>
-                            <th>Serviço Relacionado</th>
-                            <th>Departamento</th>
-                            <th>Status</th>
-                            <th>Última Atualização</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Preenchido via JS -->
-                    </tbody>
-                </table>
-             </div>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-secondary-compact">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="openTicketModal" class="btn-primary-compact">
+                    <i class="fas fa-plus"></i> Novo Chamado
+                </button>
+                <div class="user-menu-compact"><i class="far fa-bell"></i></div>
+            </div>
+        </header>
+
+        <div class="dashboard-container-compact">
+            <!-- Stats Row -->
+            <div class="stats-row support-stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="fas fa-ticket-alt"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Total de Chamados</span>
+                        <h3 id="total-tickets">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-orange"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Em Aberto</span>
+                        <h3 id="pending-tickets">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Resolvidos</span>
+                        <h3 id="solved-tickets">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="card-compact" style="margin-top: 24px;">
+                <div class="card-header-compact">
+                    <h4>Meus Chamados</h4>
+                </div>
+                <div class="table-container" style="padding: 0;">
+                    <table class="tickets-table table-compact">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Assunto</th>
+                                <th>Serviço</th>
+                                <th>Departamento</th>
+                                <th>Status</th>
+                                <th>Última Atualização</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -99,43 +135,38 @@
                                 <option value="Baixa">Baixa</option>
                                 <option value="Normal" selected>Normal</option>
                                 <option value="Alta">Alta</option>
-                                <option value="Crítica">Crítica</option>
+                                <option value="Critica">Crítica</option>
                             </select>
                         </div>
                     </div>
-
                     <div class="form-group">
+                        <label>Assunto</label>
+                        <input type="text" name="subject" required placeholder="Resumo do problema">
+                    </div>
+                    
+                    <div class="form-group" id="serviceGroup">
                         <label>Serviço Relacionado (Opcional)</label>
-                        <select name="related_service" id="relatedService">
+                        <select name="related_service_id" id="serviceSelect">
                             <option value="">Nenhum / Geral</option>
-                            <optgroup label="Servidores" id="serverOptions">
-                                <!-- JS Populates -->
-                            </optgroup>
-                            <optgroup label="Sites" id="siteOptions">
-                                <!-- JS Populates -->
-                            </optgroup>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Assunto</label>
-                        <input type="text" name="subject" placeholder="Resumo do problema" required>
+                        <label>Mensagem</label>
+                        <textarea name="message" rows="5" required placeholder="Descreva detalhadamente seu problema..."></textarea>
                     </div>
-
-                    <div class="form-group">
-                        <label>Descrição Detalhada</label>
-                        <textarea name="description" placeholder="Descreva o problema com o máximo de detalhes possível..." required rows="5"></textarea>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn">Cancelar</button>
-                        <button type="submit" class="submit-btn">Enviar Solicitação</button>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn-submit">Enviar Chamado</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <script src="js/support.js"></script>
+
+    <!-- Scripts -->
     <script src="js/sidebar.js"></script>
+    <script src="js/support.js"></script>
 </body>
 </html>
