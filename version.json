@@ -1,5 +1,5 @@
 {
-    "version": "2.2.2",
-    "updated_at": "2026-01-16T16:00:00Z",
-    "deploy_id": "final-redeploy-attempt"
+    "version": "2.2.3",
+    "updated_at": "2026-01-20T10:00:00Z",
+    "deploy_id": "fix-provisioner-upload-root"
 }
