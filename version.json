@@ -1,5 +1,5 @@
 {
-    "version": "2.2.3",
-    "updated_at": "2026-01-20T10:00:00Z",
-    "deploy_id": "fix-provisioner-upload-root"
+    "version": "2.2.4",
+    "updated_at": "2026-01-20T10:30:00Z",
+    "deploy_id": "force-debug-logs"
 }
