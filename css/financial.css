@@ -1,556 +1,590 @@
 
-/* Financial Page Styles - Professional & Modern UI */
+/* Financial Page Styles - V3 Professional Modern UI */
 
 :root {
     --primary-color: #3b82f6;
     --primary-dark: #2563eb;
-    --primary-light: #eff6ff;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-    --bg-page: #f8fafc;
+    --secondary-bg: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-indigo: #6366f1;
+    --accent-purple: #8b5cf6;
+    --card-bg: #ffffff;
+    --border-soft: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --radius-lg: 16px;
+    --radius-md: 12px;
 }
 
-body.dashboard-body {
-    background-color: var(--bg-page);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+.financial-page-body {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    background-color: var(--secondary-bg);
 }
 
+.top-bar-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    background: white;
+    border-bottom: 1px solid var(--border-soft);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-title h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.header-title p {
+    color: var(--text-secondary);
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.icon-btn-modern {
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.icon-btn-modern:hover {
+    background: var(--secondary-bg);
+    color: var(--primary-color);
+}
+
+/* Financial Grid Layout */
 .financial-container {
-    padding: 30px;
+    padding: 32px 40px;
     max-width: 1400px;
     margin: 0 auto;
-    animation: fadeIn 0.4s ease-out;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Grid Layout */
-.financial-grid {
+.financial-dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 24px;
+    grid-template-columns: 2fr 1fr; /* 2/3 for main, 1/3 for sidebar */
+    gap: 32px;
 }
 
 @media (max-width: 1024px) {
-    .financial-grid {
+    .financial-dashboard-grid {
         grid-template-columns: 1fr;
     }
 }
 
-/* Base Card Style */
-.fin-card {
-    background: white;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--card-shadow);
-    padding: 24px;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-.fin-card:hover {
-    box-shadow: var(--card-hover-shadow);
-    transform: translateY(-2px);
-    border-color: #cbd5e1;
-}
-
-/* Card Headers */
-.card-header {
+/* Sections */
+.section-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--primary-light);
+    margin-bottom: 16px;
 }
 
-.card-header h3 {
-    margin: 0;
-    color: var(--text-main);
+.section-title h3 {
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
-.card-header h3 i {
+.btn-text {
+    background: none;
+    border: none;
     color: var(--primary-color);
-    background: var(--primary-light);
-    padding: 8px;
-    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
     font-size: 0.9rem;
 }
 
-/* Plan Card Specifics */
-.plan-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.plan-name {
-    font-size: 2.5rem;
-    color: var(--text-main);
-    margin: 10px 0;
-    font-weight: 800;
-    letter-spacing: -1px;
-    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.plan-price {
-    font-size: 3rem;
-    color: var(--primary-color);
-    font-weight: 700;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 4px;
-    margin-bottom: 8px;
-}
-
-.plan-price .currency {
-    font-size: 1.25rem;
-    margin-top: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.plan-price .period {
-    font-size: 1rem;
-    align-self: flex-end;
-    margin-bottom: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.next-billing {
-    color: var(--text-muted);
-    background: var(--bg-page);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    margin-bottom: 30px;
-    display: inline-block;
-}
-
-.plan-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-    margin-top: auto;
-}
-
-.btn-upgrade {
-    background: var(--primary-color);
+/* Current Plan Card */
+.current-plan-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px;
     color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr auto;
+    gap: 24px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
 }
 
-.btn-upgrade:hover {
-    background: var(--primary-dark);
-    box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
-    transform: translateY(-1px);
-}
-
-.btn-cancel-plan {
-    background: transparent;
-    color: var(--danger-color);
-    border: 1px solid #fee2e2;
-    padding: 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-cancel-plan:hover {
-    background: #fef2f2;
-    border-color: var(--danger-color);
-}
-
-/* Payment Methods List */
-.methods-list {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
-    max-height: 280px;
-    overflow-y: auto;
-}
-
-.payment-method-item {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    gap: 16px;
-    transition: all 0.2s;
-}
-
-.payment-method-item:hover {
-    background: var(--bg-page);
-    border-color: #cbd5e1;
-}
-
-.method-icon {
-    width: 48px;
-    height: 32px;
-    border-radius: 4px;
-    background: #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: var(--text-main);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.method-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.method-title {
-    font-weight: 600;
-    color: var(--text-main);
-    font-size: 0.95rem;
-}
-
-.method-subtitle {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.default-badge {
-    font-size: 0.7rem;
-    background: var(--primary-light);
-    color: var(--primary-color);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.btn-invoice-action {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    color: var(--text-muted);
-    padding: 8px;
-    border-radius: 6px;
-    transition: all 0.2s;
-}
-
-.btn-invoice-action:hover {
-    background: #e2e8f0;
-    color: var(--text-main);
-}
-
-.btn-secondary-full {
-    width: 100%;
-    padding: 14px;
-    background: white;
-    border: 2px dashed var(--border-color);
-    color: var(--text-muted);
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.2s;
-}
-
-.btn-secondary-full:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: var(--primary-light);
-}
-
-/* Invoices Table */
-.invoices-section {
-    width: 100%;
-    margin-bottom: 40px;
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
-.invoices-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px;
-}
-
-.invoices-table th {
-    text-align: left;
-    padding: 16px;
-    color: var(--text-muted);
-    font-weight: 500;
-    font-size: 0.85rem;
-    border-bottom: 1px solid var(--border-color);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.invoices-table td {
-    padding: 16px;
-    border-bottom: 1px solid #f1f5f9;
-    color: var(--text-main);
-    font-size: 0.95rem;
-    vertical-align: middle;
-}
-
-.invoices-table tr:last-child td {
-    border-bottom: none;
-}
-
-.invoices-table tr:hover td {
-    background: #f8fafc;
-}
-
-/* Status Badges */
-.status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-}
-
-.status-badge::before {
+/* Cool background effect */
+.current-plan-card::before {
     content: '';
-    width: 6px;
-    height: 6px;
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, rgba(59,130,246,0) 70%);
     border-radius: 50%;
-    background: currentColor;
 }
 
-.status-badge.active, .status-badge.paid { 
-    background: #dcfce7; 
-    color: #15803d; 
-}
-.status-badge.pending { 
-    background: #fef9c3; 
-    color: #a16207; 
-}
-.status-badge.overdue, .status-badge.canceled { 
-    background: #fee2e2; 
-    color: #b91c1c; 
-}
-.status-badge.active::before { background: #15803d; }
-.status-badge.pending::before { background: #a16207; }
-
-/* Pricing Modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(4px);
-    overflow-y: auto;
-    align-items: center;
-    justify-content: center;
+.plan-info { grid-column: 1; }
+.plan-cost { 
+    grid-column: 2; 
+    text-align: right;
 }
 
-.modal.show {
+.plan-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    font-weight: 600;
+}
+
+.current-plan-card h2 {
+    font-size: 2.2rem;
+    margin: 8px 0;
+    font-weight: 700;
+}
+
+.plan-status-row {
     display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
 }
 
-.modal-content.large {
-    background: white;
-    width: 90%;
-    max-width: 1100px;
+.status-pill {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    padding: 4px 12px;
     border-radius: 20px;
-    padding: 0;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    margin: 40px auto;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-.modal-header {
-    padding: 24px 32px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f8fafc;
-    border-radius: 20px 20px 0 0;
+.renewal-date {
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
-.modal-header h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--text-main);
-}
-
-.close-modal {
-    font-size: 2rem;
-    color: var(--text-muted);
-    cursor: pointer;
+.plan-cost .amount {
+    font-size: 3rem;
+    font-weight: 700;
     line-height: 1;
 }
 
-.modal-body {
-    padding: 40px;
-    background: white;
-    border-radius: 0 0 20px 20px;
+.plan-cost .currency {
+    font-size: 1.2rem;
+    vertical-align: top;
+    opacity: 0.3; /* Adjusted for better visibility */
+    margin-top: 6px;
+    display: inline-block;
 }
 
-/* Pricing Grid in Modal */
-.pricing-grid {
+.plan-cost .period {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+.plan-features-mini {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
+}
+
+.feat-item {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feat-item i { color: #3b82f6; }
+
+.plan-actions-footer {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+}
+
+.btn-primary-modern {
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary-modern:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-secondary-modern {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary-modern:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Invoices Table */
+.invoices-section-modern {
+    margin-top: 32px;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    border: 1px solid var(--border-soft);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.btn-icon-text {
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.modern-table th {
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 16px;
+    font-weight: 600;
+}
+
+.modern-table td {
+    background: var(--secondary-bg);
+    padding: 16px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.modern-table tr td:first-child { 
+    border-top-left-radius: 8px; 
+    border-bottom-left-radius: 8px; 
+}
+.modern-table tr td:last-child { 
+    border-top-right-radius: 8px; 
+    border-bottom-right-radius: 8px; 
+    text-align: right;
+}
+
+.modern-table tr:hover td {
+    background: #f1f5f9;
+}
+
+/* Credit Card Visualization */
+.credit-card-visual {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 8px 20px -5px rgba(99, 102, 241, 0.4);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 24px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-chip {
+    width: 40px;
+    height: 30px;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.card-number {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    margin: 10px 0;
+}
+
+.card-logo {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 40px;
+    opacity: 0.8;
+}
+
+.card-holder, .card-expires {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.card-holder .label, .card-expires .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+    font-family: 'Inter', sans-serif;
+}
+
+.card-holder .value, .card-expires .value {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+/* Payment Methods List */
+.payment-methods-list {
+    margin-bottom: 16px;
+}
+
+.btn-dashed-full {
+    width: 100%;
+    border: 2px dashed var(--border-soft);
+    background: transparent;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 32px;
+}
+
+.btn-dashed-full:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: var(--primary-light);
+}
+
+/* Help Box */
+.help-box {
+    background: #eff6ff;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.help-box i {
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.help-box h4 {
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.help-box p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Modal Styling */
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-window {
+    background: #f8fafc;
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-top {
+    background: white;
+    padding: 32px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-soft);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.pricing-plans-container {
+    padding: 40px;
+    overflow-y: auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
 }
 
-.pricing-card {
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 32px 24px;
-    text-align: center;
-    transition: all 0.3s;
-    background: white;
-    position: relative;
+/* Loading Spinner */
+.loading-state-modern {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-soft);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+/* Plan Card in Modal */
+.pricing-card {
+    background: white;
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s;
 }
 
 .pricing-card:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-5px);
-    box-shadow: var(--card-hover-shadow);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+}
+
+.pricing-card h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.pricing-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.pricing-sub {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
 }
 
 .pricing-card.popular {
     border: 2px solid var(--primary-color);
-    background: white;
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
-}
-
-.pricing-card.popular::after {
-    content: 'Recomendado';
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--primary-color);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.pricing-card h3 {
-    font-size: 1.5rem;
-    color: var(--text-main);
-    margin: 0 0 16px 0;
-}
-
-.pricing-card .pricing-price {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--text-main);
-    margin-bottom: 8px;
-}
-
-.pricing-card .pricing-sub {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 32px;
+    position: relative;
+    box-shadow: 0 10px 25px -5px rgba(59,130,246,0.15);
 }
 
 .features-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 32px 0;
-    text-align: left;
-    flex: 1;
+    margin-bottom: 32px;
+    flex-grow: 1;
 }
 
 .features-list li {
-    padding: 10px 0;
-    border-bottom: 1px dashed var(--border-color);
-    color: var(--text-muted);
+    padding: 8px 0;
     display: flex;
-    align-items: center;
     gap: 12px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
 .features-list li i {
-    color: var(--success-color);
-    font-size: 0.9rem;
+    color: var(--primary-color);
 }
 
 .btn-select-plan {
     width: 100%;
-    padding: 16px;
-    background: var(--text-main);
-    color: white;
+    padding: 14px;
     border: none;
-    border-radius: 10px;
+    background: var(--text-primary);
+    color: white;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .pricing-card.popular .btn-select-plan {
     background: var(--primary-color);
-    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
 }
 
 .pricing-card.popular .btn-select-plan:hover {
     background: var(--primary-dark);
-}
-
-.btn-select-plan:hover {
-    background: black;
-    transform: scale(1.02);
-}
-
-.btn-select-plan:disabled {
-    background: #e2e8f0;
-    color: #94a3b8;
-    cursor: not-allowed;
-    transform: none;
 }
