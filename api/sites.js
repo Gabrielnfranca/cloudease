@@ -172,14 +172,6 @@ export default async function handler(req, res) {
                     .eq('user_id', userId)
                     .single();
 
-                // BYPASS CACHE: Garante leitura do SSL Active diretamente do DB
-                if (site && typeof site.ssl_active === 'undefined') {
-                     try {
-                        const res = await db.query('SELECT ssl_active FROM sites WHERE id = $1', [id]);
-                        if (res.rows.length > 0) site.ssl_active = res.rows[0].ssl_active;
-                     } catch(e) { }
-                }
-
                 if (error || !site) {
                     console.error('Site fetch error:', error);
                     return res.status(404).json({ error: 'Site não encontrado' });
@@ -246,48 +238,7 @@ export default async function handler(req, res) {
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false });
 
-            // Fallback: Se der erro (provavelmente coluna inexistente), tenta query antiga
-            if (error && (error.code === 'PGRST204' || error.message.includes('ssl_active'))) {
-                console.warn('Schema desatualizado (falta ssl_active), usando fallback...');
-                const retryResponse = await supabase
-                    .from('sites')
-                    .select(`
-                        id, 
-                        domain, 
-                        platform, 
-                        php_version, 
-                        status, 
-                        created_at,
-                        enable_temp_url,
-                        last_error, 
-                        server_id,
-                        servers_cache (
-                            name,
-                            ip_address
-                        )
-                    `)
-                    .eq('user_id', userId)
-                    .order('created_at', { ascending: false });
-                
-                sites = retryResponse.data;
-                error = retryResponse.error;
-            }
-
             if (error) throw error;
-
-            // FIX: Se ssl_active veio undefined (cache schema old), faz fetch direto
-            if (sites && sites.length > 0 && typeof sites[0].ssl_active === 'undefined') {
-                try {
-                   const { rows } = await db.query('SELECT id, ssl_active FROM sites WHERE user_id = $1', [userId]);
-                   if (rows && rows.length > 0) {
-                       const sslMap = {};
-                       rows.forEach(r => sslMap[r.id] = r.ssl_active);
-                       sites.forEach(s => {
-                           if (sslMap[s.id] !== undefined) s.ssl_active = sslMap[s.id];
-                       });
-                   }
-                } catch (e) { console.error('Enrichment error', e); }
-            }
 
             // Transform data (flatten structure)
             const flattenedSites = sites.map(s => ({
