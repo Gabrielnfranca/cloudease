@@ -3,7 +3,6 @@
     /* Light Theme (Default) */
     --bg-body: #f5f7fa;
     --bg-card: #ffffff;
-    --bg-sidebar: #0f172a; /* Always dark sidebar by default in light mode */
     --text-primary: #1e293b;
     --text-secondary: #64748b;
     --text-muted: #94a3b8;
@@ -12,14 +11,19 @@
     --input-border: #cbd5e0;
     --primary-color: #2563eb;
     --shadow-card: 0 1px 3px rgba(0,0,0,0.1);
-    --sidebar-border: #1e293b;
+    
+    /* Sidebar Light */
+    --bg-sidebar: #ffffff;
+    --sidebar-text: #1e293b;
+    --sidebar-text-muted: #64748b;
+    --sidebar-border: #e2e8f0;
+    --sidebar-hover: #f1f5f9;
 }
 
 [data-theme="dark"] {
     /* Dark Theme */
     --bg-body: #0f172a;
     --bg-card: #1e293b;
-    --bg-sidebar: #020617;
     --text-primary: #f1f5f9;
     --text-secondary: #cbd5e1;
     --text-muted: #64748b;
@@ -27,7 +31,14 @@
     --input-bg: #020617;
     --input-border: #334155;
     --shadow-card: 0 1px 3px rgba(0,0,0,0.5);
+
+    /* Sidebar Dark */
+    --bg-sidebar: #0f172a;
+    --sidebar-text: #f1f5f9;
+    --sidebar-text-muted: #94a3b8;
     --sidebar-border: #1e293b;
+    --sidebar-hover: #1e293b;
+
 }
 
 * {

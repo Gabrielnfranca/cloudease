@@ -28,12 +28,12 @@
 }
 
 .sidebar .brand i {
-    color: #3b82f6; /* Blue 500 */
+    color: var(--primary-color);
     font-size: 24px;
 }
 
 .sidebar .brand h1 {
-    color: #fff;
+    color: var(--sidebar-text);
     font-size: 18px;
     font-weight: 600;
     margin: 0;
@@ -58,7 +58,7 @@
     display: flex;
     align-items: center;
     padding: 10px 12px;
-    color: #94a3b8; /* Slate 400 */
+    color: var(--sidebar-text-muted);
     text-decoration: none;
     border-radius: 6px;
     transition: all 0.2s ease;
@@ -68,14 +68,14 @@
 }
 
 .nav-links li a:hover {
-    background: #1e293b; /* Slate 800 */
-    color: #f1f5f9; /* Slate 100 */
+    background: var(--sidebar-hover);
+    color: var(--sidebar-text);
     transform: translateX(4px);
 }
 
 .nav-links li.active a {
-    background: #2563eb; /* Blue 600 */
-    color: #ffffff;
+    background: var(--primary-color);
+    color: #ffffff; /* Always white on active primary bg */
     font-weight: 600;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -106,7 +106,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: 2px solid #334155;
+    border: 2px solid var(--border-color);
     box-shadow: none;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .user-name {
-    color: #e2e8f0;
+    color: var(--sidebar-text);
     font-weight: 500;
     font-size: 14px;
     margin-bottom: 2px;
@@ -126,7 +126,7 @@
 }
 
 .logout {
-    color: #94a3b8;
+    color: var(--sidebar-text-muted);
     text-decoration: none;
     font-size: 12px;
     display: flex;
