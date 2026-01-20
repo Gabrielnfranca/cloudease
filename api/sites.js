@@ -300,7 +300,6 @@ export default async function handler(req, res) {
                 enable_temp_url: s.enable_temp_url,
                 // Fix: Default to true for active sites if null/undefined
                 ssl_active: (s.ssl_active === null || s.ssl_active === undefined) ? (s.status === 'active') : s.ssl_active,
-                ssl_active: s.ssl_active || false, // Fallback para false
                 last_error: s.last_error,
                 server_name: s.servers_cache?.name,
                 ip_address: s.servers_cache?.ip_address
