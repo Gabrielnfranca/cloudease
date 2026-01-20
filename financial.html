@@ -7,9 +7,9 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="css/financial.css?v=3">
+    <link rel="stylesheet" href="css/financial.css?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="dashboard-body financial-page-body">
     <nav class="sidebar">
@@ -37,118 +37,122 @@
     </nav>
 
     <main class="main-content">
-        <header class="top-bar-modern">
-            <div class="header-title">
-                <h2>Financeiro & Assinatura</h2>
-                <p>Gerencie seu plano, faturas e métodos de pagamento</p>
+        <!-- Compact Header -->
+        <header class="header-compact">
+            <div class="header-left">
+                <h2>Financeiro</h2>
+                <div class="breadcrumbs">
+                    <span>Home</span> <i class="fas fa-chevron-right"></i> <span class="active">Faturamento</span>
+                </div>
             </div>
-            <div class="user-menu">
-                <button class="icon-btn-modern"><i class="far fa-bell"></i></button>
+            <div class="header-actions">
+                <button class="btn-secondary-compact" onclick="openUpgradeModal()"><i class="fas fa-arrow-up"></i> Upgrade</button>
+                <div class="user-menu-compact"><i class="far fa-bell"></i></div>
             </div>
         </header>
 
-        <div class="financial-container">
-            <!-- Loading State -->
-            <div id="loading" class="loading-state-modern">
-                <div class="spinner"></div>
-                <p>Carregando dados financeiros...</p>
+        <div class="financial-container-compact">
+            <!-- Loading -->
+            <div id="loading" class="loading-state-compact">
+                <div class="spinner-small"></div>
+                <p>Carregando...</p>
             </div>
 
-            <div id="content" class="content-wrapper" style="display: none;">
+            <div id="content" style="display: none;">
                 
-                <div class="financial-dashboard-grid">
-                    <!-- Left Column: Plan Info -->
-                    <div class="main-column">
-                         <div class="section-title">
-                            <h3><i class="fas fa-star-half-alt"></i> Meu Plano</h3>
-                            <button class="btn-text" onclick="openUpgradeModal()">Ver Planos Disponíveis</button>
-                        </div>
-                        
-                        <div class="current-plan-card">
-                            <div class="plan-info">
-                                <span class="plan-label">Plano Atual</span>
-                                <h2 id="planName">Carregando...</h2>
-                                <div class="plan-status-row">
-                                    <span class="status-pill" id="planStatus">Verificando...</span>
-                                    <span class="renewal-date">Renova em: <b id="nextBillingDate">--/--/----</b></span>
-                                </div>
-                            </div>
-                            <div class="plan-cost">
-                                <span class="currency">R$</span>
-                                <span class="amount" id="planPrice">--</span>
-                                <span class="period">/mês</span>
-                            </div>
-                            <div class="plan-features-mini">
-                                <div class="feat-item"><i class="fas fa-check-circle"></i> Acesso Completo</div>
-                                <div class="feat-item"><i class="fas fa-check-circle"></i> Suporte Prioritário</div>
-                            </div>
-                            <div class="plan-actions-footer">
-                                <button class="btn-primary-modern" onclick="openUpgradeModal()">Fazer Upgrade</button>
-                                <button class="btn-secondary-modern">Gerenciar Assinatura</button>
+                <!-- Quick Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon plan-icon"><i class="fas fa-layer-group"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Plano Atual</span>
+                            <div class="value-group">
+                                <h3 id="planName">...</h3>
+                                <span class="status-dot" id="planStatus"></span>
                             </div>
                         </div>
-
-                        <div class="invoices-section-modern">
-                            <div class="section-header">
-                                <h3><i class="fas fa-history"></i> Histórico de Faturas</h3>
-                                <button class="btn-icon-text"><i class="fas fa-download"></i> Relatório Completo</button>
-                            </div>
-                            <div class="table-container">
-                                <table class="modern-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Status</th>
-                                            <th>Data</th>
-                                            <th>Valor</th>
-                                            <th class="hide-mobile">Método</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="invoicesBody">
-                                        <!-- Injected via JS -->
-                                    </tbody>
-                                </table>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon cost-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Custo Mensal</span>
+                            <div class="value-group">
+                                <h3>R$ <span id="planPrice">0,00</span></h3>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right Column: Payment Methods & Stats -->
-                    <div class="side-column">
-                        <div class="section-title">
-                            <h3><i class="fas fa-credit-card"></i> Pagamento</h3>
-                        </div>
-
-                        <!-- Visual Credit Card -->
-                        <div class="credit-card-visual" id="activeCardViz">
-                            <!-- JS will update this or show default -->
-                            <div class="card-chip"></div>
-                            <div class="card-logo"><i class="fab fa-cc-visa"></i></div>
-                            <div class="card-number">•••• •••• •••• ••••</div>
-                            <div class="card-holder">
-                                <div class="label">Titular</div>
-                                <div class="value">NENHUM CARTÃO</div>
-                            </div>
-                            <div class="card-expires">
-                                <div class="label">Expira</div>
-                                <div class="value">--/--</div>
+                    <div class="stat-card">
+                        <div class="stat-icon date-icon"><i class="far fa-calendar-alt"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Próxima Fatura</span>
+                            <div class="value-group">
+                                <h3 id="nextBillingDate">--/--/----</h3>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="payment-methods-list" id="methodsList">
-                            <!-- List Items -->
-                        </div>
-
-                        <button class="btn-dashed-full">
-                            <i class="fas fa-plus"></i> Adicionar Novo Cartão
-                        </button>
-
-                        <div class="help-box">
-                            <i class="fas fa-life-ring"></i>
-                            <div>
-                                <h4>Precisa de ajuda?</h4>
-                                <p>Fale com nosso suporte financeiro sobre suas notas fiscais.</p>
+                     <div class="stat-card payment-method-mini">
+                        <div class="stat-icon card-icon"><i class="far fa-credit-card"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Método Padrão</span>
+                            <div class="value-group">
+                                <h3>Visa •••• 4242</h3> <!-- Static for now, could be dynamic -->
                             </div>
                         </div>
+                        <button class="btn-icon-only"><i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <div class="main-grid-compact">
+                    <!-- Invoices Section (Dominant) -->
+                    <div class="card-compact invoices-panel">
+                        <div class="card-header-compact">
+                            <h4>Faturas Recentes</h4>
+                            <button class="btn-text-small">Ver todas</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table-compact">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Valor</th>
+                                        <th style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoicesBody">
+                                    <!-- Injected JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                     <!-- Payment & Help (Side) -->
+                    <div class="side-panel-compact">
+                        <div class="card-compact method-panel">
+                            <div class="card-header-compact">
+                                <h4>Forma de Pagamento</h4>
+                            </div>
+                            <div class="methods-list-compact" id="methodsList">
+                                <!-- Injected JS -->
+                            </div>
+                            <button class="btn-add-card-compact">
+                                <i class="fas fa-plus"></i> Novo Cartão
+                            </button>
+                        </div>
+
+                         <div class="card-compact help-panel">
+                             <div class="help-content">
+                                 <i class="fas fa-headset"></i>
+                                 <div>
+                                     <h5>Dúvidas no pagamento?</h5>
+                                     <p>Contate nosso suporte financeiro.</p>
+                                 </div>
+                             </div>
+                         </div>
                     </div>
                 </div>
 
@@ -156,17 +160,15 @@
         </div>
     </main>
 
-    <!-- Modern Upgrade Modal -->
-    <div id="upgradeModal" class="modal-backdrop">
-        <div class="modal-window">
-            <div class="modal-top">
-                <h3>Escolha o plano ideal para você</h3>
-                <p>Mude seu plano a qualquer momento. Escala conforme você cresce.</p>
-                <button class="modal-close" onclick="closeUpgradeModal()"><i class="fas fa-times"></i></button>
+     <!-- Modal Upgrade (Refined) -->
+    <div id="upgradeModal" class="modal-backdrop-compact">
+        <div class="modal-window-compact">
+            <div class="modal-header-compact">
+                <h3>Planos e Preços</h3>
+                <button onclick="closeUpgradeModal()"><i class="fas fa-times"></i></button>
             </div>
-            
-            <div class="pricing-plans-container" id="pricingGrid">
-                <!-- Injected via JS -->
+            <div class="modal-plans-grid" id="pricingGrid">
+                <!-- Injected JS -->
             </div>
         </div>
     </div>
