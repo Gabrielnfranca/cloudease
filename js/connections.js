@@ -70,9 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${date}</td>
                 <td><span class="status-badge active">${conn.status}</span></td>
                 <td>
-                    <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
-                    <button class="action-btn" title="Sincronizar"><i class="fas fa-sync"></i></button>
-                    <button class="action-btn delete-btn" title="Remover" data-id="${conn.id}"><i class="fas fa-trash"></i></button>
+                    <div class="actions-group">
+                        <button class="action-btn" title="Configurações"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn" title="Sincronizar"><i class="fas fa-sync"></i></button>
+                        <button class="action-btn delete-btn" title="Remover" data-id="${conn.id}"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             `;
             tableBody.appendChild(row);
