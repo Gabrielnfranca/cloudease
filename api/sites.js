@@ -238,6 +238,33 @@ export default async function handler(req, res) {
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false });
 
+            // Fallback: Se der erro (provavelmente coluna ssl_active inexistente no cache da API), tenta query sem essa coluna
+            if (error && (error.code === 'PGRST204' || error.message.includes('ssl_active') || error.message.includes('not exist'))) {
+                console.warn('Schema desatualizado detected (falta ssl_active), usando fallback para query antiga...');
+                const retryResponse = await supabase
+                    .from('sites')
+                    .select(`
+                        id, 
+                        domain, 
+                        platform, 
+                        php_version, 
+                        status, 
+                        created_at,
+                        enable_temp_url,
+                        last_error, 
+                        server_id,
+                        servers_cache (
+                            name,
+                            ip_address
+                        )
+                    `)
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+                
+                sites = retryResponse.data;
+                error = retryResponse.error;
+            }
+
             if (error) throw error;
 
             // Transform data (flatten structure)
