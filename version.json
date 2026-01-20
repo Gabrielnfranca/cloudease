@@ -1,5 +1,5 @@
 {
-    "version": "2.2.4",
-    "updated_at": "2026-01-20T10:30:00Z",
-    "deploy_id": "force-debug-logs"
+    "version": "2.2.5",
+    "updated_at": "2026-01-20T11:00:00Z",
+    "deploy_id": "force-sftp-upload"
 }
