@@ -23,10 +23,10 @@ if (fs.existsSync(envPath)) {
 
 async function runMigration() {
     try {
-        const sqlPath = path.resolve(__dirname, '../db/migration-financial.sql');
+        const sqlPath = path.resolve(__dirname, '../db/migration-financial-full.sql');
         const sql = fs.readFileSync(sqlPath, 'utf-8');
         
-        console.log("Executando migração: db/migration-financial.sql");
+        console.log("Executando migração: db/migration-financial-full.sql");
         console.log("Conectando ao banco de dados...");
         
         // Executar o SQL

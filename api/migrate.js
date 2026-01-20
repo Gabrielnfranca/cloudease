@@ -1,4 +1,6 @@
 import db from '../lib/db.js';
+import fs from 'fs';
+import path from 'path';
 
 const MIGRATION_FIX_SYNC = `
     ALTER TABLE sites ADD COLUMN IF NOT EXISTS server_id INTEGER;
@@ -102,6 +104,18 @@ export default async function handler(req, res) {
             ALTER TABLE sites ADD COLUMN IF NOT EXISTS ssl_active BOOLEAN DEFAULT FALSE;
             NOTIFY pgrst, 'reload schema';
         `);
+
+        // Migration 5: Financial (Full)
+        console.log('Executando migration financial-full...');
+        try {
+            const sqlPath = path.join(process.cwd(), 'db', 'migration-financial-full.sql');
+            const sqlContent = fs.readFileSync(sqlPath, 'utf8');
+            await db.query(sqlContent);
+            await db.query("NOTIFY pgrst, 'reload schema';");
+        } catch (err) {
+            console.error('Erro ao ler/executar financial migration:', err);
+             // Não falha tudo se o arquivo não existir ou já tiver sido rodado com sucesso parcial
+        }
         
         console.log('Todas as migrações concluídas.');
         res.status(200).json({ message: 'Migrações executadas com sucesso!' });

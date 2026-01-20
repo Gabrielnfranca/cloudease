@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Financeiro</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/financial.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a></li>
+            <li><a href="servers.html"><i class="fas fa-server"></i> Servidores</a></li>
+            <li><a href="sites.html"><i class="fas fa-globe"></i> Sites</a></li>
+            <li><a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a></li>
+            <li class="active"><a href="financial.html"><i class="fas fa-wallet"></i> Financeiro</a></li>
+            <li><a href="support.html"><i class="fas fa-headset"></i> Suporte</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Configurações</a></li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <h2><i class="fas fa-wallet"></i> Financeiro</h2>
+            <div class="user-menu">
+                <button class="icon-btn"><i class="fas fa-bell"></i></button>
+            </div>
+        </header>
+
+        <div class="financial-container">
+            <!-- Loading State -->
+            <div id="loading" class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i> Carregando informações financeiras...
+            </div>
+
+            <div id="content" style="display: none;">
+                <!-- Top Row: Plan & Payment Methods -->
+                <div class="financial-grid">
+                    <!-- Current Plan -->
+                    <div class="fin-card plan-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-star"></i> Plano Atual</h3>
+                            <span class="status-badge" id="planStatus">Ativo</span>
+                        </div>
+                        <div class="plan-body">
+                            <h2 class="plan-name" id="planName">Free</h2>
+                            <div class="plan-price">
+                                <span class="currency">R$</span>
+                                <span class="amount" id="planPrice">0,00</span>
+                                <span class="period">/mês</span>
+                            </div>
+                            <p class="next-billing">Próxima renovação: <strong id="nextBillingDate">-</strong></p>
+                            
+                            <div class="plan-actions">
+                                <button class="btn-upgrade" onclick="openUpgradeModal()">Mudar de Plano</button>
+                                <button class="btn-cancel-plan">Cancelar Assinatura</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="fin-card payment-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-credit-card"></i> Métodos de Pagamento</h3>
+                            <button class="btn-icon-small" title="Adicionar Novo"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="methods-list" id="methodsList">
+                            <!-- Cards will be injected here -->
+                            <div class="empty-state-small">Nenhum cartão cadastrado.</div>
+                        </div>
+                        <div class="add-method-footer">
+                            <button class="btn-secondary-full"><i class="fas fa-plus-circle"></i> Adicionar Cartão de Crédito</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Table -->
+                <div class="fin-card invoices-section">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-invoice-dollar"></i> Histórico de Faturas</h3>
+                        <button class="btn-download-all"><i class="fas fa-download"></i> Exportar</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="invoices-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                    <th>Valor</th>
+                                    <th>Plano</th>
+                                    <th>Método</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesBody">
+                                <!-- Invoices here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Upgrade -->
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Escolha seu Plano</h3>
+                <span class="close-modal" onclick="closeUpgradeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="pricing-grid" id="pricingGrid">
+                    <!-- Pricing cards here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/financial.js"></script>
+</body>
+</html>
