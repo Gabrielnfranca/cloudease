@@ -256,22 +256,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${site.platformLabel || (site.platform === 'wordpress' ? 'WordPress' : (site.platform === 'html' ? 'HTML' : 'PHP'))}
                     </div>
                 </td>
-                <td>
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <span style="font-weight: 600; color: #2d3748;">${site.domain}</span>
-                    </div>
+                <td style="font-weight: 500;">
+                    ${site.domain}
                 </td>
-                <td>
-                    ${isSslActive ? '<span class="ssl-badge active" title="SSL Ativo"><i class="fas fa-lock"></i> Seguro</span>' : '<span class="ssl-badge warning" title="SSL não ativado"><i class="fas fa-unlock"></i> Pendente</span>'}
+                <td style="text-align: center;">
+                    ${isSslActive ? '<span class="ssl-badge ssl-active" title="SSL Ativo"><i class="fas fa-lock"></i></span>' : '<span class="ssl-badge ssl-warning" title="SSL Pendente"><i class="fas fa-unlock"></i></span>'}
                 </td>
-                <td>${site.server_name || site.server || '-'}</td>
-                <td>${site.ip_address || site.ip || '-'}</td>
-                <td>
+                <td style="text-align: center;">${site.server_name || site.server || '-'}</td>
+                <td style="color: #6b7280; font-family: monospace; text-align: center;">${site.ip_address || site.ip || '-'}</td>
+                <td style="text-align: center;">
                     ${statusHtml}
                 </td>
-                <td>${site.created_at ? new Date(site.created_at).toLocaleDateString('pt-BR') : '-'}</td>
-                <td class="actions">
-                    <div style="display: flex; gap: 5px; justify-content: flex-end;">
+                <td style="text-align: center; color: #6b7280;">${site.created_at ? new Date(site.created_at).toLocaleDateString('pt-BR') : '-'}</td>
+                <td>
+                    <div class="actions-cell">
                         ${retryBtn}
                         <button class="action-btn delete-btn" title="Excluir" onclick="deleteSite(event, ${site.id}, '${site.domain}')">
                             <i class="fas fa-trash"></i>
