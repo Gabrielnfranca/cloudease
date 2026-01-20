@@ -5,11 +5,11 @@
     min-height: 100vh;
 }
 
-/* Barra Lateral */
+/* Barra Lateral - Modern V4 */
 .sidebar {
     width: 250px;
-    background: linear-gradient(165deg, #1e3c72 0%, #2a5298 100%);
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    background: #0f172a; /* Slate 900 */
+    border-right: 1px solid #1e293b;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -18,122 +18,129 @@
 }
 
 .sidebar .brand {
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 64px;
+    padding: 0 24px;
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.sidebar .brand h1 {
-    color: #ffffff;
-    font-size: 20px;
-    margin: 0;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+    border-bottom: 1px solid #1e293b;
 }
 
 .sidebar .brand i {
-    color: #64b5f6;
+    color: #3b82f6; /* Blue 500 */
     font-size: 24px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.sidebar .brand h1 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.025em;
 }
 
 .nav-links {
     list-style: none;
-    padding: 16px 0;
+    padding: 24px 16px;
     margin: 0;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .nav-links li {
-    margin: 4px 12px;
+    margin: 0;
 }
 
 .nav-links li a {
     display: flex;
     align-items: center;
-    padding: 10px 16px;
-    color: rgba(255, 255, 255, 0.85);
+    padding: 10px 12px;
+    color: #94a3b8; /* Slate 400 */
     text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    gap: 10px;
-    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    gap: 12px;
     font-size: 14px;
+    font-weight: 500;
 }
 
-.nav-links li.active a {
-    background: #2196f3;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
-}
-
-.nav-links li:not(.active) a:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
+.nav-links li a:hover {
+    background: #1e293b; /* Slate 800 */
+    color: #f1f5f9; /* Slate 100 */
     transform: translateX(4px);
 }
 
+.nav-links li.active a {
+    background: #2563eb; /* Blue 600 */
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 .nav-links li a i {
-    font-size: 18px;
+    font-size: 16px;
     width: 20px;
     text-align: center;
-    transition: transform 0.2s ease;
+    transition: none;
 }
 
 .nav-links li a:hover i {
-    transform: scale(1.1);
+    transform: none;
 }
 
 /* Área do usuário */
 .user-info {
     margin-top: auto;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 16px;
+    padding: 20px 24px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+    border-top: 1px solid #1e293b;
+    background: #0f172a;
 }
 
 .avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    border: 2px solid #64b5f6;
-    box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.3);
+    border: 2px solid #334155;
+    box-shadow: none;
 }
 
 .user-details {
     flex-grow: 1;
+    overflow: hidden;
 }
 
 .user-name {
-    color: #ffffff;
-    font-weight: 600;
+    color: #e2e8f0;
+    font-weight: 500;
     font-size: 14px;
-    display: block;
     margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .logout {
-    color: #ff5252;
+    color: #94a3b8;
     text-decoration: none;
     font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: rgba(255, 82, 82, 0.1);
-    transition: all 0.3s ease;
+    gap: 6px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    transition: color 0.2s;
 }
 
 .logout:hover {
-    background: rgba(255, 82, 82, 0.2);
-    transform: translateY(-1px);
+    color: #ef4444; /* Red 500 */
+    background: transparent;
+    transform: none;
 }
 
 /* Conteúdo Principal */
