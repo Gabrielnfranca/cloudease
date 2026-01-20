@@ -1,4 +1,35 @@
 /* Reset e estilos globais */
+:root {
+    /* Light Theme (Default) */
+    --bg-body: #f5f7fa;
+    --bg-card: #ffffff;
+    --bg-sidebar: #0f172a; /* Always dark sidebar by default in light mode */
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --input-bg: #ffffff;
+    --input-border: #cbd5e0;
+    --primary-color: #2563eb;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.1);
+    --sidebar-border: #1e293b;
+}
+
+[data-theme="dark"] {
+    /* Dark Theme */
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-sidebar: #020617;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-color: #334155;
+    --input-bg: #020617;
+    --input-border: #334155;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.5);
+    --sidebar-border: #1e293b;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,11 +37,13 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background: #f5f6fa;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Layout da página de login */

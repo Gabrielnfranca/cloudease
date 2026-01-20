@@ -1,6 +1,6 @@
 /* Layout Base */
 .dashboard-body {
-    background: #f5f7fa;
+    background: var(--bg-body);
     display: flex;
     min-height: 100vh;
 }
@@ -8,13 +8,14 @@
 /* Barra Lateral - Modern V4 */
 .sidebar {
     width: 250px;
-    background: #0f172a; /* Slate 900 */
-    border-right: 1px solid #1e293b;
+    background: var(--bg-sidebar); 
+    border-right: 1px solid var(--sidebar-border);
     display: flex;
     flex-direction: column;
     position: fixed;
     height: 100vh;
     z-index: 100;
+    transition: background-color 0.3s ease;
 }
 
 .sidebar .brand {
@@ -23,7 +24,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 1px solid #1e293b;
+    border-bottom: 1px solid var(--sidebar-border);
 }
 
 .sidebar .brand i {
@@ -97,8 +98,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    border-top: 1px solid #1e293b;
-    background: #0f172a;
+    border-top: 1px solid var(--sidebar-border);
+    background: var(--bg-sidebar);
 }
 
 .avatar {
@@ -158,10 +159,11 @@
     gap: 20px;
     align-items: center;
     margin-bottom: 24px;
-    background: white;
+    background: var(--bg-card);
     padding: 16px 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-card);
+    color: var(--text-primary);
 }
 
 .header-title {
@@ -171,7 +173,7 @@
 
 .header-title h1 {
     margin: 0;
-    color: #1e3c72;
+    color: var(--text-primary);
     font-size: 18px;
     font-weight: 600;
 }
@@ -214,12 +216,12 @@
 
 /* Cards Modernos */
 .card {
-    background: white;
+    background: var(--bg-card);
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.04);
+    box-shadow: var(--shadow-card);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(25, 118, 210, 0.08);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
     aspect-ratio: 1.6;
@@ -228,6 +230,7 @@
     justify-content: space-between;
     min-height: 90px;
     text-align: left;
+    color: var(--text-primary);
 }
 
 .card::before {
