@@ -83,7 +83,11 @@ export default async function handler(req, res) {
             return new Promise((resolve) => {
                 const conn = new Client();
                 conn.on('ready', () => {
-                     conn.exec(`tail -n 20 ${logFile}`, (err, stream) => {
+                     // Tenta ler o log principal E o log de debug de execução (se existir)
+                     const debugLogFile = `/tmp/debug_run_${site.domain}.log`;
+                     const cmd = `tail -n 20 ${logFile}; echo "---DEBUG---"; cat ${debugLogFile} 2>/dev/null`;
+                     
+                     conn.exec(cmd, (err, stream) => {
                         if (err) {
                             conn.end();
                             // Pode ser que o arquivo ainda não exista (muito cedo)
@@ -97,13 +101,24 @@ export default async function handler(req, res) {
                         stream.on('close', () => {
                                   conn.end();
                                   
+                                  // Separa logs principais dos logs de debug
+                                  const parts = output.split('---DEBUG---');
+                                  const mainLog = parts[0] || '';
+                                  const debugLog = parts[1] || '';
+
                                   // Parse Logs
                                   let percent = 10;
                                   let step = 'Iniciando...';
                                   
-                                  if (!output) {
+                                  if (!mainLog || mainLog.trim() === '') {
                                       // Log vazio ou inexistente
-                                      if (errorOutput && errorOutput.includes('No such file')) {
+                                      if (debugLog && debugLog.trim().length > 0) {
+                                           // Temos erro no debug de execução!
+                                           percent = 0;
+                                           step = 'Falha na inicialização do script: ' + debugLog.substring(0, 100);
+                                           // Update erro
+                                           supabase.from('sites').update({ status: 'error', last_error: 'Script init failed: ' + debugLog }).eq('id', id).then();
+                                      } else if (errorOutput && errorOutput.includes('No such file')) {
                                           percent = 5;
                                           step = 'Aguardando criação de logs...';
                                       } else if (errorOutput) {
@@ -114,6 +129,7 @@ export default async function handler(req, res) {
                                           step = 'Preparando ambiente...';
                                       }
                                   } else {
+                                      output = mainLog; // Usa só o log principal para o parsing padrão
                                       if (output.includes('STARTING')) { percent = 10; step = 'Inicializando...'; }
                                       if (output.includes('Atualizando sistema')) { percent = 20; step = 'Atualizando Sistema...'; }
                                       if (output.includes('Instalando dependencias')) { percent = 30; step = 'Instalando Dependências...'; }
