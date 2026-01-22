@@ -84,7 +84,8 @@ export default async function handler(req, res) {
                 const conn = new Client();
                 conn.on('ready', () => {
                      // Tenta ler o log principal E o log de debug de execução (se existir)
-                     const debugLogFile = `/tmp/debug_run_${site.domain}.log`;
+                     // Ajustado para ler log de debug na pasta root
+                     const debugLogFile = `/root/debug_run_${site.domain}.log`;
                      const cmd = `tail -n 20 ${logFile}; echo "---DEBUG---"; cat ${debugLogFile} 2>/dev/null`;
                      
                      conn.exec(cmd, (err, stream) => {
