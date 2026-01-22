@@ -90,8 +90,11 @@ export default async function handler(req, res) {
                             return resolve(res.status(200).json({ percent: 5, step: 'Aguardando logs...' }));
                         }
                         let output = '';
+                        let errorOutput = '';
                         stream.on('data', (data) => { output += data.toString(); })
-                              .on('close', () => {
+                              .stderr.on('data', (data) => { errorOutput += data.toString(); }); // Captura stderr
+                        
+                        stream.on('close', () => {
                                   conn.end();
                                   
                                   // Parse Logs
@@ -100,8 +103,16 @@ export default async function handler(req, res) {
                                   
                                   if (!output) {
                                       // Log vazio ou inexistente
-                                      percent = 5; 
-                                      step = 'Preparando ambiente...';
+                                      if (errorOutput && errorOutput.includes('No such file')) {
+                                          percent = 5;
+                                          step = 'Aguardando criação de logs...';
+                                      } else if (errorOutput) {
+                                          percent = 5;
+                                          step = 'Erro ao ler logs: ' + errorOutput.substring(0, 50);
+                                      } else {
+                                          percent = 5; 
+                                          step = 'Preparando ambiente...';
+                                      }
                                   } else {
                                       if (output.includes('STARTING')) { percent = 10; step = 'Inicializando...'; }
                                       if (output.includes('Atualizando sistema')) { percent = 20; step = 'Atualizando Sistema...'; }
