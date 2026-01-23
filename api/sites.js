@@ -566,7 +566,7 @@ export default async function handler(req, res) {
 
         const { 
             serverId, 
-            domain, 
+            domain: rawDomain,
             platform, 
             phpVersion, 
             // WP specific
@@ -576,9 +576,11 @@ export default async function handler(req, res) {
             wpAdminEmail 
         } = req.body;
         
-        if (!serverId || !domain) {
+        if (!serverId || !rawDomain) {
             return res.status(400).json({ error: 'Servidor e Domínio são obrigatórios.' });
         }
+
+        const domain = rawDomain.toLowerCase().trim();
 
         try {
             // 1. Check if domain already exists for another user? RLS handles isolation, but we might want uniqueness?
