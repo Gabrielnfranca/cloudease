@@ -316,7 +316,11 @@ function renderAccess(site) {
     }
     
     const btn = document.getElementById('webFileManagerBtn');
-    if(btn) btn.href = `http://${site.ip}:8080/filemanager?root=/var/www/${site.domain}`; 
+    if (btn) {
+        const sftpUser = (site.system_user && site.system_user !== '-') ? site.system_user : 'root';
+        btn.href = `sftp://${sftpUser}@${site.ip}:22`;
+        btn.title = 'Abrir no cliente SFTP padrão do sistema';
+    }
 }
 
 function renderDatabase(site) {
