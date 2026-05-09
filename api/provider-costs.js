@@ -1,6 +1,6 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
-import { fetchPlans, fetchServers } from '../lib/providers.js';
+import { fetchPlans, fetchServers, fetchProviderBilling } from '../lib/providers.js';
 
 const PROVIDER_LABELS = {
     vultr: 'Vultr',
@@ -161,6 +161,8 @@ export default async function handler(req, res) {
             let plansError = null;
             let liveServers = [];
             let liveServersError = null;
+            let realBilling = { pendingUsd: null, balanceUsd: null, source: 'unavailable' };
+            let realBillingError = null;
 
             try {
                 plans = await fetchPlans(providerKey, provider.api_key);
@@ -172,6 +174,12 @@ export default async function handler(req, res) {
                 liveServers = await fetchServers(providerKey, provider.api_key);
             } catch (error) {
                 liveServersError = error.message;
+            }
+
+            try {
+                realBilling = await fetchProviderBilling(providerKey, provider.api_key);
+            } catch (error) {
+                realBillingError = error.message;
             }
 
             const planMap = new Map(
@@ -243,8 +251,12 @@ export default async function handler(req, res) {
                 pricedServers,
                 totalUsd: Number(totalUsd.toFixed(2)),
                 totalBrl,
+                realPendingUsd: realBilling.pendingUsd,
+                realBalanceUsd: realBilling.balanceUsd,
+                realBillingSource: realBilling.source,
                 plansError,
                 liveServersError,
+                realBillingError,
                 servers: serverRows
             });
         }

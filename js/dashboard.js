@@ -152,6 +152,8 @@ function renderProviderCosts(data) {
         const logo = PROVIDER_LOGOS[String(provider.provider || '').toLowerCase()];
         const providerTotalUsd = formatMoney(provider.totalUsd, 'USD');
         const providerTotalBrl = provider.totalBrl !== null ? formatMoney(provider.totalBrl, 'BRL') : '--';
+        const realPendingUsd = provider.realPendingUsd !== null ? formatMoney(provider.realPendingUsd, 'USD') : '--';
+        const realBalanceUsd = provider.realBalanceUsd !== null ? formatMoney(provider.realBalanceUsd, 'USD') : '--';
 
         const providerHeader = `
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:10px;">
@@ -163,8 +165,9 @@ function renderProviderCosts(data) {
                     <div style="font-size:12px; color:#64748b;">${provider.pricedServers}/${provider.totalServers} servidor(es) com preco identificado</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:13px; font-weight:700; color:#0f172a;">${providerTotalUsd}/mes</div>
-                    <div style="font-size:12px; color:#64748b;">${providerTotalBrl}/mes</div>
+                    <div style="font-size:13px; font-weight:700; color:#0f172a;">Fatura em aberto (real): ${realPendingUsd}</div>
+                    <div style="font-size:12px; color:#64748b;">Saldo da conta: ${realBalanceUsd}</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:2px;">Referencia por servidor: ${providerTotalUsd}/mes (${providerTotalBrl}/mes)</div>
                 </div>
             </div>
         `;
@@ -207,6 +210,9 @@ function renderProviderCosts(data) {
         }
         if (provider.liveServersError) {
             warnings.push(`Nao foi possivel consultar servidores em tempo real agora: ${escapeHtml(provider.liveServersError)}`);
+        }
+        if (provider.realBillingError) {
+            warnings.push(`Nao foi possivel consultar billing real agora: ${escapeHtml(provider.realBillingError)}`);
         }
 
         const warning = warnings.length
