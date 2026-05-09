@@ -272,7 +272,7 @@ export default async function handler(req, res) {
                     provider_name: provider.provider_name,
                     php_version: site.php_version,
                     enable_temp_url: site.enable_temp_url,
-                    ssl_active: site.ssl_active === null ? (site.status === 'active') : site.ssl_active,
+                    ssl_active: site.ssl_active === true,
                     system_user: site.system_user,
                     system_password: site.system_password,
                     application: {
@@ -353,8 +353,7 @@ export default async function handler(req, res) {
                 status: s.status,
                 created_at: s.created_at,
                 enable_temp_url: s.enable_temp_url,
-                // Fix: Default to true for active sites if null/undefined
-                ssl_active: (s.ssl_active === null || s.ssl_active === undefined) ? (s.status === 'active') : s.ssl_active,
+                ssl_active: s.ssl_active === true,
                 last_error: s.last_error,
                 server_name: s.servers_cache?.name,
                 ip_address: s.servers_cache?.ip_address

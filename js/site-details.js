@@ -523,35 +523,23 @@ function renderSSL(site) {
 
     // Initial Status Check
     updateSSLStatusURI(site.ssl_active);
-
-    // Auto-Discovery: Se não estiver ativo, verifica se o site responde em HTTPS
-    if (!site.ssl_active && site.status === 'active') {
-        checkAutoSSL(site.id, site.domain);
-    }
 }
 
 async function checkAutoSSL(siteId, domain) {
+    // Verifica SSL via API do backend (que faz a checagem no servidor, evitando no-cors falso positivo)
     try {
-        await fetch(`https://${domain}`, { 
-            method: 'HEAD', 
-            mode: 'no-cors',
-            cache: 'no-cache'
-        });
-        
-        console.log(`SSL Auto-Discovery: Detectado para ${domain}!`);
-        
-        // Atualiza backend
         const authToken = localStorage.getItem('authToken');
-        await fetch('/api/sites', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
-            body: JSON.stringify({ siteId, action: 'update_ssl_status' })
+        const response = await fetch(`/api/sites?id=${siteId}&action=check-ssl`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${authToken}` }
         });
-        
-        // Atualiza UI
-        updateSSLStatusURI(true);
-        await loadSiteDetails(siteId);
-        
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.ssl_active === true) {
+            console.log(`SSL Auto-Discovery: Confirmado pelo servidor para ${domain}.`);
+            updateSSLStatusURI(true);
+            await loadSiteDetails(siteId);
+        }
     } catch (e) {
         // Ignora silenciosamente
     }
