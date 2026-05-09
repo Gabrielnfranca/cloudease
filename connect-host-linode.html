@@ -61,9 +61,44 @@
             font-weight: 500; /* Define o peso da fonte do botão "Voltar" */
             transition: background-color 0.2s; /* Transição suave para a cor de fundo do botão "Voltar" */
         }
+        .video-card {
+            margin-top: 14px;
+            border: 1px solid #dbe4ef;
+            border-radius: 8px;
+            background: #f8fbff;
+            padding: 12px 14px;
+        }
+        .video-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        .video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0f6cbd;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .video-btn.disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .video-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
     </style>
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body" data-provider="linode">
     <div id="sidebar-include"></div>
 
     <main class="main-content">
@@ -102,11 +137,17 @@
                     <input type="text" id="token" required autocomplete="off">
                     
                     <button type="submit" class="connect-btn"><i class="fas fa-plug"></i> Conectar</button>
+                    <div id="integrationVideoCard" class="video-card">
+                        <div class="video-title">Ajuda em video: como integrar Linode</div>
+                        <a id="integrationVideoLink" class="video-btn" href="#"><i class="fas fa-play-circle"></i> Assistir tutorial</a>
+                        <div id="integrationVideoHint" class="video-hint">Carregando status do tutorial...</div>
+                    </div>
                 </form>
             </div>
         </section>
     </main>
     <script src="js/connect-provider-form.js"></script>
     <script src="js/sidebar.js"></script>
+    <script src="js/integration-videos.js"></script>
 </body>
 </html>
