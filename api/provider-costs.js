@@ -1,6 +1,6 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
-import { fetchPlans } from '../lib/providers.js';
+import { fetchPlans, fetchServers } from '../lib/providers.js';
 
 const PROVIDER_LABELS = {
     vultr: 'Vultr',
@@ -38,7 +38,7 @@ const matchPlanBySpecs = (plans, specs = {}) => {
 
     if (serverCpu === null || serverRam === null || serverDisk === null) return null;
 
-    return plans.find((plan) => {
+    const matches = plans.filter((plan) => {
         const planCpu = Number(plan.cpu);
         const planRam = Number(plan.ram);
         const planDisk = Number(plan.disk);
@@ -46,7 +46,16 @@ const matchPlanBySpecs = (plans, specs = {}) => {
             && planCpu === serverCpu
             && planRam === serverRam
             && planDisk === serverDisk;
-    }) || null;
+    });
+
+    if (matches.length === 0) return null;
+
+    const uniquePrices = new Set(matches.map((plan) => Number(plan.price)).filter((p) => Number.isFinite(p)));
+
+    // Se houver planos com mesmas specs mas precos diferentes, evita chute.
+    if (uniquePrices.size > 1) return null;
+
+    return matches[0] || null;
 };
 
 async function getUsdBrlRate() {
@@ -114,7 +123,7 @@ export default async function handler(req, res) {
                 .order('created_at', { ascending: false }),
             supabase
                 .from('servers_cache')
-                .select('id, provider_id, name, status, specs')
+                .select('id, provider_id, external_id, name, status, specs')
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false }),
             getUsdBrlRate().catch((error) => ({ error: error.message }))
@@ -149,11 +158,19 @@ export default async function handler(req, res) {
 
             let plans = [];
             let plansError = null;
+            let liveServers = [];
+            let liveServersError = null;
 
             try {
                 plans = await fetchPlans(providerKey, provider.api_key);
             } catch (error) {
                 plansError = error.message;
+            }
+
+            try {
+                liveServers = await fetchServers(providerKey, provider.api_key);
+            } catch (error) {
+                liveServersError = error.message;
             }
 
             const planMap = new Map(
@@ -163,20 +180,31 @@ export default async function handler(req, res) {
                 }])
             );
 
+            const liveSpecsByExternalId = new Map(
+                (liveServers || [])
+                    .filter((server) => server && server.external_id)
+                    .map((server) => [String(server.external_id), server.specs || {}])
+            );
+
             const serverRows = providerServers.map((server) => {
-                const specs = server.specs || {};
+                const cachedSpecs = server.specs || {};
+                const liveSpecs = liveSpecsByExternalId.get(String(server.external_id || '')) || {};
+                const specs = { ...cachedSpecs, ...liveSpecs };
                 const candidates = getPlanCandidateIds(specs);
 
                 let matchedPlan = null;
+                let matchMethod = null;
                 for (const candidateId of candidates) {
                     if (planMap.has(candidateId)) {
                         matchedPlan = planMap.get(candidateId);
+                        matchMethod = 'plan_id';
                         break;
                     }
                 }
 
                 if (!matchedPlan && plans.length) {
                     matchedPlan = matchPlanBySpecs(plans, specs);
+                    if (matchedPlan) matchMethod = 'specs';
                 }
 
                 const monthlyUsd = matchedPlan && Number.isFinite(Number(matchedPlan.price))
@@ -194,7 +222,8 @@ export default async function handler(req, res) {
                     planId: matchedPlan?.id || specs.plan || specs.plan_id || null,
                     monthlyUsd,
                     monthlyBrl,
-                    hasPrice: monthlyUsd !== null
+                    hasPrice: monthlyUsd !== null,
+                    matchMethod: matchMethod || 'unmatched'
                 };
             }).sort((a, b) => (b.monthlyUsd || -1) - (a.monthlyUsd || -1));
 
@@ -211,6 +240,7 @@ export default async function handler(req, res) {
                 totalUsd: Number(totalUsd.toFixed(2)),
                 totalBrl,
                 plansError,
+                liveServersError,
                 servers: serverRows
             });
         }

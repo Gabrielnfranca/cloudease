@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateDashboard, 30000);
 });
 
+const PROVIDER_LOGOS = {
+    vultr: 'https://www.vultr.com/favicon.ico',
+    digitalocean: 'https://www.digitalocean.com/favicon.ico',
+    linode: 'https://www.linode.com/favicon.ico',
+    aws: 'assets/images/aws-logo.svg'
+};
+
 async function updateDashboard() {
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -138,13 +145,17 @@ function renderProviderCosts(data) {
     container.className = '';
 
     const providersHtml = data.providers.map((provider) => {
+        const logo = PROVIDER_LOGOS[String(provider.provider || '').toLowerCase()];
         const providerTotalUsd = formatMoney(provider.totalUsd, 'USD');
         const providerTotalBrl = provider.totalBrl !== null ? formatMoney(provider.totalBrl, 'BRL') : '--';
 
         const providerHeader = `
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:10px;">
                 <div>
-                    <div style="font-size:15px; font-weight:700; color:#0f172a;">${escapeHtml(provider.providerLabel)}</div>
+                    <div style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#0f172a;">
+                        ${logo ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(provider.providerLabel)}" style="width:18px; height:18px; object-fit:contain; border-radius:4px;">` : ''}
+                        <span>${escapeHtml(provider.providerLabel)}</span>
+                    </div>
                     <div style="font-size:12px; color:#64748b;">${provider.pricedServers}/${provider.totalServers} servidor(es) com preco identificado</div>
                 </div>
                 <div style="text-align:right;">
@@ -166,10 +177,18 @@ function renderProviderCosts(data) {
         const rows = provider.servers.map((server) => {
             const usd = server.monthlyUsd !== null ? `${formatMoney(server.monthlyUsd, 'USD')}/mes` : '--';
             const brl = server.monthlyBrl !== null ? `${formatMoney(server.monthlyBrl, 'BRL')}/mes` : '--';
+            const source = server.matchMethod === 'plan_id'
+                ? '<span style="font-size:11px; color:#0f766e;">ID do plano</span>'
+                : server.matchMethod === 'specs'
+                    ? '<span style="font-size:11px; color:#b45309;">Estimado por specs</span>'
+                    : '<span style="font-size:11px; color:#94a3b8;">Sem mapeamento</span>';
 
             return `
                 <tr>
-                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; font-weight:600; color:#0f172a;">${escapeHtml(server.name)}</td>
+                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; font-weight:600; color:#0f172a;">
+                        ${escapeHtml(server.name)}
+                        <div>${source}</div>
+                    </td>
                     <td style="padding:8px; border-bottom:1px solid #f1f5f9; color:#475569; text-transform:capitalize;">${escapeHtml(server.status || '-')}</td>
                     <td style="padding:8px; border-bottom:1px solid #f1f5f9; color:#475569;">${escapeHtml(server.planId || '-')}</td>
                     <td style="padding:8px; border-bottom:1px solid #f1f5f9; text-align:right; color:#0f172a;">${usd}</td>
@@ -178,8 +197,16 @@ function renderProviderCosts(data) {
             `;
         }).join('');
 
-        const warning = provider.plansError
-            ? `<div style="margin-top:8px; font-size:12px; color:#b45309;">Nao foi possivel atualizar catalogo de planos agora: ${escapeHtml(provider.plansError)}</div>`
+        const warnings = [];
+        if (provider.plansError) {
+            warnings.push(`Nao foi possivel atualizar catalogo de planos agora: ${escapeHtml(provider.plansError)}`);
+        }
+        if (provider.liveServersError) {
+            warnings.push(`Nao foi possivel consultar servidores em tempo real agora: ${escapeHtml(provider.liveServersError)}`);
+        }
+
+        const warning = warnings.length
+            ? `<div style="margin-top:8px; font-size:12px; color:#b45309;">${warnings.join(' | ')}</div>`
             : '';
 
         return `
