@@ -150,69 +150,14 @@ function renderProviderCosts(data) {
 
     const providersHtml = data.providers.map((provider) => {
         const logo = PROVIDER_LOGOS[String(provider.provider || '').toLowerCase()];
-        const providerTotalUsd = formatMoney(provider.totalUsd, 'USD');
-        const providerTotalBrl = provider.totalBrl !== null ? formatMoney(provider.totalBrl, 'BRL') : '--';
         const realPendingUsd = provider.realPendingUsd !== null ? formatMoney(provider.realPendingUsd, 'USD') : '--';
         const realBalanceUsd = provider.realBalanceUsd !== null ? formatMoney(provider.realBalanceUsd, 'USD') : '--';
-
-        const providerHeader = `
-            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:10px;">
-                <div>
-                    <div style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#0f172a;">
-                        ${logo ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(provider.providerLabel)}" style="width:18px; height:18px; object-fit:contain; border-radius:4px;">` : ''}
-                        <span>${escapeHtml(provider.providerLabel)}</span>
-                    </div>
-                    <div style="font-size:12px; color:#64748b;">${provider.pricedServers}/${provider.totalServers} servidor(es) com preco identificado</div>
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-size:13px; font-weight:700; color:#0f172a;">Fatura em aberto (real): ${realPendingUsd}</div>
-                    <div style="font-size:12px; color:#64748b;">Saldo da conta: ${realBalanceUsd}</div>
-                    <div style="font-size:11px; color:#64748b; margin-top:2px;">Referencia por servidor: ${providerTotalUsd}/mes (${providerTotalBrl}/mes)</div>
-                </div>
-            </div>
-        `;
-
-        if (!provider.servers || provider.servers.length === 0) {
-            return `
-                <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; background:#fff;">
-                    ${providerHeader}
-                    <div style="font-size:13px; color:#94a3b8;">Nenhum servidor encontrado nesse provedor.</div>
-                </div>
-            `;
-        }
-
-        const rows = provider.servers.map((server) => {
-            const usd = server.monthlyUsd !== null ? `${formatMoney(server.monthlyUsd, 'USD')}/mes` : '--';
-            const brl = server.monthlyBrl !== null ? `${formatMoney(server.monthlyBrl, 'BRL')}/mes` : '--';
-            const source = server.matchMethod === 'plan_id'
-                ? '<span style="font-size:11px; color:#0f766e;">Confirmado (ID do plano)</span>'
-                : server.matchMethod === 'specs'
-                    ? '<span style="font-size:11px; color:#b45309;">Estimado por specs</span>'
-                    : '<span style="font-size:11px; color:#94a3b8;">Nao confirmado</span>';
-
-            return `
-                <tr>
-                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; font-weight:600; color:#0f172a;">
-                        ${escapeHtml(server.name)}
-                        <div>${source}</div>
-                    </td>
-                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; color:#475569; text-transform:capitalize;">${escapeHtml(server.status || '-')}</td>
-                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; color:#475569;">${escapeHtml(server.planId || '-')}</td>
-                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; text-align:right; color:#0f172a;">${usd}</td>
-                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; text-align:right; color:#0f172a;">${brl}</td>
-                </tr>
-            `;
-        }).join('');
+        const realPendingBrl = provider.realPendingBrl !== null ? formatMoney(provider.realPendingBrl, 'BRL') : '--';
+        const realBalanceBrl = provider.realBalanceBrl !== null ? formatMoney(provider.realBalanceBrl, 'BRL') : '--';
 
         const warnings = [];
-        if (provider.plansError) {
-            warnings.push(`Nao foi possivel atualizar catalogo de planos agora: ${escapeHtml(provider.plansError)}`);
-        }
-        if (provider.liveServersError) {
-            warnings.push(`Nao foi possivel consultar servidores em tempo real agora: ${escapeHtml(provider.liveServersError)}`);
-        }
         if (provider.realBillingError) {
-            warnings.push(`Nao foi possivel consultar billing real agora: ${escapeHtml(provider.realBillingError)}`);
+            warnings.push(`Nao foi possivel consultar billing real: ${escapeHtml(provider.realBillingError)}`);
         }
 
         const warning = warnings.length
@@ -220,22 +165,27 @@ function renderProviderCosts(data) {
             : '';
 
         return `
-            <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; background:#fff; overflow:auto;">
-                ${providerHeader}
-                <table style="width:100%; border-collapse:collapse; font-size:13px; min-width:700px;">
-                    <thead>
-                        <tr>
-                            <th style="padding:8px; text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">Servidor</th>
-                            <th style="padding:8px; text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">Status</th>
-                            <th style="padding:8px; text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">Plano</th>
-                            <th style="padding:8px; text-align:right; color:#475569; border-bottom:1px solid #e2e8f0;">USD</th>
-                            <th style="padding:8px; text-align:right; color:#475569; border-bottom:1px solid #e2e8f0;">BRL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rows}
-                    </tbody>
-                </table>
+            <div style="border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:12px; background:#fff;">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#0f172a;">
+                        ${logo ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(provider.providerLabel)}" style="width:20px; height:20px; object-fit:contain; border-radius:4px;">` : ''}
+                        <span>${escapeHtml(provider.providerLabel)}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:flex-end;">
+                            <div>
+                                <div style="font-size:11px; color:#64748b; margin-bottom:2px;">Fatura em aberto</div>
+                                <div style="font-size:14px; font-weight:700; color:#0f172a;">${realPendingUsd}</div>
+                                <div style="font-size:11px; color:#64748b;">${realPendingBrl}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:11px; color:#64748b; margin-bottom:2px;">Saldo da conta</div>
+                                <div style="font-size:14px; font-weight:700; color:#0f172a;">${realBalanceUsd}</div>
+                                <div style="font-size:11px; color:#64748b;">${realBalanceBrl}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 ${warning}
             </div>
         `;

@@ -243,6 +243,14 @@ export default async function handler(req, res) {
             const totalBrl = exchangeRate ? Number((totalUsd * exchangeRate).toFixed(2)) : null;
             const pricedServers = serverRows.filter((row) => row.hasPrice).length;
 
+            // Converte valores reais para BRL
+            const realPendingBrl = realBilling.pendingUsd !== null && exchangeRate
+                ? Number((realBilling.pendingUsd * exchangeRate).toFixed(2))
+                : null;
+            const realBalanceBrl = realBilling.balanceUsd !== null && exchangeRate
+                ? Number((realBilling.balanceUsd * exchangeRate).toFixed(2))
+                : null;
+
             providerCosts.push({
                 provider: providerKey,
                 providerLabel: PROVIDER_LABELS[providerKey] || provider.label || providerKey,
@@ -253,6 +261,8 @@ export default async function handler(req, res) {
                 totalBrl,
                 realPendingUsd: realBilling.pendingUsd,
                 realBalanceUsd: realBilling.balanceUsd,
+                realPendingBrl,
+                realBalanceBrl,
                 realBillingSource: realBilling.source,
                 plansError,
                 liveServersError,
