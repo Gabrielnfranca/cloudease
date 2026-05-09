@@ -66,18 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.repairDatabase = async function() {
         if(!confirm("Isso tentará rodar as migrações pendentes. Continuar?")) return;
-        try {
-            const btn = document.querySelector('button[onclick="repairDatabase()"]');
-            if(btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reparando...';
-            
-            const res = await fetch('/api/migrate');
-            const data = await res.json();
-            
-            alert('Resultado: ' + (data.message || JSON.stringify(data)));
-            loadSites();
-        } catch(e) {
-            alert('Erro ao tentar reparar: ' + e.message);
-        }
+        alert('Reparo automatico desativado nesta versao. Se precisar, execute a migracao via scripts internos no backend.');
     };
 
     window.retryProvision = async function(event, siteId) {
