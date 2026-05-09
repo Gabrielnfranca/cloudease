@@ -91,13 +91,43 @@ function renderHeader(site) {
     badge.className = `status-badge ${site.status}`;
     
     const visitBtn = document.getElementById('visitSiteBtn');
-    // Prefer temp url if set
-    // Adiciona /wp-admin para redirecionar diretamente ao login
-    let url = (site.enable_temp_url && site.ip) 
-        ? `http://${site.domain}.${site.ip}.nip.io/wp-admin/` 
-        : `http://${site.domain}/wp-admin/`;
-    
-    visitBtn.href = url;
+    const wpAdminBtn = document.getElementById('visitWpAdminBtn');
+    const tempUrl = site.tempUrl || ((site.enable_temp_url && site.ip) ? `http://${site.domain}.${site.ip}.nip.io/` : null);
+
+    let url = null;
+    if (site.ssl_active) {
+        url = `https://${site.domain}/`;
+    } else if (site.enable_temp_url && tempUrl) {
+        url = tempUrl;
+    }
+
+    if (url) {
+        visitBtn.href = url;
+        visitBtn.style.pointerEvents = 'auto';
+        visitBtn.style.opacity = '1';
+        visitBtn.innerHTML = site.ssl_active
+            ? '<i class="fas fa-lock"></i> Domínio Principal (SSL)'
+            : '<i class="fas fa-link"></i> Link Provisório';
+        visitBtn.title = site.ssl_active ? 'Abrir domínio principal com SSL' : 'Abrir link temporário enquanto DNS/SSL não está ativo';
+    } else {
+        visitBtn.href = '#';
+        visitBtn.style.pointerEvents = 'none';
+        visitBtn.style.opacity = '0.6';
+        visitBtn.innerHTML = '<i class="fas fa-ban"></i> Sem Acesso Público';
+        visitBtn.title = 'Ative o Link Provisório ou aguarde o SSL do domínio principal.';
+    }
+
+    if (wpAdminBtn) {
+        const canShowWpAdmin = site.platform === 'wordpress' && !!url;
+        if (canShowWpAdmin) {
+            const baseUrl = site.ssl_active ? `https://${site.domain}/` : tempUrl;
+            wpAdminBtn.href = `${baseUrl}wp-admin/`;
+            wpAdminBtn.style.display = 'inline-flex';
+            wpAdminBtn.title = 'Abrir painel administrativo do WordPress';
+        } else {
+            wpAdminBtn.style.display = 'none';
+        }
+    }
 }
 
 function getProviderIcon(name) {
@@ -135,21 +165,16 @@ function renderDetails(site) {
     document.getElementById('detailPlatform').textContent = site.platformLabel || site.platform;
     document.getElementById('detailPhp').textContent = site.php_version || 'N/A';
     document.getElementById('detailRootPath').textContent = `/var/www/${site.domain}`;
+    const accessMode = document.getElementById('accessModeStatus');
+    const sslTempUrlHint = document.getElementById('sslTempUrlHint');
 
     // Temp URL State
     const toggle = document.getElementById('tempUrlToggle');
     const statusText = document.getElementById('tempUrlStatus');
     
     if (toggle) {
-        // HIDE OPTION IF SSL ACTIVE
         const container = toggle.closest('.info-item');
-        if (container) {
-             if (site.ssl_active) {
-                 container.style.display = 'none';
-             } else {
-                 container.style.display = 'flex';
-             }
-        }
+        if (container) container.style.display = 'flex';
 
         toggle.checked = site.enable_temp_url || false;
         
@@ -166,6 +191,20 @@ function renderDetails(site) {
         } else {
              toggle.disabled = false;
         }
+    }
+
+    if (accessMode) {
+        if (site.ssl_active) {
+            accessMode.innerHTML = '<span style="color: #22c55e; font-weight: 600;">Domínio Principal (HTTPS)</span>';
+        } else if (site.enable_temp_url && site.ip) {
+            accessMode.innerHTML = '<span style="color: #0f766e; font-weight: 600;">Link Provisório (DNS ainda não apontado)</span>';
+        } else {
+            accessMode.innerHTML = '<span style="color: #b91c1c; font-weight: 600;">Sem acesso público no momento</span>';
+        }
+    }
+
+    if (sslTempUrlHint) {
+        sslTempUrlHint.style.display = (site.ssl_active && site.enable_temp_url) ? 'block' : 'none';
     }
 }
 
@@ -480,6 +519,7 @@ async function checkAutoSSL(siteId, domain) {
         
         // Atualiza UI
         updateSSLStatusURI(true);
+        await loadSiteDetails(siteId);
         
     } catch (e) {
         // Ignora silenciosamente
@@ -536,11 +576,7 @@ function updateSSLStatusURI(isActive) {
         document.getElementById('step2').classList.add('disabled');
     }
 
-    // Toggle Link Provisório visibility
-    const tempUrlContainer = document.getElementById('tempUrlContainer');
-    if (tempUrlContainer) {
-        tempUrlContainer.style.display = isActive ? 'none' : 'flex';
-    }
+    // Mantemos o controle do link provisório sempre visível para permitir ativar/desativar manualmente.
 }
 
 async function verifyDNS() {
@@ -616,6 +652,7 @@ async function installSSL() {
         if (data.ok) {
             // Atualiza UI para sucesso!
             updateSSLStatusURI(true);
+            await loadSiteDetails(currentSiteId);
             
             // Remove botão loading
             btn.innerHTML = '<i class="fas fa-check"></i> SSL Instalado com Sucesso';

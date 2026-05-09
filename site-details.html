@@ -47,6 +47,9 @@
                 <a href="#" target="_blank" id="visitSiteBtn" class="action-btn secondary">
                     <i class="fas fa-external-link-alt"></i> Visitar Site
                 </a>
+                <a href="#" target="_blank" id="visitWpAdminBtn" class="action-btn secondary" style="display: none;">
+                    <i class="fab fa-wordpress"></i> Admin WordPress
+                </a>
             </div>
         </header>
 
@@ -112,6 +115,13 @@
                             <small class="hint-text" style="display: block; margin-top: 5px; color: #a0aec0; font-size: 0.85em;">
                                 Ativa um link temporário (ex: domain.ip.nip.io) para acesso sem DNS propagado.
                             </small>
+                            <small id="sslTempUrlHint" class="hint-text" style="display: none; margin-top: 6px; color: #b45309; font-size: 0.85em;">
+                                SSL ativo detectado. Recomendado desativar o link provisório para evitar confusão.
+                            </small>
+                        </div>
+                        <div class="info-item">
+                            <label>Acesso Atual</label>
+                            <span id="accessModeStatus">-</span>
                         </div>
                         <div class="info-item">
                             <label>Caminho Raiz (Root Path)</label>

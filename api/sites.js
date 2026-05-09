@@ -6,6 +6,55 @@ import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';
 import dns from 'dns';
+import { randomBytes } from 'crypto';
+
+/**
+ * Gera uma senha criptograficamente segura com até 15 caracteres.
+ * Usa letras maiúsculas, minúsculas, números e caracteres especiais
+ * seguros para uso em shell scripts (sem aspas ou backticks).
+ */
+function generateSecurePassword(length = 15) {
+    const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const lower = 'abcdefghjkmnpqrstuvwxyz';
+    const digits = '23456789';
+    const special = '@#%^&*_+=!';
+    const all = upper + lower + digits + special;
+
+    // Garante pelo menos um de cada categoria
+    const mandatory = [
+        upper[randomBytes(1)[0] % upper.length],
+        lower[randomBytes(1)[0] % lower.length],
+        digits[randomBytes(1)[0] % digits.length],
+        special[randomBytes(1)[0] % special.length]
+    ];
+
+    const rest = Array.from({ length: length - mandatory.length }, () =>
+        all[randomBytes(1)[0] % all.length]
+    );
+
+    // Embaralha com randomBytes para não expor posição das obrigatórias
+    const combined = [...mandatory, ...rest];
+    for (let i = combined.length - 1; i > 0; i--) {
+        const j = randomBytes(1)[0] % (i + 1);
+        [combined[i], combined[j]] = [combined[j], combined[i]];
+    }
+
+    return combined.join('');
+}
+
+/**
+ * Gera um nome de usuário Linux único e menos previsível.
+ * Formato: <prefixo do domínio, até 8 chars> + _ + <4 chars hex aleatório>
+ * Exemplo: worldit_3f2a
+ */
+function generateSecureUsername(domain) {
+    const prefix = (domain || 'site')
+        .replace(/[^a-z0-9]/g, '')
+        .substring(0, 8)
+        || 'site';
+    const suffix = randomBytes(2).toString('hex'); // 4 chars hex
+    return `${prefix}_${suffix}`; // máx 13 chars, sempre começa com letra ou dígito
+}
 
 function getPrivateKey() {
     if (process.env.SSH_PRIVATE_KEY) return process.env.SSH_PRIVATE_KEY.replace(/\\n/g, '\n');
@@ -219,7 +268,7 @@ export default async function handler(req, res) {
                     server_id: site.server_id,
                     server_name: server.name,
                     ip: server.ip_address || site.ip_address, // Fallback
-                    tempUrl: (site.enable_temp_url && server.ip_address) ? `http://${site.domain}.${server.ip_address}.nip.io` : null,
+                    tempUrl: (site.enable_temp_url && server.ip_address) ? `http://${site.domain}.${server.ip_address}.nip.io/` : null,
                     provider_name: provider.provider_name,
                     php_version: site.php_version,
                     enable_temp_url: site.enable_temp_url,
@@ -569,6 +618,7 @@ export default async function handler(req, res) {
             domain: rawDomain,
             platform, 
             phpVersion, 
+            enableTempUrl,
             // WP specific
             wpTitle, 
             wpAdminUser, 
@@ -592,9 +642,10 @@ export default async function handler(req, res) {
                 domain: domain,
                 platform: platform || 'php',
                 php_version: phpVersion || '8.2',
+                enable_temp_url: Boolean(enableTempUrl),
                 status: 'provisioning',
-                system_user: (domain || '').replace(/\./g, '').substring(0, 10), // Simple username gen
-                system_password: Math.random().toString(36).slice(-10) // Tmp password
+                system_user: generateSecureUsername(domain),
+                system_password: generateSecurePassword(15)
             };
 
             const { data: siteData, error: siteError } = await supabase
@@ -615,7 +666,7 @@ export default async function handler(req, res) {
                     // Configuração de Banco de Dados Padrão (automática)
                     db_name: (domain || '').replace(/\./g, '_').substring(0, 10) + '_db',
                     db_user: (domain || '').replace(/\./g, '_').substring(0, 10) + '_user',
-                    db_pass: Math.random().toString(36).slice(-12)
+                    db_pass: generateSecurePassword(15)
                 };
 
                 const { error: appError } = await supabase
@@ -650,6 +701,7 @@ export default async function handler(req, res) {
                         wpAdminPass: wpAdminPass,
                         wpAdminEmail: wpAdminEmail,
                         wpTitle: wpTitle,
+                        enableTempUrl: Boolean(enableTempUrl),
                         platform: platform // Passa a plataforma para decidir o que instalar no script
                     };
 
