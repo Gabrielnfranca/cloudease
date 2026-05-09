@@ -283,6 +283,13 @@ export default async function handler(req, res) {
                     }
                 };
 
+                // Atualiza config Nginx em background (migração silenciosa para sites existentes)
+                // Garante que index.html tenha prioridade sobre index.php sem intervenção do usuário
+                if (site.status === 'active' && server.ip_address) {
+                    updateNginxConfig(server.ip_address, site.domain, site.enable_temp_url, site.php_version)
+                        .catch(err => console.warn(`[bg] Nginx sync silencioso falhou para ${site.domain}:`, err.message));
+                }
+
                 return res.status(200).json(detailedSite);
 
             } catch (error) {
