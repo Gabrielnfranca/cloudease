@@ -439,29 +439,10 @@ export default async function handler(req, res) {
         if (!siteId) return res.status(400).json({ error: 'ID do site é obrigatório' });
 
         try {
-            // HANDLE SSL STATUS UPDATE (Auto-Discovery)
+            // REMOVIDO: update_ssl_status via PUT — SSL só pode ser ativado via action=install-ssl (POST)
+            // que verifica DNS antes de instalar o certificado
             if (action === 'update_ssl_status') {
-                const { error: updateError } = await supabase
-                    .from('sites')
-                    .update({ ssl_active: true })
-                    .eq('id', siteId)
-                    .eq('user_id', userId);
-
-                if (updateError) {
-                    // Tenta auto-healing se falhar
-                    if (updateError.message && updateError.message.includes('ssl_active')) {
-                        try {
-                           await db.query('ALTER TABLE sites ADD COLUMN IF NOT EXISTS ssl_active BOOLEAN DEFAULT FALSE;');
-                           await supabase.from('sites').update({ ssl_active: true }).eq('id', siteId).eq('user_id', userId);
-                        } catch (e) {
-                            return res.status(500).json({ error: 'Falha no auto-healing DB' });
-                        }
-                    } else {
-                        throw updateError;
-                    }
-                }
-                
-                return res.status(200).json({ success: true });
+                return res.status(403).json({ error: 'Operação não permitida. Use a instalação de SSL com verificação de DNS.' });
             }
 
             // HANDLE NGINX CONFIG UPDATE (Temp URL)
