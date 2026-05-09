@@ -16,6 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
             let provider = 'digitalocean';
             if (window.location.href.includes('linode')) provider = 'linode';
             if (window.location.href.includes('vultr')) provider = 'vultr';
+            if (window.location.href.includes('aws')) provider = 'aws';
+
+            if (provider === 'aws') {
+                alert('Integração AWS em preparação. A tela e o fluxo visual já estão prontos, e a conexão completa será habilitada assim que finalizarmos validações de custo e segurança.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                return;
+            }
 
             try {
                 const authToken = localStorage.getItem('authToken');

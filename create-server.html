@@ -112,6 +112,25 @@
             color: #4299e1;
         }
 
+        .option-card.coming-soon {
+            opacity: 0.75;
+            border-style: dashed;
+            position: relative;
+        }
+
+        .soon-badge {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 999px;
+            padding: 3px 8px;
+        }
+
         .actions {
             display: flex;
             justify-content: space-between;
@@ -123,6 +142,58 @@
         .btn-secondary {
             background: #cbd5e0;
             color: #2d3748;
+        }
+
+        .guidance-card {
+            margin-top: 14px;
+            border: 1px solid #dbeafe;
+            background: #f8fbff;
+            color: #1e3a8a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .guidance-card strong {
+            color: #0f172a;
+        }
+
+        .cost-card {
+            margin-top: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        .warn-card {
+            margin-top: 12px;
+            border: 1px solid #fbd38d;
+            background: #fffaf0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #7b341e;
+            font-size: 13px;
+        }
+
+        .summary-row {
+            margin-bottom: 8px;
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .summary-value {
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -184,8 +255,14 @@
                                 <i class="fas fa-server"></i>
                                 <h3>Linode</h3>
                             </div>
+                            <div class="option-card coming-soon" data-disabled="1" onclick="selectOption(this, 'provider', 'aws')">
+                                <i class="fab fa-aws"></i>
+                                <h3>AWS</h3>
+                                <span class="soon-badge">Em breve</span>
+                            </div>
                         </div>
                         <input type="hidden" name="provider" id="providerInput" required>
+                        <div id="providerGuidance" class="guidance-card" style="display:none"></div>
                     </div>
                 </div>
 
@@ -196,6 +273,7 @@
                         <select id="regionInput" name="region" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
                             <option value="">Selecione uma região...</option>
                         </select>
+                        <p class="helper-text" id="regionHint" style="margin-top: 10px; color: #718096; font-size: 14px;">Escolha a região mais próxima dos seus visitantes para reduzir latência.</p>
                     </div>
                 </div>
 
@@ -217,6 +295,8 @@
                         <select id="planInput" name="plan" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
                             <option value="">Selecione um plano...</option>
                         </select>
+                        <div id="planCostInfo" class="cost-card">Selecione um plano para ver estimativa de custo e recomendação.</div>
+                        <div id="planWarning" class="warn-card" style="display:none"></div>
                     </div>
                 </div>
 
@@ -230,9 +310,29 @@
                     
                     <div class="summary-card" style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-top: 20px;">
                         <h3>Resumo</h3>
-                        <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <div class="summary-row">
+                            <div class="summary-label">Provedor</div>
+                            <div class="summary-value" id="summaryProvider">-</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">Região</div>
+                            <div class="summary-value" id="summaryRegion">-</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">Sistema</div>
+                            <div class="summary-value" id="summaryOs">-</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">Plano</div>
+                            <div class="summary-value" id="summaryPlan">-</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">Custo estimado</div>
+                            <div class="summary-value" id="summaryCost">-</div>
+                        </div>
+                        <ul style="list-style: none; padding: 0; margin-top: 14px;">
                             <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Stack CloudEase (Nginx, PHP, MySQL) será instalada automaticamente.</li>
-                            <li><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Pronto para hospedar múltiplos sites.</li>
+                            <li><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Se o plano estiver abaixo do recomendado, você receberá um alerta antes da criação.</li>
                         </ul>
                     </div>
                 </div>
@@ -246,7 +346,7 @@
         </div>
     </main>
 
-    <script src="js/create-server.js?v=3"></script>
+    <script src="js/create-server.js?v=4"></script>
     <script src="js/sidebar.js"></script>
 </body>
 </html>

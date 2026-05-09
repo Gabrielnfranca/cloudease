@@ -8,6 +8,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('createServerForm');
     
     let allPlans = []; // Armazena todos os planos carregados
+    let selectedPlanMeta = null;
+
+    const providerProfiles = {
+        vultr: {
+            label: 'Vultr',
+            guidance: 'Ideal para deploy rápido com boa previsibilidade de custo. Para produção, prefira planos com pelo menos 2 GB de RAM.',
+            minRamMB: 2048
+        },
+        digitalocean: {
+            label: 'DigitalOcean',
+            guidance: 'Ótimo equilíbrio entre simplicidade e performance. Prefira regiões próximas do público e planos com 2 GB de RAM ou mais para projetos ativos.',
+            minRamMB: 2048
+        },
+        linode: {
+            label: 'Linode',
+            guidance: 'Boa opção para workloads Linux com custo competitivo. Em produção, recomendamos começar com no mínimo 2 GB de RAM.',
+            minRamMB: 2048
+        },
+        aws: {
+            label: 'AWS',
+            guidance: 'Integração AWS em preparação. Em breve você poderá escolher EC2 com recomendações de custo por workload.',
+            minRamMB: 2048
+        }
+    };
 
     // Navegação do Wizard
     function updateWizard() {
@@ -49,6 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Seleção de Opções (Cards)
     window.selectOption = async function(element, inputId, value) {
+        if (element.dataset.disabled === '1') {
+            alert('Integração AWS em breve. Estamos finalizando validações para evitar configurações incorretas e custos inesperados.');
+            return;
+        }
+
         // Remove seleção dos irmãos
         const container = element.parentElement;
         container.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
@@ -61,9 +90,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Se selecionou provedor, carrega opções
         if (inputId === 'provider') {
+            renderProviderGuidance(value);
             await loadProviderOptions(value);
         }
     };
+
+    function renderProviderGuidance(provider) {
+        const panel = document.getElementById('providerGuidance');
+        if (!panel) return;
+
+        const profile = providerProfiles[provider];
+        if (!profile) {
+            panel.style.display = 'none';
+            panel.innerHTML = '';
+            return;
+        }
+
+        panel.innerHTML = `<strong>${profile.label}:</strong> ${profile.guidance}`;
+        panel.style.display = 'block';
+    }
 
     async function loadProviderOptions(provider) {
         const nextBtn = document.getElementById('nextBtn');
@@ -111,17 +156,21 @@ document.addEventListener('DOMContentLoaded', function() {
         select.innerHTML = '<option value="">Selecione uma região...</option>';
         
         // Ordena por nome
-        regions.sort((a, b) => a.name.localeCompare(b.name));
+        regions.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
 
         regions.forEach(region => {
             const option = document.createElement('option');
             option.value = region.id;
-            option.textContent = `${region.name} (${region.country})`;
+            const regionLabel = region.country ? `${region.name} (${region.country})` : (region.description || region.name);
+            option.textContent = regionLabel;
             select.appendChild(option);
         });
         
-        // Adiciona listener para filtrar planos quando a região mudar
-        select.addEventListener('change', updatePlansList);
+        // Atualiza filtros/summary ao trocar região
+        select.onchange = function() {
+            updatePlansList();
+            updateSummary();
+        };
     }
 
     function renderOS(osList) {
@@ -142,9 +191,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const option = document.createElement('option');
             option.value = os.id;
             option.textContent = os.name;
-            if (os.name.includes('Ubuntu 22.04')) option.selected = true; // Auto-select recommended
+            const osName = String(os.name || '').toLowerCase();
+            if (osName.includes('ubuntu 22.04') || osName.includes('ubuntu 24.04')) option.selected = true;
             select.appendChild(option);
         });
+
+        select.onchange = updateSummary;
     }
 
     function updatePlansList() {
@@ -167,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         renderPlans(filteredPlans);
+        updateSummary();
     }
 
     function renderPlans(plans) {
@@ -177,16 +230,102 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         select.innerHTML = '<option value="">Selecione um plano...</option>';
 
-        // Ordena por preço
-        plans.sort((a, b) => a.price - b.price);
+        // Ordena por preço quando disponível
+        plans.sort((a, b) => {
+            const ap = Number(a.price ?? Number.POSITIVE_INFINITY);
+            const bp = Number(b.price ?? Number.POSITIVE_INFINITY);
+            return ap - bp;
+        });
 
         plans.forEach(plan => {
             const option = document.createElement('option');
             option.value = plan.id;
-            const price = parseFloat(plan.price || 0).toFixed(2);
-            option.textContent = `US$ ${price}/mês - ${plan.cpu} vCPU, ${plan.ram}MB RAM, ${plan.disk}GB SSD`;
+            const hasPrice = plan.price !== null && plan.price !== undefined && !Number.isNaN(Number(plan.price));
+            const priceLabel = hasPrice ? `US$ ${Number(plan.price).toFixed(2)}/mês` : 'Preço indisponível';
+            option.textContent = `${priceLabel} - ${plan.cpu} vCPU, ${plan.ram}MB RAM, ${plan.disk}GB SSD`;
+            option.dataset.cpu = plan.cpu || '';
+            option.dataset.ram = plan.ram || '';
+            option.dataset.disk = plan.disk || '';
+            option.dataset.price = hasPrice ? Number(plan.price).toFixed(2) : '';
             select.appendChild(option);
         });
+
+        select.onchange = function() {
+            updatePlanInsights();
+            updateSummary();
+        };
+        selectedPlanMeta = null;
+        updatePlanInsights();
+    }
+
+    function getSelectedProviderProfile() {
+        const provider = document.getElementById('providerInput').value;
+        return providerProfiles[provider] || null;
+    }
+
+    function updatePlanInsights() {
+        const planSelect = document.getElementById('planInput');
+        const costEl = document.getElementById('planCostInfo');
+        const warningEl = document.getElementById('planWarning');
+        if (!planSelect || !costEl || !warningEl) return;
+
+        const selected = planSelect.options[planSelect.selectedIndex];
+        if (!selected || !selected.value) {
+            selectedPlanMeta = null;
+            costEl.textContent = 'Selecione um plano para ver estimativa de custo e recomendação.';
+            warningEl.style.display = 'none';
+            warningEl.textContent = '';
+            return;
+        }
+
+        const cpu = Number(selected.dataset.cpu || 0);
+        const ram = Number(selected.dataset.ram || 0);
+        const disk = Number(selected.dataset.disk || 0);
+        const price = selected.dataset.price ? Number(selected.dataset.price) : null;
+        const profile = getSelectedProviderProfile();
+
+        selectedPlanMeta = { cpu, ram, disk, price };
+
+        const priceText = price !== null ? `US$ ${price.toFixed(2)}/mês` : 'Preço não informado pelo provedor';
+        costEl.textContent = `Estimativa: ${priceText}. Recursos: ${cpu} vCPU, ${ram}MB RAM, ${disk}GB SSD.`;
+
+        if (profile && ram > 0 && ram < profile.minRamMB) {
+            warningEl.style.display = 'block';
+            warningEl.textContent = `Atenção: este plano tem ${ram}MB de RAM. Recomendamos pelo menos ${profile.minRamMB}MB para evitar lentidão e risco de indisponibilidade em produção.`;
+        } else {
+            warningEl.style.display = 'none';
+            warningEl.textContent = '';
+        }
+    }
+
+    function updateSummary() {
+        const providerEl = document.getElementById('summaryProvider');
+        const regionEl = document.getElementById('summaryRegion');
+        const osEl = document.getElementById('summaryOs');
+        const planEl = document.getElementById('summaryPlan');
+        const costEl = document.getElementById('summaryCost');
+        if (!providerEl || !regionEl || !osEl || !planEl || !costEl) return;
+
+        const provider = document.getElementById('providerInput').value;
+        const regionSelect = document.getElementById('regionInput');
+        const osSelect = document.getElementById('osInput');
+        const planSelect = document.getElementById('planInput');
+
+        const profile = providerProfiles[provider];
+        providerEl.textContent = profile ? profile.label : '-';
+
+        const regionText = regionSelect && regionSelect.selectedIndex > 0 ? regionSelect.options[regionSelect.selectedIndex].text : '-';
+        regionEl.textContent = regionText;
+
+        const osText = osSelect && osSelect.selectedIndex > 0 ? osSelect.options[osSelect.selectedIndex].text : '-';
+        osEl.textContent = osText;
+
+        const planText = planSelect && planSelect.selectedIndex > 0 ? planSelect.options[planSelect.selectedIndex].text : '-';
+        planEl.textContent = planText;
+
+        costEl.textContent = selectedPlanMeta && selectedPlanMeta.price !== null
+            ? `US$ ${selectedPlanMeta.price.toFixed(2)}/mês`
+            : '-';
     }
 
     function validateStep(step) {
@@ -217,6 +356,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Por favor, selecione um plano.');
                 return false;
             }
+
+            updatePlanInsights();
+
+            const profile = getSelectedProviderProfile();
+            if (profile && selectedPlanMeta && selectedPlanMeta.ram > 0 && selectedPlanMeta.ram < profile.minRamMB) {
+                const proceed = confirm(`Este plano está abaixo do recomendado para produção (${selectedPlanMeta.ram}MB RAM). Deseja continuar mesmo assim?`);
+                if (!proceed) return false;
+            }
         }
         return true;
     }
@@ -231,12 +378,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = {
             provider: document.getElementById('providerInput').value,
-            region: document.getElementById('regionInput').value || 'nyc1',
-            plan: document.getElementById('planInput').value || 'basic-1gb',
+            region: document.getElementById('regionInput').value,
+            plan: document.getElementById('planInput').value,
             os_id: document.getElementById('osInput').value,
             app: 'base-stack', // Sempre instala a base stack
             name: document.getElementById('serverName').value || 'Novo Servidor'
         };
+
+        if (!formData.provider || !formData.region || !formData.plan || !formData.os_id) {
+            alert('Preencha provedor, região, sistema e plano antes de criar o servidor.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            return;
+        }
 
         try {
             const authToken = localStorage.getItem('authToken');
@@ -265,6 +419,9 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = originalText;
         }
     });
+
+    // Estado inicial de apoio visual
+    updateSummary();
 
 
 });

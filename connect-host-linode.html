@@ -90,8 +90,14 @@
                     <input type="text" id="hostName" required autocomplete="off">
                     
                     <label for="token">Token (Personal Access Token):</label>
-                    <div class="token-help" style="margin-bottom:8px; color:#4a5568; font-size:13px;">
-                        <i class="fas fa-info-circle"></i> Acesse <a href="https://cloud.linode.com/profile/tokens" target="_blank">Linode API</a>, gere um Personal Access Token e cole aqui.
+                    <div class="token-help" style="margin-bottom:8px; color:#4a5568; font-size:13px; line-height:1.5;">
+                        <i class="fas fa-info-circle"></i> Instruções:
+                        <ol style="margin-left: 20px; margin-top: 5px;">
+                            <li>Acesse <a href="https://cloud.linode.com/profile/tokens" target="_blank">Linode API Tokens</a>.</li>
+                            <li>Crie token com permissões de <strong>Linodes: Read/Write</strong> e <strong>Images/Regions: Read</strong>.</li>
+                            <li>Copie o token completo e cole abaixo.</li>
+                            <li>Use um token dedicado ao CloudEase para facilitar rotação de credenciais.</li>
+                        </ol>
                     </div>
                     <input type="text" id="token" required autocomplete="off">
                     

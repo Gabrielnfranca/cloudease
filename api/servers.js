@@ -213,5 +213,6 @@ function getProviderLogo(name) {
     if (name === 'vultr') return 'https://www.vultr.com/favicon.ico';
     if (name === 'digitalocean') return 'https://www.digitalocean.com/favicon.ico';
     if (name === 'linode') return 'https://www.linode.com/favicon.ico';
+    if (name === 'aws') return 'assets/images/aws-logo.svg';
     return 'assets/images/server-icon.png';
 }
