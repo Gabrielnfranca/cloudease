@@ -92,9 +92,13 @@ function renderHeader(site) {
     
     const visitBtn = document.getElementById('visitSiteBtn');
     const wpAdminBtn = document.getElementById('visitWpAdminBtn');
+    const modeBadge = document.getElementById('siteModeBadge');
     const tempUrl = site.tempUrl || ((site.enable_temp_url && site.ip) ? `http://${site.domain}.${site.ip}.nip.io/` : null);
 
     visitBtn.classList.remove('visit-temp', 'visit-live', 'visit-disabled');
+    if (modeBadge) {
+        modeBadge.classList.remove('mode-migration', 'mode-production', 'mode-warning');
+    }
 
     let url = null;
     if (site.ssl_active) {
@@ -119,6 +123,19 @@ function renderHeader(site) {
         visitBtn.innerHTML = '<i class="fas fa-ban"></i> Ative Link Provisório';
         visitBtn.title = 'Ative o Link Provisório para acessar enquanto DNS/SSL não está ativo.';
         visitBtn.classList.add('visit-disabled');
+    }
+
+    if (modeBadge) {
+        if (site.ssl_active) {
+            modeBadge.innerHTML = '<i class="fas fa-rocket"></i> Modo Produção';
+            modeBadge.classList.add('mode-production');
+        } else if (site.enable_temp_url && site.ip) {
+            modeBadge.innerHTML = '<i class="fas fa-tools"></i> Modo Migração';
+            modeBadge.classList.add('mode-migration');
+        } else {
+            modeBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Migração sem Link Provisório';
+            modeBadge.classList.add('mode-warning');
+        }
     }
 
     if (wpAdminBtn) {

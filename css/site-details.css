@@ -222,6 +222,35 @@
     border-color: #e2e8f0;
 }
 
+.mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.mode-badge.mode-migration {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fdba74;
+}
+
+.mode-badge.mode-production {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.mode-badge.mode-warning {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
 .action-btn.small {
     padding: 6px 12px;
     font-size: 12px;
