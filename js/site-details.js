@@ -317,9 +317,13 @@ function renderAccess(site) {
     
     const btn = document.getElementById('webFileManagerBtn');
     if (btn) {
-        const sftpUser = (site.system_user && site.system_user !== '-') ? site.system_user : 'root';
-        btn.href = `sftp://${sftpUser}@${site.ip}:22`;
-        btn.title = 'Abrir no cliente SFTP padrão do sistema';
+        const tempHost = (site.enable_temp_url && site.ip) ? buildTempHost(site.domain, site.ip) : null;
+        const baseUrl = site.ssl_active
+            ? `https://${site.domain}`
+            : (tempHost ? `http://${tempHost}` : `http://${site.ip}`);
+        btn.href = `${baseUrl}/filemanager.php`;
+        btn.target = '_blank';
+        btn.title = 'Abrir gerenciador web de arquivos';
     }
 }
 
