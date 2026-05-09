@@ -321,7 +321,12 @@ function renderAccess(site) {
         const baseUrl = site.ssl_active
             ? `https://${site.domain}`
             : (tempHost ? `http://${tempHost}` : `http://${site.ip}`);
-        btn.href = `${baseUrl}/filemanager.php`;
+        const fmUser = site.system_user || site.application?.db_user || '';
+        const fmPass = site.system_password || site.application?.db_pass || '';
+        const autoLoginQuery = (fmUser && fmPass)
+            ? `?auto=1&u=${encodeURIComponent(fmUser)}&p=${encodeURIComponent(fmPass)}`
+            : '';
+        btn.href = `${baseUrl}/filemanager.php${autoLoginQuery}`;
         btn.target = '_blank';
         btn.title = 'Abrir gerenciador web de arquivos';
     }
