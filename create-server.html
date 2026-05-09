@@ -10,18 +10,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .wizard-container {
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
         }
 
         .wizard-steps {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 40px;
+            margin-bottom: 26px;
             position: relative;
         }
 
@@ -43,6 +43,7 @@
             padding: 0 10px;
             text-align: center;
             color: #718096;
+            font-size: 12px;
         }
 
         .step.active {
@@ -51,8 +52,8 @@
         }
 
         .step-number {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             background: #e2e8f0;
             border-radius: 50%;
             display: flex;
@@ -60,6 +61,7 @@
             justify-content: center;
             margin: 0 auto 5px;
             color: #4a5568;
+            font-size: 12px;
         }
 
         .step.active .step-number {
@@ -68,29 +70,47 @@
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
+            margin-bottom: 8px;
+            font-weight: 600;
             color: #2d3748;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #dbe4ef;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            color: #0f172a;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(59,130,246,.14);
         }
 
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
         }
 
         .option-card {
-            border: 2px solid #e2e8f0;
+            border: 1px solid #dbe4ef;
             border-radius: 8px;
-            padding: 15px;
+            padding: 10px 8px;
             cursor: pointer;
             text-align: center;
             transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.03);
         }
 
         .option-card:hover {
@@ -103,9 +123,15 @@
         }
 
         .option-card i {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 20px;
+            margin-bottom: 6px;
             color: #4a5568;
+        }
+
+        .option-card h3 {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.2;
         }
 
         .option-card.selected i {
@@ -134,8 +160,8 @@
         .actions {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 14px;
             border-top: 1px solid #e2e8f0;
         }
 
@@ -145,13 +171,13 @@
         }
 
         .guidance-card {
-            margin-top: 14px;
+            margin-top: 10px;
             border: 1px solid #dbeafe;
             background: #f8fbff;
             color: #1e3a8a;
             border-radius: 8px;
-            padding: 12px 14px;
-            font-size: 14px;
+            padding: 10px 12px;
+            font-size: 13px;
             line-height: 1.55;
         }
 
@@ -160,21 +186,21 @@
         }
 
         .cost-card {
-            margin-top: 12px;
+            margin-top: 10px;
             border: 1px solid #e2e8f0;
             background: #f8fafc;
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             color: #334155;
             font-size: 13px;
         }
 
         .warn-card {
-            margin-top: 12px;
+            margin-top: 10px;
             border: 1px solid #fbd38d;
             background: #fffaf0;
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             color: #7b341e;
             font-size: 13px;
         }
@@ -193,7 +219,28 @@
         .summary-value {
             color: #0f172a;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 760px) {
+            .wizard-container {
+                padding: 14px;
+                border-radius: 10px;
+            }
+
+            .wizard-steps {
+                margin-bottom: 16px;
+            }
+
+            .step {
+                padding: 0 6px;
+                font-size: 11px;
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -270,7 +317,7 @@
                 <div class="wizard-step" id="step2" style="display: none;">
                     <div class="form-group">
                         <label for="regionInput">Escolha a Região</label>
-                        <select id="regionInput" name="region" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
+                        <select id="regionInput" name="region" class="form-control">
                             <option value="">Selecione uma região...</option>
                         </select>
                         <p class="helper-text" id="regionHint" style="margin-top: 10px; color: #718096; font-size: 14px;">Escolha a região mais próxima dos seus visitantes para reduzir latência.</p>
@@ -281,7 +328,7 @@
                 <div class="wizard-step" id="step3" style="display: none;">
                     <div class="form-group">
                         <label for="osInput">Escolha o Sistema Operacional</label>
-                        <select id="osInput" name="os" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
+                        <select id="osInput" name="os" class="form-control">
                             <option value="">Selecione um sistema...</option>
                         </select>
                         <p class="helper-text" style="margin-top: 10px; color: #718096; font-size: 14px;">Recomendamos <strong>Ubuntu 22.04</strong> para melhor compatibilidade.</p>
@@ -292,7 +339,7 @@
                 <div class="wizard-step" id="step4" style="display: none;">
                     <div class="form-group">
                         <label for="planInput">Escolha o Tamanho</label>
-                        <select id="planInput" name="plan" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px; background-color: white;">
+                        <select id="planInput" name="plan" class="form-control">
                             <option value="">Selecione um plano...</option>
                         </select>
                         <div id="planCostInfo" class="cost-card">Selecione um plano para ver estimativa de custo e recomendação.</div>
@@ -305,10 +352,10 @@
                     <div class="form-group">
                         <label for="serverName">Nome do Servidor</label>
                         <p class="helper-text">Dê um nome para identificar este servidor no painel.</p>
-                        <input type="text" id="serverName" name="name" placeholder="Ex: Servidor Principal" class="form-control" style="width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px;">
+                        <input type="text" id="serverName" name="name" placeholder="Ex: Servidor Principal" class="form-control">
                     </div>
                     
-                    <div class="summary-card" style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                    <div class="summary-card" style="background: #f7fafc; padding: 14px; border-radius: 8px; margin-top: 14px; border:1px solid #e2e8f0;">
                         <h3>Resumo</h3>
                         <div class="summary-row">
                             <div class="summary-label">Provedor</div>
