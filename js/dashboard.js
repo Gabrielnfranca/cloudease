@@ -33,10 +33,11 @@ async function updateDashboard() {
     };
 
     // Parallel fetch with individual error handling handling implicitly via helper
-    const [providers, servers, sites] = await Promise.all([
+    const [providers, servers, sites, providerCosts] = await Promise.all([
         fetchJson('/api/providers'),
         fetchJson('/api/servers'),
-        fetchJson('/api/sites')
+        fetchJson('/api/sites'),
+        fetchJson('/api/provider-costs')
     ]);
 
     // Update Connections
@@ -65,6 +66,8 @@ async function updateDashboard() {
         const sslCount = sites.filter(s => s.ssl_active === true).length;
         setElementValue('total-ssl', sslCount);
     }
+
+    renderProviderCosts(providerCosts);
 }
 
 function setElementValue(id, value) {
@@ -77,4 +80,129 @@ function setElementValue(id, value) {
     } else {
         console.warn(`Element with id ${id} not found`);
     }
+}
+
+function formatMoney(value, currency) {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return '--';
+
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(num);
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderProviderCosts(data) {
+    const container = document.getElementById('provider-costs-container');
+    const exchangeRateInfo = document.getElementById('exchange-rate-info');
+    const costsUpdatedAt = document.getElementById('costs-updated-at');
+    if (!container || !exchangeRateInfo || !costsUpdatedAt) return;
+
+    if (!data || !Array.isArray(data.providers)) {
+        container.className = 'empty-state';
+        container.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Nao foi possivel carregar os custos em tempo real.</p>';
+        exchangeRateInfo.textContent = 'Cotacao USD/BRL: indisponivel';
+        costsUpdatedAt.textContent = 'Atualizado em: --';
+        return;
+    }
+
+    const exchangeRate = data.exchange?.usdBrl;
+    const exchangeDateRaw = data.exchange?.updatedAt || data.generatedAt;
+    const exchangeDate = exchangeDateRaw ? new Date(exchangeDateRaw) : null;
+
+    exchangeRateInfo.textContent = exchangeRate
+        ? `Cotacao USD/BRL: ${Number(exchangeRate).toFixed(4)}`
+        : 'Cotacao USD/BRL: indisponivel';
+
+    costsUpdatedAt.textContent = exchangeDate && !Number.isNaN(exchangeDate.getTime())
+        ? `Atualizado em: ${exchangeDate.toLocaleString('pt-BR')}`
+        : 'Atualizado em: --';
+
+    if (data.providers.length === 0) {
+        container.className = 'empty-state';
+        container.innerHTML = '<i class="fas fa-plug"></i><p>Nenhum provedor integrado no momento.</p>';
+        return;
+    }
+
+    container.className = '';
+
+    const providersHtml = data.providers.map((provider) => {
+        const providerTotalUsd = formatMoney(provider.totalUsd, 'USD');
+        const providerTotalBrl = provider.totalBrl !== null ? formatMoney(provider.totalBrl, 'BRL') : '--';
+
+        const providerHeader = `
+            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:10px;">
+                <div>
+                    <div style="font-size:15px; font-weight:700; color:#0f172a;">${escapeHtml(provider.providerLabel)}</div>
+                    <div style="font-size:12px; color:#64748b;">${provider.pricedServers}/${provider.totalServers} servidor(es) com preco identificado</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:13px; font-weight:700; color:#0f172a;">${providerTotalUsd}/mes</div>
+                    <div style="font-size:12px; color:#64748b;">${providerTotalBrl}/mes</div>
+                </div>
+            </div>
+        `;
+
+        if (!provider.servers || provider.servers.length === 0) {
+            return `
+                <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; background:#fff;">
+                    ${providerHeader}
+                    <div style="font-size:13px; color:#94a3b8;">Nenhum servidor encontrado nesse provedor.</div>
+                </div>
+            `;
+        }
+
+        const rows = provider.servers.map((server) => {
+            const usd = server.monthlyUsd !== null ? `${formatMoney(server.monthlyUsd, 'USD')}/mes` : '--';
+            const brl = server.monthlyBrl !== null ? `${formatMoney(server.monthlyBrl, 'BRL')}/mes` : '--';
+
+            return `
+                <tr>
+                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; font-weight:600; color:#0f172a;">${escapeHtml(server.name)}</td>
+                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; color:#475569; text-transform:capitalize;">${escapeHtml(server.status || '-')}</td>
+                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; color:#475569;">${escapeHtml(server.planId || '-')}</td>
+                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; text-align:right; color:#0f172a;">${usd}</td>
+                    <td style="padding:8px; border-bottom:1px solid #f1f5f9; text-align:right; color:#0f172a;">${brl}</td>
+                </tr>
+            `;
+        }).join('');
+
+        const warning = provider.plansError
+            ? `<div style="margin-top:8px; font-size:12px; color:#b45309;">Nao foi possivel atualizar catalogo de planos agora: ${escapeHtml(provider.plansError)}</div>`
+            : '';
+
+        return `
+            <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; background:#fff; overflow:auto;">
+                ${providerHeader}
+                <table style="width:100%; border-collapse:collapse; font-size:13px; min-width:700px;">
+                    <thead>
+                        <tr>
+                            <th style="padding:8px; text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">Servidor</th>
+                            <th style="padding:8px; text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">Status</th>
+                            <th style="padding:8px; text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">Plano</th>
+                            <th style="padding:8px; text-align:right; color:#475569; border-bottom:1px solid #e2e8f0;">USD</th>
+                            <th style="padding:8px; text-align:right; color:#475569; border-bottom:1px solid #e2e8f0;">BRL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+                ${warning}
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = providersHtml;
 }
