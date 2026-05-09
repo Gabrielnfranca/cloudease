@@ -582,6 +582,24 @@ export default async function handler(req, res) {
              if (fetchError || !site) return res.status(404).json({ error: 'Site não encontrado' });
              const serverIp = site.servers_cache?.ip_address;
 
+             // OBRIGATÓRIO: Verificar se o DNS já aponta para o servidor antes de instalar SSL
+             // Let's Encrypt exige que o domínio resolva para o servidor para emitir o certificado
+             const dnsCheck = await new Promise((resolve) => {
+                 dns.resolve4(site.domain, (err, addresses) => {
+                     if (err) {
+                         resolve({ ok: false, error: `DNS não resolvido: ${err.code}. Aponte o domínio para ${serverIp} e aguarde a propagação.` });
+                     } else if (!addresses.includes(serverIp)) {
+                         resolve({ ok: false, error: `O domínio aponta para ${addresses[0]}, mas o servidor é ${serverIp}. Corrija os apontamentos DNS e aguarde propagação (até 24h).` });
+                     } else {
+                         resolve({ ok: true });
+                     }
+                 });
+             });
+
+             if (!dnsCheck.ok) {
+                 return res.status(400).json({ ok: false, error: dnsCheck.error });
+             }
+
              try {
                 await provisionSSL(serverIp, site.domain);
                 
