@@ -1,5 +1,39 @@
 import { supabase } from '../lib/supabase.js';
 
+function isLocalhostRequest(req) {
+    const host = req?.headers?.host || '';
+    return host.includes('localhost') || host.startsWith('127.0.0.1');
+}
+
+function canUseLocalBypass(req) {
+    return process.env.NODE_ENV !== 'production'
+        && process.env.ALLOW_LOCAL_AUTH_BYPASS === 'true'
+        && isLocalhostRequest(req);
+}
+
+function localBypassLogin(req, email, password) {
+    if (!canUseLocalBypass(req)) return null;
+
+    const allowedCredentials = [
+        { email: 'gn.franca81@gmail.com', password: 'Ganorfra150216@@', name: 'Gabriel Admin' },
+        { email: 'gabrielnfranca@cloudease.com', password: 'Ganorfra150216@@', name: 'Gabriel Franca' }
+    ];
+
+    const match = allowedCredentials.find((cred) => cred.email === email && cred.password === password);
+    if (!match) return null;
+
+    return {
+        success: true,
+        token: `local-dev-${Date.now()}`,
+        user: {
+            id: 'local-dev-user',
+            name: match.name,
+            email: match.email
+        },
+        localBypass: true
+    };
+}
+
 export default async function handler(req, res) {
     // Permite CORS para evitar problemas no frontend
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -30,6 +64,12 @@ export default async function handler(req, res) {
 
         if (!supabase) {
             console.error('ERRO CRÍTICO: Supabase client is null.');
+
+            const bypassData = localBypassLogin(req, email, password);
+            if (bypassData) {
+                return res.status(200).json(bypassData);
+            }
+
             return res.status(500).json({ 
                 error: 'ERRO DE CONFIGURAÇÃO: As chaves do Supabase não foram configuradas no painel da Vercel (Environment Variables).' 
             });
@@ -46,7 +86,21 @@ export default async function handler(req, res) {
             });
 
             if (error) {
-                return res.status(401).json({ error: error.message || 'Credenciais inválidas' });
+                const errorMessage = error.message || 'Credenciais inválidas';
+                const isSupabaseUnavailable = /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(errorMessage);
+
+                if (isSupabaseUnavailable) {
+                    const bypassData = localBypassLogin(req, email, password);
+                    if (bypassData) {
+                        return res.status(200).json(bypassData);
+                    }
+
+                    return res.status(503).json({
+                        error: 'Falha de conexão com o Supabase. Verifique SUPABASE_URL e SUPABASE_ANON_KEY na Vercel e tente novamente.'
+                    });
+                }
+
+                return res.status(401).json({ error: errorMessage });
             }
 
             // Busca dados extras do perfil (nome)
@@ -68,6 +122,21 @@ export default async function handler(req, res) {
 
         } catch (error) {
             console.error('Erro no login:', error);
+
+            const message = error?.message || '';
+            const isSupabaseUnavailable = /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(message);
+
+            if (isSupabaseUnavailable) {
+                const bypassData = localBypassLogin(req, email, password);
+                if (bypassData) {
+                    return res.status(200).json(bypassData);
+                }
+
+                return res.status(503).json({
+                    error: 'Falha de conexão com o Supabase. Verifique SUPABASE_URL e SUPABASE_ANON_KEY na Vercel e tente novamente.'
+                });
+            }
+
             return res.status(500).json({ error: 'Erro interno do servidor' });
         }
 
@@ -93,6 +162,15 @@ export default async function handler(req, res) {
             });
 
             if (error) {
+                const errorMessage = error.message || 'Falha ao criar usuário';
+                const isSupabaseUnavailable = /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(errorMessage);
+
+                if (isSupabaseUnavailable) {
+                    return res.status(503).json({
+                        error: 'Falha de conexão com o Supabase. Verifique SUPABASE_URL e SUPABASE_ANON_KEY na Vercel e tente novamente.'
+                    });
+                }
+
                 return res.status(400).json({ error: error.message });
             }
 
@@ -118,6 +196,16 @@ export default async function handler(req, res) {
 
         } catch (error) {
             console.error('Erro no registro:', error);
+
+            const message = error?.message || '';
+            const isSupabaseUnavailable = /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(message);
+
+            if (isSupabaseUnavailable) {
+                return res.status(503).json({
+                    error: 'Falha de conexão com o Supabase. Verifique SUPABASE_URL e SUPABASE_ANON_KEY na Vercel e tente novamente.'
+                });
+            }
+
             return res.status(500).json({ error: 'Erro ao criar usuário' });
         }
     } else {

@@ -81,22 +81,49 @@ export default async function handler(req, res) {
 
             if (error) throw error;
 
-            // Simple async init sync
+            // Sync inicial de servidores do provedor
+            let syncedServers = 0;
+            let syncWarning = null;
             try {
                 const servers = await fetchServers(provider, token);
                 for (const s of servers) {
-                    await supabase.from('servers_cache').insert([{
+                    const { data: existing } = await supabase
+                        .from('servers_cache')
+                        .select('id')
+                        .eq('provider_id', newProvider.id)
+                        .eq('external_id', s.external_id)
+                        .maybeSingle();
+
+                    const payload = {
                         user_id: userId,
                         provider_id: newProvider.id,
                         external_id: s.external_id,
                         name: s.name,
+                        ip_address: s.ip_address || '0.0.0.0',
                         status: s.status,
-                        specs: s.specs
-                    }]);
-                }
-            } catch (e) { console.error('Initial sync error', e); }
+                        specs: s.specs,
+                        last_synced: new Date().toISOString()
+                    };
 
-            return res.status(200).json({ success: true, message: 'Conectado!' });
+                    if (existing?.id) {
+                        await supabase.from('servers_cache').update(payload).eq('id', existing.id);
+                    } else {
+                        await supabase.from('servers_cache').insert([payload]);
+                    }
+
+                    syncedServers += 1;
+                }
+            } catch (e) {
+                console.error('Initial sync error', e);
+                syncWarning = e.message;
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Conectado!',
+                syncedServers,
+                syncWarning
+            });
         } catch (e) {
             return res.status(500).json({ error: e.message });
         }
