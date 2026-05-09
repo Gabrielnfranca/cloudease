@@ -200,22 +200,46 @@ document.addEventListener('DOMContentLoaded', function() {
             const tr = document.createElement('tr');
             
             // Ícone da plataforma
-            let platformIcon = 'fa-globe';
+            let platformIcon = 'fa-php';
+            let platformIconPrefix = 'fab';
             let platformClass = 'icon-php';
             let platformName = 'PHP';
             
             if (site.platform === 'wordpress') {
                 platformIcon = 'fa-wordpress';
+                platformIconPrefix = 'fab';
                 platformClass = 'icon-wordpress';
                 platformName = 'WordPress';
+            } else if (site.platform === 'php-mysql') {
+                platformIcon = 'fa-php';
+                platformIconPrefix = 'fab';
+                platformClass = 'icon-php';
+                platformName = 'PHP + MySQL';
+            } else if (site.platform === 'php') {
+                platformIcon = 'fa-php';
+                platformIconPrefix = 'fab';
+                platformClass = 'icon-php';
+                platformName = 'PHP';
+            } else if (site.platform === 'html') {
+                platformIcon = 'fa-html5';
+                platformIconPrefix = 'fab';
+                platformClass = 'icon-php';
+                platformName = 'HTML';
             } else if (site.platform === 'laravel') {
                 platformIcon = 'fa-laravel';
+                platformIconPrefix = 'fab';
                 platformClass = 'icon-laravel';
                 platformName = 'Laravel';
             } else if (site.platform === 'nodejs') {
                 platformIcon = 'fa-node-js';
+                platformIconPrefix = 'fab';
                 platformClass = 'icon-nodejs';
                 platformName = 'Node.js';
+            } else {
+                platformIcon = 'fa-globe';
+                platformIconPrefix = 'fas';
+                platformClass = 'icon-php';
+                platformName = (site.platform || 'Site').toUpperCase();
             }
 
             // Status Badge Logic
@@ -252,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Adiciona classe para estilização e evento de clique na linha
             if (site.status !== 'provisioning') {
                 tr.classList.add('clickable-row');
+                tr.style.cursor = 'pointer';
                 tr.onclick = (e) => {
                     // Previne navegação se o clique foi em um botão ou link dentro da linha
                     if (e.target.closest('a') || e.target.closest('button') || e.target.closest('.action-btn')) return;
@@ -264,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tr.innerHTML = `
                 <td>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fab ${platformIcon} ${platformClass}" style="font-size: 16px;"></i>
+                        <i class="${platformIconPrefix} ${platformIcon} ${platformClass}" style="font-size: 16px;"></i>
                         <span style="font-size: 13px;">${platformName}</span>
                     </div>
                 </td>
