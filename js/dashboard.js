@@ -136,6 +136,10 @@ function renderProviderCosts(data) {
         ? `Atualizado em: ${exchangeDate.toLocaleString('pt-BR')}`
         : 'Atualizado em: --';
 
+    if (data.mode === 'strict') {
+        costsUpdatedAt.textContent += ' | Modo estrito: apenas valores confirmados por ID de plano';
+    }
+
     if (data.providers.length === 0) {
         container.className = 'empty-state';
         container.innerHTML = '<i class="fas fa-plug"></i><p>Nenhum provedor integrado no momento.</p>';
@@ -178,10 +182,10 @@ function renderProviderCosts(data) {
             const usd = server.monthlyUsd !== null ? `${formatMoney(server.monthlyUsd, 'USD')}/mes` : '--';
             const brl = server.monthlyBrl !== null ? `${formatMoney(server.monthlyBrl, 'BRL')}/mes` : '--';
             const source = server.matchMethod === 'plan_id'
-                ? '<span style="font-size:11px; color:#0f766e;">ID do plano</span>'
+                ? '<span style="font-size:11px; color:#0f766e;">Confirmado (ID do plano)</span>'
                 : server.matchMethod === 'specs'
                     ? '<span style="font-size:11px; color:#b45309;">Estimado por specs</span>'
-                    : '<span style="font-size:11px; color:#94a3b8;">Sem mapeamento</span>';
+                    : '<span style="font-size:11px; color:#94a3b8;">Nao confirmado</span>';
 
             return `
                 <tr>

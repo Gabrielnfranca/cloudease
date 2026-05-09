@@ -113,6 +113,7 @@ export default async function handler(req, res) {
     }
 
     const userId = user.id;
+    const estimateMode = req.query?.mode === 'estimate';
 
     try {
         const [providersResult, serversResult, exchange] = await Promise.all([
@@ -202,7 +203,9 @@ export default async function handler(req, res) {
                     }
                 }
 
-                if (!matchedPlan && plans.length) {
+                if (!matchedPlan && !estimateMode && plans.length) {
+                    // Modo estrito: nao calcula por aproximacao para evitar valores incorretos.
+                } else if (!matchedPlan && plans.length) {
                     matchedPlan = matchPlanBySpecs(plans, specs);
                     if (matchedPlan) matchMethod = 'specs';
                 }
@@ -223,7 +226,8 @@ export default async function handler(req, res) {
                     monthlyUsd,
                     monthlyBrl,
                     hasPrice: monthlyUsd !== null,
-                    matchMethod: matchMethod || 'unmatched'
+                    matchMethod: matchMethod || 'unmatched',
+                    isConfirmed: matchMethod === 'plan_id'
                 };
             }).sort((a, b) => (b.monthlyUsd || -1) - (a.monthlyUsd || -1));
 
@@ -247,6 +251,7 @@ export default async function handler(req, res) {
 
         return res.status(200).json({
             providers: providerCosts,
+            mode: estimateMode ? 'estimate' : 'strict',
             exchange: {
                 usdBrl: exchangeRate,
                 ...exchangeMeta
