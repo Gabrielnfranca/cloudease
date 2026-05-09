@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Monitoramento Em Tempo Real</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/dashboard-v4.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="js/theme.js"></script>
+    <style>
+        .monitor-wrapper {
+            display: grid;
+            gap: 14px;
+        }
+
+        .monitor-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .monitor-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .refresh-info {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .refresh-badge {
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #0c4a6e;
+            font-weight: 700;
+        }
+
+        .monitor-cards {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .monitor-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .monitor-card.unavailable {
+            border-color: #fecaca;
+            background: #fff7f7;
+        }
+
+        .monitor-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .server-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .server-meta {
+            margin-top: 2px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .status-chip {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-healthy {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-off {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .resource-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .resource-item {
+            display: grid;
+            gap: 6px;
+        }
+
+        .resource-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .bar {
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .fill.cpu { background: linear-gradient(90deg, #38bdf8, #2563eb); }
+        .fill.memory { background: linear-gradient(90deg, #34d399, #059669); }
+        .fill.disk { background: linear-gradient(90deg, #f59e0b, #ea580c); }
+
+        .resource-sub {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .traffic-row {
+            font-size: 12px;
+            color: #475569;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sparkline-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .sparkline-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .sparkline {
+            width: 100%;
+            height: 62px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .line-cpu,
+        .line-memory {
+            fill: none;
+            stroke-width: 2;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .line-cpu { stroke: #2563eb; }
+        .line-memory { stroke: #059669; }
+
+        .suggestion {
+            font-size: 12px;
+            color: #334155;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .unavailable-text {
+            color: #7f1d1d;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        @media (max-width: 840px) {
+            .sparkline-wrap {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-body dashboard-page-body">
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-cloud"></i>
+            <h1>CloudEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="connections.html"><i class="fas fa-network-wired"></i> Conexões</a></li>
+            <li><a href="servers.html"><i class="fas fa-server"></i> Servidores</a></li>
+            <li class="active"><a href="server-monitoring.html"><i class="fas fa-chart-line"></i> Monitoramento</a></li>
+            <li><a href="sites.html"><i class="fas fa-globe"></i> Sites</a></li>
+            <li><a href="domains.html"><i class="fas fa-globe-americas"></i> Domínios</a></li>
+            <li><a href="financial.html"><i class="fas fa-wallet"></i> Financeiro</a></li>
+            <li><a href="support.html"><i class="fas fa-headset"></i> Suporte</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Configurações</a></li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name">Usuário</span>
+                <a href="index.html" class="logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="header-compact">
+            <div class="header-left">
+                <h2>Monitoramento Em Tempo Real</h2>
+                <div class="breadcrumbs">
+                    <span>CloudEase</span> <i class="fas fa-chevron-right"></i> <span class="active">Monitoramento</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-secondary-compact">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="servers.html" class="btn-primary-compact">
+                    <i class="fas fa-server"></i> Voltar Para Servidores
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-container-compact monitor-wrapper">
+            <div class="monitor-head card-compact">
+                <div>
+                    <h4 style="margin:0;">Saúde da Infraestrutura</h4>
+                    <div style="font-size:12px; color:#64748b; margin-top:5px;">CPU, memória, disco e tráfego coletados diretamente do servidor via SSH.</div>
+                </div>
+                <div class="refresh-info">
+                    <span id="refreshBadge" class="refresh-badge">Iniciando...</span>
+                    <span>Última atualização: <strong id="lastUpdate">--</strong></span>
+                </div>
+            </div>
+
+            <div class="monitor-top">
+                <div class="metric-card">
+                    <div class="metric-label">Média CPU</div>
+                    <div class="metric-value" id="metricAvgCpu">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Média Memória</div>
+                    <div class="metric-value" id="metricAvgRam">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Média Disco</div>
+                    <div class="metric-value" id="metricAvgDisk">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Servidores em alerta</div>
+                    <div class="metric-value" id="metricOverloaded">0</div>
+                </div>
+            </div>
+
+            <div id="monitoringEmpty" class="empty-state" style="display:none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Nenhum dado disponível no momento.</p>
+            </div>
+
+            <div id="monitoringCards" class="monitor-cards"></div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/server-monitoring.js"></script>
+</body>
+</html>
