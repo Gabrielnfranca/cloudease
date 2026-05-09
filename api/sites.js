@@ -70,6 +70,15 @@ function formatPlatform(platform) {
     return platform.charAt(0).toUpperCase() + platform.slice(1);
 }
 
+function buildTempHost(domain, serverIp) {
+    const safeDomain = (domain || 'site')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+    return `temp-${safeDomain}.${serverIp}.nip.io`;
+}
+
 export default async function handler(req, res) {
     // CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -268,7 +277,7 @@ export default async function handler(req, res) {
                     server_id: site.server_id,
                     server_name: server.name,
                     ip: server.ip_address || site.ip_address, // Fallback
-                    tempUrl: (site.enable_temp_url && server.ip_address) ? `http://${site.domain}.${server.ip_address}.nip.io/` : null,
+                    tempUrl: (site.enable_temp_url && server.ip_address) ? `http://${buildTempHost(site.domain, server.ip_address)}/` : null,
                     provider_name: provider.provider_name,
                     php_version: site.php_version,
                     enable_temp_url: site.enable_temp_url,

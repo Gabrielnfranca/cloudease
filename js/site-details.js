@@ -2,6 +2,15 @@
 let currentModalType = null; // 'sftp' or 'db'
 let currentSiteId = null;
 
+function buildTempHost(domain, serverIp) {
+    const safeDomain = (domain || 'site')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+    return `temp-${safeDomain}.${serverIp}.nip.io`;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Obter Site ID da URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -93,7 +102,7 @@ function renderHeader(site) {
     const visitBtn = document.getElementById('visitSiteBtn');
     const wpAdminBtn = document.getElementById('visitWpAdminBtn');
     const modeBadge = document.getElementById('siteModeBadge');
-    const tempUrl = site.tempUrl || ((site.enable_temp_url && site.ip) ? `http://${site.domain}.${site.ip}.nip.io/` : null);
+    const tempUrl = site.tempUrl || ((site.enable_temp_url && site.ip) ? `http://${buildTempHost(site.domain, site.ip)}/` : null);
 
     visitBtn.classList.remove('visit-temp', 'visit-live', 'visit-disabled');
     if (modeBadge) {
@@ -189,7 +198,7 @@ function renderDetails(site) {
     const accessMode = document.getElementById('accessModeStatus');
     const sslTempUrlHint = document.getElementById('sslTempUrlHint');
     const tempUrlPreview = document.getElementById('tempUrlPreview');
-    const computedTempUrl = (site.enable_temp_url && site.ip) ? `http://${site.domain}.${site.ip}.nip.io/` : null;
+    const computedTempUrl = (site.enable_temp_url && site.ip) ? `http://${buildTempHost(site.domain, site.ip)}/` : null;
 
     // Temp URL State
     const toggle = document.getElementById('tempUrlToggle');
