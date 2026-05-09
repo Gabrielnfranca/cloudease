@@ -321,7 +321,7 @@ function renderAccess(site) {
         const baseUrl = site.ssl_active
             ? `https://${site.domain}`
             : (tempHost ? `http://${tempHost}` : `http://${site.ip}`);
-        btn.href = `${baseUrl}/filemanager.php`;
+        btn.href = `${baseUrl}/filemanager.php?fresh=1`;
         btn.target = '_blank';
         btn.title = 'Abrir gerenciador web de arquivos';
     }
