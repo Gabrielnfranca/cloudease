@@ -3,12 +3,13 @@ let currentModalType = null; // 'sftp' or 'db'
 let currentSiteId = null;
 
 function buildTempHost(domain, serverIp) {
-    const safeDomain = (domain || 'site')
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-    return `temp-${safeDomain}.${serverIp}.nip.io`;
+    const normalized = (domain || 'site').toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < normalized.length; i++) {
+        hash = ((hash * 31) + normalized.charCodeAt(i)) >>> 0;
+    }
+    const alias = hash.toString(36);
+    return `ce-${alias}.${serverIp}.nip.io`;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
