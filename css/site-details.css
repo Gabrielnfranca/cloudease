@@ -194,6 +194,34 @@
     border-color: #94a3b8;
 }
 
+.action-btn.secondary.visit-temp {
+    background-color: #fff7ed;
+    color: #9a3412;
+    border-color: #fdba74;
+}
+
+.action-btn.secondary.visit-temp:hover {
+    background-color: #ffedd5;
+    border-color: #fb923c;
+}
+
+.action-btn.secondary.visit-live {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-color: #6ee7b7;
+}
+
+.action-btn.secondary.visit-live:hover {
+    background-color: #d1fae5;
+    border-color: #34d399;
+}
+
+.action-btn.secondary.visit-disabled {
+    background-color: #f8fafc;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
+
 .action-btn.small {
     padding: 6px 12px;
     font-size: 12px;

@@ -94,6 +94,8 @@ function renderHeader(site) {
     const wpAdminBtn = document.getElementById('visitWpAdminBtn');
     const tempUrl = site.tempUrl || ((site.enable_temp_url && site.ip) ? `http://${site.domain}.${site.ip}.nip.io/` : null);
 
+    visitBtn.classList.remove('visit-temp', 'visit-live', 'visit-disabled');
+
     let url = null;
     if (site.ssl_active) {
         url = `https://${site.domain}/`;
@@ -109,12 +111,14 @@ function renderHeader(site) {
             ? '<i class="fas fa-lock"></i> Visitar Site'
             : '<i class="fas fa-link"></i> Link Provisório';
         visitBtn.title = site.ssl_active ? 'Abrir domínio principal com SSL' : 'Abrir link temporário enquanto DNS/SSL não está ativo';
+        visitBtn.classList.add(site.ssl_active ? 'visit-live' : 'visit-temp');
     } else {
         visitBtn.href = '#';
         visitBtn.style.pointerEvents = 'none';
         visitBtn.style.opacity = '0.6';
         visitBtn.innerHTML = '<i class="fas fa-ban"></i> Ative Link Provisório';
         visitBtn.title = 'Ative o Link Provisório para acessar enquanto DNS/SSL não está ativo.';
+        visitBtn.classList.add('visit-disabled');
     }
 
     if (wpAdminBtn) {
