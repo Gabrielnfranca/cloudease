@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         allOs: [],
         selectedPlanMeta: null,
         existingServers: [],
-        selectedN8nServer: '',
-        minPlanPriceUsd: 5
+        selectedN8nServer: ''
     };
 
     const providerProfiles = {
@@ -65,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const providerGuidance = document.getElementById('providerGuidanceModal');
     const planStatus = document.getElementById('planStatusModal');
     const planWarning = document.getElementById('planWarningModal');
-    const planFilterInfo = document.getElementById('planFilterInfoModal');
 
     const createServerSection = document.getElementById('createServerSectionModal');
     const createInstallSection = document.getElementById('createInstallSectionModal');
@@ -335,20 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getFilteredPlans() {
-        const regionPlans = getPlansByRegion();
-        if (regionPlans.length === 0) return { plans: [], filterApplied: false, hadPricedPlans: false };
-
-        const pricedPlans = regionPlans.filter((plan) => isFinitePrice(plan.price));
-        if (pricedPlans.length === 0) {
-            return { plans: regionPlans, filterApplied: false, hadPricedPlans: false };
-        }
-
-        const filtered = pricedPlans.filter((plan) => Number(plan.price) > state.minPlanPriceUsd);
-        return {
-            plans: filtered,
-            filterApplied: true,
-            hadPricedPlans: true
-        };
+        return getPlansByRegion();
     }
 
     function renderPlans() {
@@ -357,33 +342,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state.provider) {
             planSelect.disabled = true;
             planStatus.textContent = 'Escolha uma empresa para comecar.';
-            planFilterInfo.hidden = true;
             state.selectedPlanMeta = null;
             evaluateCompatibility();
             updateSummary();
             return;
         }
 
-        const filtered = getFilteredPlans();
-        const plans = filtered.plans.slice().sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
+        const plans = getFilteredPlans().slice().sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
 
         planSelect.disabled = false;
 
-        if (state.region && filtered.filterApplied) {
-            planFilterInfo.hidden = false;
-            planFilterInfo.textContent = `Filtro ativo: exibindo planos acima de US$ ${state.minPlanPriceUsd.toFixed(0)} nesta regiao.`;
-        } else {
-            planFilterInfo.hidden = true;
-        }
-
         if (plans.length === 0) {
-            if (state.region && filtered.hadPricedPlans) {
-                planStatus.textContent = `Nenhum plano acima de US$ ${state.minPlanPriceUsd.toFixed(0)} encontrado nesta regiao.`;
-            } else {
-                planStatus.textContent = state.region
-                    ? 'Nenhum tamanho encontrado nesta regiao.'
-                    : 'Escolha uma regiao para ver os tamanhos disponiveis.';
-            }
+            planStatus.textContent = state.region
+                ? 'Nenhum tamanho encontrado nesta regiao.'
+                : 'Escolha uma regiao para ver os tamanhos disponiveis.';
             state.selectedPlanMeta = null;
             evaluateCompatibility();
             updateSummary();
