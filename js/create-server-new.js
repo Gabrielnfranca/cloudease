@@ -328,7 +328,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const normalizedRegion = String(state.region).trim().toLowerCase();
         return plans.filter((plan) => {
             if (!Array.isArray(plan.locations)) return false;
-            return plan.locations.some((location) => String(location).trim().toLowerCase() === normalizedRegion);
+            return plan.locations.some((location) => {
+                if (typeof location === 'string') {
+                    return String(location).trim().toLowerCase() === normalizedRegion;
+                }
+
+                if (location && typeof location === 'object') {
+                    const value = location.id || location.region || location.code || location.slug;
+                    return value ? String(value).trim().toLowerCase() === normalizedRegion : false;
+                }
+
+                return false;
+            });
         });
     }
 
