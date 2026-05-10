@@ -109,6 +109,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    window.selectProviderCard = async function(button, provider) {
+        const card = button.closest('.option-card');
+        if (!card) return;
+        await window.selectOption(card, 'provider', provider);
+    };
+
     function renderProviderGuidance(provider) {
         const panel = document.getElementById('providerGuidance');
         if (!panel) return;

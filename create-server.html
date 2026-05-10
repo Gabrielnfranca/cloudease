@@ -672,6 +672,37 @@
             min-height: 36px;
         }
 
+        .provider-card-actions {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .provider-select-btn {
+            border: 1px solid #c7daef;
+            background: #f3f8ff;
+            color: #0f4f8a;
+            border-radius: 9px;
+            padding: 7px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .provider-select-btn:hover {
+            background: #e5f0fc;
+            border-color: #9ec3ea;
+            transform: translateY(-1px);
+        }
+
+        .option-card.selected .provider-select-btn {
+            background: #0f6cbd;
+            border-color: #0f6cbd;
+            color: #ffffff;
+        }
+
         .option-card {
             min-height: 140px;
             padding: 16px 12px;
@@ -778,25 +809,37 @@
                         </div>
                         <div class="options-grid" id="providerOptions">
                             <!-- Preenchido via JS -->
-                            <div class="option-card" onclick="selectOption(this, 'provider', 'vultr')">
+                            <div class="option-card">
                                 <img src="https://www.vultr.com/favicon.ico" alt="Vultr" class="provider-logo">
                                 <h3>Vultr</h3>
                                 <div class="provider-card-meta">Desempenho forte e datacenters globais.</div>
+                                <div class="provider-card-actions">
+                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'vultr')">Selecionar</button>
+                                </div>
                             </div>
-                            <div class="option-card" onclick="selectOption(this, 'provider', 'digitalocean')">
-                                <img src="https://www.digitalocean.com/favicon.ico" alt="DigitalOcean" class="provider-logo">
+                            <div class="option-card">
+                                <img src="assets/images/DigitalOcean_logo2.svg.png" alt="DigitalOcean" class="provider-logo">
                                 <h3>DigitalOcean</h3>
                                 <div class="provider-card-meta">Experiência simples e muito conhecida por clientes.</div>
+                                <div class="provider-card-actions">
+                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'digitalocean')">Selecionar</button>
+                                </div>
                             </div>
-                            <div class="option-card" onclick="selectOption(this, 'provider', 'linode')">
+                            <div class="option-card">
                                 <img src="https://www.linode.com/favicon.ico" alt="Linode" class="provider-logo">
                                 <h3>Linode</h3>
                                 <div class="provider-card-meta">Custo previsível para workloads Linux.</div>
+                                <div class="provider-card-actions">
+                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'linode')">Selecionar</button>
+                                </div>
                             </div>
-                            <div class="option-card coming-soon" data-disabled="1" onclick="selectOption(this, 'provider', 'aws')">
+                            <div class="option-card coming-soon" data-disabled="1">
                                 <img src="assets/images/aws-logo.svg" alt="AWS" class="provider-logo">
                                 <h3>AWS</h3>
                                 <span class="soon-badge">Em breve</span>
+                                <div class="provider-card-actions">
+                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'aws')">Selecionar</button>
+                                </div>
                             </div>
                         </div>
                         <input type="hidden" name="provider" id="providerInput" required>
