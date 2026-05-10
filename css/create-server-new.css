@@ -24,6 +24,90 @@
     padding: 18px;
 }
 
+.builder-form > #createServerSection,
+.builder-form > #createBasicSection,
+.builder-form > #createInstallSection,
+.builder-form > #installN8nSection,
+.builder-form > .builder-layout,
+.builder-form > .builder-actions {
+    display: none;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+body.install-mode .builder-form > .panel-card:nth-of-type(2) {
+    display: none;
+}
+
+body.install-mode #openConfigBtn {
+    display: none;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 40;
+}
+
+.config-modal {
+    width: min(1120px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow: auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    border: 1px solid #dbe7f4;
+    padding: 20px;
+}
+
+.config-modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.config-modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #0f172a;
+}
+
+.config-modal-header p {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.icon-btn {
+    border: 1px solid #dbe4ef;
+    background: #fff;
+    color: #334e68;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.config-modal-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+}
+
+.config-main {
+    display: grid;
+    gap: 16px;
+}
+
 .builder-banner {
     display: grid;
     grid-template-columns: 1fr 220px;
@@ -447,6 +531,10 @@
         grid-template-columns: 1fr;
     }
 
+    .config-modal-body {
+        grid-template-columns: 1fr;
+    }
+
     .summary-card {
         position: static;
         top: auto;
@@ -471,5 +559,14 @@
 
     .primary-btn {
         width: 100%;
+    }
+
+    .modal-backdrop {
+        padding: 10px;
+    }
+
+    .config-modal {
+        padding: 16px;
+        border-radius: 14px;
     }
 }
