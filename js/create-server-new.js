@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const state = {
-        mode: '',
+        mode: 'create-server',
         provider: '',
         region: '',
         os: '',
@@ -78,6 +78,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createServerFormNew');
     const createServerBtn = document.getElementById('createServerBtn');
 
+    function clearSummary() {
+        summaryMode.textContent = '-';
+        summaryProvider.textContent = '-';
+        summaryRegion.textContent = '-';
+        summaryOs.textContent = '-';
+        summaryPlan.textContent = '-';
+        summaryApp.textContent = '-';
+        summaryCost.textContent = '-';
+        summaryCompatibility.textContent = '-';
+    }
+
     function setMode(mode) {
         state.mode = mode;
         modeCards.forEach((card) => card.classList.toggle('is-active', card.dataset.mode === mode));
@@ -90,28 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createActions.hidden = !createVisible;
         installN8nSection.hidden = !installVisible;
 
-        if (createVisible) {
-            summaryMode.textContent = 'Criar servidor';
-            summaryApp.textContent = 'Servidor base';
-        } else if (installVisible) {
-            summaryMode.textContent = 'Instalar n8n';
-            summaryApp.textContent = 'n8n';
-            summaryProvider.textContent = '-';
-            summaryRegion.textContent = '-';
-            summaryOs.textContent = '-';
-            summaryPlan.textContent = '-';
-            summaryCost.textContent = 'Nao se aplica';
-            summaryCompatibility.textContent = 'Nao se aplica';
-        } else {
-            summaryMode.textContent = 'Escolha acima';
-            summaryProvider.textContent = '-';
-            summaryRegion.textContent = '-';
-            summaryOs.textContent = '-';
-            summaryPlan.textContent = '-';
-            summaryApp.textContent = '-';
-            summaryCost.textContent = '-';
-            summaryCompatibility.textContent = 'Aguardando';
-        }
+        clearSummary();
     }
 
     function getToken() {
@@ -150,6 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSummary() {
+        if (state.mode === 'install-n8n') {
+            summaryMode.textContent = 'Instalar n8n';
+            summaryApp.textContent = 'n8n';
+            summaryRegion.textContent = '-';
+            summaryOs.textContent = '-';
+            summaryCost.textContent = '-';
+            summaryCompatibility.textContent = '-';
+            return;
+        }
+
+        summaryMode.textContent = 'Criar servidor';
         summaryProvider.textContent = state.provider ? (providerProfiles[state.provider]?.label || state.provider) : '-';
 
         if (state.region) {
@@ -167,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         summaryPlan.textContent = state.selectedPlanMeta ? state.selectedPlanMeta.label : '-';
-        summaryApp.textContent = 'Servidor base';
+        summaryApp.textContent = (state.provider || state.region || state.os || state.plan) ? 'Servidor base' : '-';
         summaryCost.textContent = state.selectedPlanMeta && state.selectedPlanMeta.price !== null
             ? `US$ ${state.selectedPlanMeta.price.toFixed(2)}/mes`
             : '-';
@@ -557,6 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = state.existingServers.find((server) => String(server.id) === String(state.selectedN8nServer));
         summaryPlan.textContent = target ? target.name : '-';
         summaryProvider.textContent = target ? (target.provider || '-') : '-';
+        updateSummary();
     });
 
     installN8nBtn.addEventListener('click', () => {
@@ -586,5 +588,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     setMode(state.mode);
-    updateSummary();
 });
