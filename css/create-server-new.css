@@ -43,6 +43,10 @@ body.install-mode #openConfigBtn {
     z-index: 70;
 }
 
+.modal-backdrop[hidden] {
+    display: none !important;
+}
+
 .config-modal {
     width: min(1120px, 100%);
     max-height: calc(100vh - 40px);
