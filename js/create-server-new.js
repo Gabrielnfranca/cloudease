@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function setStep(step) {
         state.step = step;
-        panels.forEach((panel) => panel.classList.toggle('is-active', Number(panel.dataset.stepPanel) === step));
+        panels.forEach((panel) => panel.classList.add('is-active'));
         chips.forEach((chip) => chip.classList.toggle('is-active', Number(chip.dataset.stepChip) === step));
     }
 
@@ -460,15 +460,6 @@ document.addEventListener('DOMContentLoaded', function () {
             setLoadingButton(submitActionBtn, false, '');
         }
     }
-
-    chips.forEach((chip) => {
-        chip.addEventListener('click', function () {
-            const target = Number(chip.dataset.stepChip);
-            if (target <= state.step) {
-                setStep(target);
-            }
-        });
-    });
 
     document.querySelectorAll('[data-select-provider]').forEach((button) => {
         button.addEventListener('click', function () {
