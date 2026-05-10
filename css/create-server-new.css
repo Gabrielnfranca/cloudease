@@ -93,51 +93,27 @@
 
 .provider-top {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 8px;
 }
 
 .provider-logo {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     object-fit: contain;
-}
-
-.provider-badge {
-    border: 1px solid #0f6cbd;
-    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
-    color: #ffffff;
-    border-radius: 999px;
-    padding: 4px 8px;
-    font-size: 11px;
-    font-weight: 700;
-}
-    box-shadow: 0 10px 20px rgba(15, 108, 189, 0.22);
-
-.provider-badge.is-disabled {
-    background: #fff5e8;
-    border-color: #f7cf97;
-    color: #9b5c00;
 }
 
 .provider-card h3 {
     margin: 8px 0 6px;
-    font-size: 20px;
-    color: #10243d;
-}
+    border: 1px solid #0f6cbd;
+    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
+    color: #ffffff;
 
 .provider-card p {
     margin: 0;
     color: #62748c;
     font-size: 13px;
-    line-height: 1.45;
-    flex: 1;
-}
-
-.provider-btn {
-    margin-top: 12px;
-    border: 1px solid #c1d8f0;
     background: #f1f8ff;
     color: #0c4a84;
     border-radius: 10px;
@@ -146,20 +122,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #0f6cbd;
-    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
-    color: #ffffff;
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 11px;
-    font-weight: 800;
-}
-    padding: 9px 12px;
-    font-size: 13px;
-    font-weight: 800;
-    cursor: pointer;
-    border: 1px solid #0f6cbd;
-    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
     color: #ffffff;
     background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
     border-color: #0f6cbd;
@@ -301,15 +263,22 @@
     .app-action-btn {
         margin-top: 10px;
         width: 100%;
-        border: 1px solid #c1d8f0;
-        background: #f1f8ff;
-        color: #0c4a84;
+        border: 1px solid #0f6cbd;
+        background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
+        color: #ffffff;
         border-radius: 10px;
         padding: 9px 12px;
         font-size: 13px;
         font-weight: 800;
         cursor: pointer;
+        box-shadow: 0 10px 20px rgba(15, 108, 189, 0.22);
     }
+
+    .app-action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px rgba(15, 108, 189, 0.28);
+    }
+
     .app-card.is-active .app-action-btn {
         background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
         border-color: #0f6cbd;
