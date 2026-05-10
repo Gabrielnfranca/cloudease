@@ -7,9 +7,6 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/shared/styles.css">
     <link rel="stylesheet" href="css/shared/dashboard.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .wizard-container {
@@ -106,20 +103,6 @@
             gap: 12px;
         }
 
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
-        }
-
-        .cards-grid.compact {
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-        }
-
-        .cards-grid.plans {
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-        }
-
         .option-card {
             border: 1px solid #dbe4ef;
             border-radius: 8px;
@@ -153,131 +136,6 @@
 
         .option-card.selected i {
             color: #4299e1;
-        }
-
-        .select-hidden {
-            display: none;
-        }
-
-        .region-card,
-        .os-card,
-        .plan-card {
-            border: 1px solid #dbe4ef;
-            border-radius: 12px;
-            padding: 13px;
-            background: #fff;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 6px rgba(15,23,42,0.03);
-            text-align: left;
-            position: relative;
-        }
-
-        .region-card:hover,
-        .os-card:hover,
-        .plan-card:hover {
-            border-color: #93c5fd;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-        }
-
-        .region-card.selected,
-        .os-card.selected,
-        .plan-card.selected {
-            border-color: #4299e1;
-            background: linear-gradient(180deg, #f6fbff 0%, #ebf8ff 100%);
-        }
-
-        .card-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .card-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: #f1f5f9;
-            color: #1e293b;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .card-title {
-            color: #0f172a;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .card-subtitle {
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .card-badge {
-            display: inline-flex;
-            align-items: center;
-            border-radius: 999px;
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 1px solid transparent;
-            white-space: nowrap;
-        }
-
-        .badge-good {
-            color: #166534;
-            background: #ecfdf3;
-            border-color: #86efac;
-        }
-
-        .badge-warn {
-            color: #92400e;
-            background: #fffbeb;
-            border-color: #fcd34d;
-        }
-
-        .badge-bad {
-            color: #9f1239;
-            background: #fff1f2;
-            border-color: #fda4af;
-        }
-
-        .badge-info {
-            color: #1e3a8a;
-            background: #eff6ff;
-            border-color: #bfdbfe;
-        }
-
-        .badge-best {
-            color: #0f4f46;
-            background: #ecfeff;
-            border-color: #99f6e4;
-        }
-
-        .plan-card.best-value {
-            border-color: #14b8a6;
-            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.18), 0 10px 24px rgba(15, 23, 42, 0.08);
-        }
-
-        .card-price {
-            color: #0f6cbd;
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .card-meta {
-            color: #334155;
-            font-size: 12px;
-            line-height: 1.45;
         }
 
         .option-card.coming-soon {
@@ -347,53 +205,6 @@
             font-size: 13px;
         }
 
-        .health-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border-radius: 999px;
-            padding: 4px 10px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        .health-chip .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-        }
-
-        .health-good {
-            background: #ecfdf3;
-            color: #166534;
-            border: 1px solid #86efac;
-        }
-
-        .health-good .dot {
-            background: #22c55e;
-        }
-
-        .health-warn {
-            background: #fffbeb;
-            color: #92400e;
-            border: 1px solid #fcd34d;
-        }
-
-        .health-warn .dot {
-            background: #f59e0b;
-        }
-
-        .health-bad {
-            background: #fff1f2;
-            color: #9f1239;
-            border: 1px solid #fda4af;
-        }
-
-        .health-bad .dot {
-            background: #ef4444;
-        }
-
         .summary-row {
             margin-bottom: 8px;
         }
@@ -432,381 +243,6 @@
             }
         }
     </style>
-    <style>
-        :root {
-            --ui-text: #0f172a;
-            --ui-soft: #4b5f78;
-            --ui-primary: #0f6cbd;
-            --ui-primary-deep: #0b4f8a;
-            --ui-border: #d9e3f0;
-        }
-
-        .dashboard-body {
-            font-family: 'Manrope', 'Segoe UI', sans-serif;
-            background:
-                radial-gradient(circle at 12% 10%, rgba(15, 108, 189, 0.1), transparent 26%),
-                radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.08), transparent 24%),
-                linear-gradient(180deg, #f3f7fc 0%, #eaf0f7 100%);
-        }
-
-        .main-content {
-            padding-top: 22px;
-        }
-
-        .dashboard-header {
-            border: 1px solid var(--ui-border);
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(4px);
-            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-            margin-bottom: 18px;
-        }
-
-        .dashboard-header .header-title h1 {
-            margin: 0;
-            color: var(--ui-text);
-            font-size: 30px;
-            letter-spacing: -0.02em;
-        }
-
-        .page-subtitle {
-            margin-top: 6px;
-            color: var(--ui-soft);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .wizard-container {
-            max-width: 1020px;
-            border-radius: 18px;
-            border: 1px solid var(--ui-border);
-            box-shadow: 0 16px 44px rgba(15, 23, 42, 0.11);
-            position: relative;
-            overflow: hidden;
-            padding: 24px;
-        }
-
-        .wizard-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--ui-primary) 0%, #0ea5a4 100%);
-        }
-
-        .wizard-steps::before {
-            top: 19px;
-            left: 7%;
-            right: 7%;
-            height: 3px;
-            border-radius: 999px;
-            background: #e1ebf7;
-        }
-
-        .step {
-            color: #60738b;
-            font-weight: 700;
-        }
-
-        .step-number {
-            width: 38px;
-            height: 38px;
-            margin-bottom: 8px;
-            background: #edf2f9;
-            border: 1px solid #d7e2f0;
-        }
-
-        .step.active {
-            color: var(--ui-primary);
-        }
-
-        .step.active .step-number {
-            background: linear-gradient(160deg, var(--ui-primary) 0%, var(--ui-primary-deep) 100%);
-            box-shadow: 0 0 0 4px rgba(15, 108, 189, 0.16);
-            border-color: transparent;
-        }
-
-        .options-grid {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px;
-        }
-
-        .cards-grid.plans {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        }
-
-        .option-card,
-        .region-card,
-        .os-card,
-        .plan-card {
-            border-radius: 12px;
-            border-color: var(--ui-border);
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
-        }
-
-        .option-card {
-            padding: 14px 10px;
-        }
-
-        .option-card h3 {
-            color: #0f2239;
-            font-size: 15px;
-        }
-
-        .option-card:hover,
-        .region-card:hover,
-        .os-card:hover,
-        .plan-card:hover {
-            border-color: #9ec3ea;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
-        }
-
-        .option-card.selected,
-        .region-card.selected,
-        .os-card.selected,
-        .plan-card.selected {
-            border-color: var(--ui-primary);
-            background: linear-gradient(180deg, #f5faff 0%, #ebf4ff 100%);
-            box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.12);
-        }
-
-        .card-icon {
-            background: #eff4fa;
-            border-color: #dde7f4;
-        }
-
-        .actions {
-            border-top-color: #e2ebf6;
-        }
-
-        .new-site-btn {
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        #nextBtn,
-        #submitBtn {
-            background: linear-gradient(160deg, var(--ui-primary) 0%, var(--ui-primary-deep) 100%);
-            box-shadow: 0 10px 24px rgba(15, 108, 189, 0.24);
-        }
-
-        .summary-card {
-            background: linear-gradient(180deg, #f8fbff 0%, #f2f7fe 100%);
-            border: 1px solid #dbe7f4;
-            border-radius: 12px;
-            padding: 16px;
-        }
-
-        .summary-card h3 {
-            margin-top: 0;
-            margin-bottom: 12px;
-            color: #102a43;
-            font-size: 18px;
-        }
-
-        .summary-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 14px;
-        }
-
-        .summary-list li {
-            margin-bottom: 10px;
-            color: #3b4f67;
-        }
-
-        .helper-text {
-            color: #607086;
-            font-size: 13px;
-            margin-top: 8px;
-            line-height: 1.45;
-        }
-
-        @media (max-width: 760px) {
-            .wizard-container {
-                padding: 16px;
-            }
-
-            .cards-grid,
-            .cards-grid.compact,
-            .cards-grid.plans {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-header .header-title h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
-    <style>
-        .dashboard-header {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 18px;
-            align-items: center;
-        }
-
-        .wizard-section-title h2 {
-            font-size: 19px;
-            font-weight: 800;
-        }
-
-        .wizard-section-title p {
-            max-width: 720px;
-        }
-
-        .provider-logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            margin-bottom: 4px;
-        }
-
-        .provider-card-meta {
-            font-size: 12px;
-            color: #667891;
-            line-height: 1.4;
-            min-height: 34px;
-        }
-
-        .provider-card-actions {
-            margin-top: 10px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-
-        .provider-select-btn {
-            border: 1px solid #c7daef;
-            background: #f3f8ff;
-            color: #0f4f8a;
-            border-radius: 9px;
-            padding: 7px 14px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .provider-select-btn:hover {
-            background: #e5f0fc;
-            border-color: #9ec3ea;
-            transform: translateY(-1px);
-        }
-
-        .option-card.selected .provider-select-btn {
-            background: #0f6cbd;
-            border-color: #0f6cbd;
-            color: #ffffff;
-        }
-
-        #step1 .options-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        #step1 .option-card {
-            min-height: 194px;
-            padding: 16px 12px;
-            gap: 6px;
-            border-radius: 14px;
-            justify-content: flex-start;
-            background: linear-gradient(180deg, #ffffff 0%, #f9fcff 100%);
-        }
-
-        #step1 .option-card h3 {
-            font-size: 17px;
-            font-weight: 800;
-            letter-spacing: -0.01em;
-        }
-
-        .option-card.selected,
-        .region-card.selected,
-        .os-card.selected,
-        .plan-card.selected {
-            box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.10), 0 14px 30px rgba(15, 23, 42, 0.10);
-        }
-
-        .actions {
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .actions #prevBtn {
-            margin-right: auto;
-        }
-
-        .provider-actions {
-            justify-content: flex-end;
-        }
-
-        .provider-actions .new-site-btn {
-            min-width: 168px;
-        }
-
-        .actions .new-site-btn {
-            width: auto !important;
-            flex: 0 0 auto;
-            min-width: 156px;
-            padding: 10px 20px;
-        }
-
-        #nextBtn,
-        #submitBtn {
-            min-width: 182px;
-            width: auto !important;
-            border-radius: 12px;
-        }
-
-        #prevBtn {
-            min-width: 130px;
-        }
-
-        .new-site-btn {
-            border-radius: 12px;
-        }
-
-        #step1 .provider-select-btn {
-            width: 100%;
-            max-width: 140px;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 12px;
-            font-weight: 800;
-            border: 1px solid #bfd6ef;
-            background: #f2f8ff;
-            color: #0c4a84;
-        }
-
-        #step1 .provider-select-btn:hover {
-            background: #e5f1ff;
-            border-color: #9ec3ea;
-        }
-
-        #step1 .option-card.selected .provider-select-btn {
-            background: linear-gradient(160deg, var(--ui-primary) 0%, var(--ui-primary-deep) 100%);
-            border-color: #0f6cbd;
-            color: #fff;
-            box-shadow: 0 8px 16px rgba(15, 108, 189, 0.24);
-        }
-
-        #step1 .option-card.coming-soon .provider-select-btn {
-            opacity: 0.55;
-        }
-
-        @media (max-width: 980px) {
-            #step1 .options-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        .wizard-container {
-            margin-top: 4px;
-        }
-    </style>
 </head>
 <body class="dashboard-body">
     <div id="sidebar-include"></div>
@@ -815,7 +251,6 @@
         <header class="dashboard-header">
             <div class="header-title">
                 <h1>Novo Servidor</h1>
-                <p class="page-subtitle">Provisionamento guiado, rápido e com validação de compatibilidade.</p>
             </div>
             <div class="header-back">
                 <button class="new-site-btn" onclick="window.location.href='servers.html'">
@@ -852,43 +287,25 @@
                 <!-- Passo 1: Provedor -->
                 <div class="wizard-step active" id="step1">
                     <div class="form-group">
-                        <div class="wizard-section-title">
-                            <h2>Escolha o provedor</h2>
-                            <p>Selecione a VPS que vai hospedar o projeto. Cada card mostra a identidade visual da plataforma.</p>
-                        </div>
+                        <label>Escolha o Provedor</label>
                         <div class="options-grid" id="providerOptions">
                             <!-- Preenchido via JS -->
-                            <div class="option-card">
-                                <img src="https://www.vultr.com/favicon.ico" alt="Vultr" class="provider-logo">
+                            <div class="option-card" onclick="selectOption(this, 'provider', 'vultr')">
+                                <i class="fas fa-server"></i>
                                 <h3>Vultr</h3>
-                                <div class="provider-card-meta">Desempenho forte com infraestrutura global.</div>
-                                <div class="provider-card-actions">
-                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'vultr')">Selecionar</button>
-                                </div>
                             </div>
-                            <div class="option-card">
-                                <img src="https://www.digitalocean.com/favicon.ico" alt="DigitalOcean" class="provider-logo">
+                            <div class="option-card" onclick="selectOption(this, 'provider', 'digitalocean')">
+                                <i class="fas fa-cloud"></i>
                                 <h3>DigitalOcean</h3>
-                                <div class="provider-card-meta">Onboarding simples e ótimo para times enxutos.</div>
-                                <div class="provider-card-actions">
-                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'digitalocean')">Selecionar</button>
-                                </div>
                             </div>
-                            <div class="option-card">
-                                <img src="https://www.linode.com/favicon.ico" alt="Linode" class="provider-logo">
+                            <div class="option-card" onclick="selectOption(this, 'provider', 'linode')">
+                                <i class="fas fa-server"></i>
                                 <h3>Linode</h3>
-                                <div class="provider-card-meta">Custo previsível para workloads Linux.</div>
-                                <div class="provider-card-actions">
-                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'linode')">Selecionar</button>
-                                </div>
                             </div>
-                            <div class="option-card coming-soon" data-disabled="1">
-                                <img src="assets/images/aws-logo.svg" alt="AWS" class="provider-logo">
+                            <div class="option-card coming-soon" data-disabled="1" onclick="selectOption(this, 'provider', 'aws')">
+                                <i class="fab fa-aws"></i>
                                 <h3>AWS</h3>
                                 <span class="soon-badge">Em breve</span>
-                                <div class="provider-card-actions">
-                                    <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'aws')">Selecionar</button>
-                                </div>
                             </div>
                         </div>
                         <input type="hidden" name="provider" id="providerInput" required>
@@ -900,8 +317,7 @@
                 <div class="wizard-step" id="step2" style="display: none;">
                     <div class="form-group">
                         <label for="regionInput">Escolha a Região</label>
-                        <div id="regionCards" class="cards-grid compact"></div>
-                        <select id="regionInput" name="region" class="form-control select-hidden">
+                        <select id="regionInput" name="region" class="form-control">
                             <option value="">Selecione uma região...</option>
                         </select>
                         <p class="helper-text" id="regionHint" style="margin-top: 10px; color: #718096; font-size: 14px;">Escolha a região mais próxima dos seus visitantes para reduzir latência.</p>
@@ -912,8 +328,7 @@
                 <div class="wizard-step" id="step3" style="display: none;">
                     <div class="form-group">
                         <label for="osInput">Escolha o Sistema Operacional</label>
-                        <div id="osCards" class="cards-grid compact"></div>
-                        <select id="osInput" name="os" class="form-control select-hidden">
+                        <select id="osInput" name="os" class="form-control">
                             <option value="">Selecione um sistema...</option>
                         </select>
                         <p class="helper-text" style="margin-top: 10px; color: #718096; font-size: 14px;">Recomendamos <strong>Ubuntu 22.04</strong> para melhor compatibilidade.</p>
@@ -924,8 +339,7 @@
                 <div class="wizard-step" id="step4" style="display: none;">
                     <div class="form-group">
                         <label for="planInput">Escolha o Tamanho</label>
-                        <div id="planCards" class="cards-grid plans"></div>
-                        <select id="planInput" name="plan" class="form-control select-hidden">
+                        <select id="planInput" name="plan" class="form-control">
                             <option value="">Selecione um plano...</option>
                         </select>
                         <div id="planCostInfo" class="cost-card">Selecione um plano para ver estimativa de custo e recomendação.</div>
@@ -936,30 +350,12 @@
                 <!-- Passo 5: Nome (Finalização) -->
                 <div class="wizard-step" id="step5" style="display: none;">
                     <div class="form-group">
-                        <label>Perfil de instalacao</label>
-                        <p class="helper-text">Escolha o que sera instalado automaticamente no servidor.</p>
-                        <div class="options-grid" id="appOptions">
-                            <div class="option-card selected" onclick="selectOption(this, 'app', 'base-stack')">
-                                <i class="fas fa-layer-group"></i>
-                                <h3>Stack CloudEase</h3>
-                            </div>
-                            <div class="option-card" onclick="selectOption(this, 'app', 'n8n-stack')">
-                                <i class="fas fa-diagram-project"></i>
-                                <h3>n8n 1-Clique</h3>
-                            </div>
-                        </div>
-                        <input type="hidden" name="app" id="appInput" value="base-stack">
-                    </div>
-
-                    <div class="form-group">
                         <label for="serverName">Nome do Servidor</label>
                         <p class="helper-text">Dê um nome para identificar este servidor no painel.</p>
                         <input type="text" id="serverName" name="name" placeholder="Ex: Servidor Principal" class="form-control">
                     </div>
-
-                    <div id="compatibilityInfo" class="guidance-card" style="display:none"></div>
                     
-                    <div class="summary-card" style="margin-top: 14px;">
+                    <div class="summary-card" style="background: #f7fafc; padding: 14px; border-radius: 8px; margin-top: 14px; border:1px solid #e2e8f0;">
                         <h3>Resumo</h3>
                         <div class="summary-row">
                             <div class="summary-label">Provedor</div>
@@ -978,25 +374,17 @@
                             <div class="summary-value" id="summaryPlan">-</div>
                         </div>
                         <div class="summary-row">
-                            <div class="summary-label">Perfil de Instalação</div>
-                            <div class="summary-value" id="summaryApp">Stack CloudEase</div>
-                        </div>
-                        <div class="summary-row">
                             <div class="summary-label">Custo estimado</div>
                             <div class="summary-value" id="summaryCost">-</div>
                         </div>
-                        <div class="summary-row">
-                            <div class="summary-label">Compatibilidade</div>
-                            <div class="summary-value" id="summaryCompatibility">-</div>
-                        </div>
-                        <ul class="summary-list">
-                            <li><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Stack CloudEase (Nginx, PHP, MySQL) será instalada automaticamente.</li>
+                        <ul style="list-style: none; padding: 0; margin-top: 14px;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Stack CloudEase (Nginx, PHP, MySQL) será instalada automaticamente.</li>
                             <li><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Se o plano estiver abaixo do recomendado, você receberá um alerta antes da criação.</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="actions provider-actions">
+                <div class="actions">
                     <button type="button" class="new-site-btn btn-secondary" id="prevBtn" style="display: none;">Voltar</button>
                     <button type="button" class="new-site-btn" id="nextBtn">Próximo</button>
                     <button type="submit" class="new-site-btn" id="submitBtn" style="display: none;">Criar Servidor</button>

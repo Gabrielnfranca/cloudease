@@ -2,16 +2,6 @@ import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
 import { createInstance, fetchServers, deleteInstance } from '../lib/providers.js';
 import { discoverSites } from '../lib/provisioner.js';
-import { randomBytes } from 'crypto';
-
-function generateStrongPass(length = 14) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*()-_=+';
-    let out = '';
-    for (let i = 0; i < length; i += 1) {
-        out += chars[randomBytes(1)[0] % chars.length];
-    }
-    return out;
-}
 
 export default async function handler(req, res) {
     // CORS
@@ -155,9 +145,6 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         // Create Request
         const { provider, region, plan, app, name, os_id } = req.body;
-        const selectedApp = app === 'n8n-stack' ? 'n8n-stack' : 'base-stack';
-        const n8nUser = selectedApp === 'n8n-stack' ? 'admin' : null;
-        const n8nPass = selectedApp === 'n8n-stack' ? generateStrongPass(14) : null;
         
         const { data: provData } = await supabase
             .from('providers')
@@ -169,15 +156,7 @@ export default async function handler(req, res) {
         if (!provData) return res.status(400).json({ error: 'Provedor não conectado' });
 
         try {
-            const result = await createInstance(provider, provData.api_key, {
-                region,
-                plan,
-                app: selectedApp,
-                name,
-                os_id,
-                n8n_user: n8nUser,
-                n8n_pass: n8nPass
-            });
+            const result = await createInstance(provider, provData.api_key, { region, plan, app, name, os_id });
             
             let externalId = 'pending';
             if (result.instance?.id) externalId = result.instance.id;
@@ -190,28 +169,10 @@ export default async function handler(req, res) {
                 external_id: externalId,
                 name,
                 status: 'creating',
-                specs: {
-                    app: selectedApp,
-                    plan,
-                    region,
-                    ...(selectedApp === 'n8n-stack' ? {
-                        n8n_user: n8nUser,
-                        n8n_pass: n8nPass,
-                        n8n_port: 5678
-                    } : {})
-                }
+                specs: { app, plan, region }
             }]);
 
-            return res.status(201).json({
-                success: true,
-                message: 'Criando servidor...',
-                access: selectedApp === 'n8n-stack' ? {
-                    service: 'n8n',
-                    user: n8nUser,
-                    password: n8nPass,
-                    note: 'Use http://IP_DO_SERVIDOR:5678 quando o servidor estiver ativo.'
-                } : null
-            });
+            return res.status(201).json({ success: true, message: 'Criando servidor...' });
         } catch (e) {
             return res.status(500).json({ error: e.message });
         }

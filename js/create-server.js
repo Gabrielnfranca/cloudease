@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('createServerForm');
     
     let allPlans = []; // Armazena todos os planos carregados
-    let visiblePlans = []; // Planos após filtro da região selecionada
     let selectedPlanMeta = null;
 
     const providerProfiles = {
@@ -31,19 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
             label: 'AWS',
             guidance: 'Integração AWS em preparação. Em breve você poderá escolher EC2 com recomendações de custo por workload.',
             minRamMB: 2048
-        }
-    };
-
-    const appProfiles = {
-        'base-stack': {
-            label: 'Stack CloudEase',
-            requirements: { minCpu: 1, minRamMB: 1024, minDiskGB: 20 },
-            message: 'Requer no minimo 1 vCPU, 1 GB de RAM e 20 GB de disco.'
-        },
-        'n8n-stack': {
-            label: 'n8n 1-Clique',
-            requirements: { minCpu: 1, minRamMB: 2048, minDiskGB: 25 },
-            message: 'Requer no minimo 1 vCPU, 2 GB de RAM e 25 GB de disco para operar com estabilidade.'
         }
     };
 
@@ -109,12 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    window.selectProviderCard = async function(button, provider) {
-        const card = button.closest('.option-card');
-        if (!card) return;
-        await window.selectOption(card, 'provider', provider);
-    };
-
     function renderProviderGuidance(provider) {
         const panel = document.getElementById('providerGuidance');
         if (!panel) return;
@@ -169,13 +149,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderRegions(regions) {
         const select = document.getElementById('regionInput');
-        const cards = document.getElementById('regionCards');
         if (!select) {
             console.error('Elemento regionInput não encontrado no DOM');
             return;
         }
         select.innerHTML = '<option value="">Selecione uma região...</option>';
-        if (cards) cards.innerHTML = '';
         
         // Ordena por nome
         regions.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
@@ -186,28 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const regionLabel = region.country ? `${region.name} (${region.country})` : (region.description || region.name);
             option.textContent = regionLabel;
             select.appendChild(option);
-
-            if (cards) {
-                const card = document.createElement('button');
-                card.type = 'button';
-                card.className = 'region-card';
-                card.dataset.value = region.id;
-                card.innerHTML = `
-                    <div class="card-head">
-                        <span class="card-icon"><i class="fas fa-location-dot"></i></span>
-                        <span class="card-badge badge-info">Datacenter</span>
-                    </div>
-                    <div class="card-title">${region.name || region.id}</div>
-                    <div class="card-subtitle">${region.country || region.description || region.id}</div>
-                `;
-                card.addEventListener('click', function () {
-                    cards.querySelectorAll('.region-card').forEach(el => el.classList.remove('selected'));
-                    card.classList.add('selected');
-                    select.value = region.id;
-                    if (typeof select.onchange === 'function') select.onchange();
-                });
-                cards.appendChild(card);
-            }
         });
         
         // Atualiza filtros/summary ao trocar região
@@ -219,10 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderOS(osList) {
         const select = document.getElementById('osInput');
-        const cards = document.getElementById('osCards');
         if (!select) return;
         select.innerHTML = '<option value="">Selecione um sistema...</option>';
-        if (cards) cards.innerHTML = '';
         
         if (!osList || osList.length === 0) {
             // Fallback se não vier nada
@@ -238,33 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
             option.value = os.id;
             option.textContent = os.name;
             const osName = String(os.name || '').toLowerCase();
-            const isDefault = osName.includes('ubuntu 22.04') || osName.includes('ubuntu 24.04');
-            if (isDefault) option.selected = true;
+            if (osName.includes('ubuntu 22.04') || osName.includes('ubuntu 24.04')) option.selected = true;
             select.appendChild(option);
-
-            if (cards) {
-                const osLabel = String(os.name || '').toLowerCase();
-                const osIcon = osLabel.includes('ubuntu') ? 'fa-ubuntu' : (osLabel.includes('debian') ? 'fa-linux' : 'fa-server');
-                const card = document.createElement('button');
-                card.type = 'button';
-                card.className = 'os-card' + (isDefault ? ' selected' : '');
-                card.dataset.value = os.id;
-                card.innerHTML = `
-                    <div class="card-head">
-                        <span class="card-icon"><i class="fab ${osIcon}"></i></span>
-                        ${isDefault ? '<span class="card-badge badge-good">Recomendado</span>' : '<span class="card-badge badge-info">Disponível</span>'}
-                    </div>
-                    <div class="card-title">${os.name}</div>
-                    <div class="card-subtitle">${os.family || 'Linux'}</div>
-                `;
-                card.addEventListener('click', function () {
-                    cards.querySelectorAll('.os-card').forEach(el => el.classList.remove('selected'));
-                    card.classList.add('selected');
-                    select.value = os.id;
-                    if (typeof select.onchange === 'function') select.onchange();
-                });
-                cards.appendChild(card);
-            }
         });
 
         select.onchange = updateSummary;
@@ -283,15 +212,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasLocations = allPlans.some(p => p.locations && Array.isArray(p.locations) && p.locations.length > 0);
             
             if (hasLocations) {
-                const normalizedRegion = String(selectedRegion).trim().toLowerCase();
-                filteredPlans = allPlans.filter(plan => {
-                    if (!plan.locations || !Array.isArray(plan.locations)) return false;
-                    return plan.locations.some((loc) => String(loc).trim().toLowerCase() === normalizedRegion);
-                });
+                filteredPlans = allPlans.filter(plan => 
+                    plan.locations && plan.locations.includes(selectedRegion)
+                );
             }
         }
-
-        visiblePlans = Array.isArray(filteredPlans) ? [...filteredPlans] : [];
 
         renderPlans(filteredPlans);
         updateSummary();
@@ -299,13 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderPlans(plans) {
         const select = document.getElementById('planInput');
-        const cards = document.getElementById('planCards');
         if (!select) {
             console.error('Elemento planInput não encontrado no DOM');
             return;
         }
         select.innerHTML = '<option value="">Selecione um plano...</option>';
-        if (cards) cards.innerHTML = '';
 
         // Ordena por preço quando disponível
         plans.sort((a, b) => {
@@ -313,26 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const bp = Number(b.price ?? Number.POSITIVE_INFINITY);
             return ap - bp;
         });
-
-        const profile = getSelectedProviderProfile();
-        const appProfile = getSelectedAppProfile();
-
-        const compatiblePricedPlans = plans.filter((plan) => {
-            const cpu = Number(plan.cpu || 0);
-            const ram = Number(plan.ram || 0);
-            const disk = Number(plan.disk || 0);
-            const hasPrice = plan.price !== null && plan.price !== undefined && Number.isFinite(Number(plan.price));
-            const req = appProfile.requirements;
-            return hasPrice && cpu >= req.minCpu && ram >= req.minRamMB && disk >= req.minDiskGB;
-        });
-
-        let bestPlanId = null;
-        if (compatiblePricedPlans.length > 0) {
-            const best = compatiblePricedPlans.reduce((acc, item) => {
-                return Number(item.price) < Number(acc.price) ? item : acc;
-            });
-            bestPlanId = String(best.id);
-        }
 
         plans.forEach(plan => {
             const option = document.createElement('option');
@@ -345,52 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
             option.dataset.disk = plan.disk || '';
             option.dataset.price = hasPrice ? Number(plan.price).toFixed(2) : '';
             select.appendChild(option);
-
-            if (cards) {
-                const cpu = Number(plan.cpu || 0);
-                const ram = Number(plan.ram || 0);
-                const disk = Number(plan.disk || 0);
-                const req = appProfile.requirements;
-                const appCompatible = cpu >= req.minCpu && ram >= req.minRamMB && disk >= req.minDiskGB;
-                const providerRecommended = !!(profile && ram >= profile.minRamMB);
-
-                let badgeClass = 'badge-bad';
-                let badgeLabel = 'Não recomendado';
-                if (appCompatible && providerRecommended) {
-                    badgeClass = 'badge-good';
-                    badgeLabel = 'Recomendado';
-                } else if (appCompatible) {
-                    badgeClass = 'badge-warn';
-                    badgeLabel = 'Aceitável';
-                }
-
-                const isBestValue = bestPlanId && String(plan.id) === bestPlanId;
-                if (isBestValue) {
-                    badgeClass = 'badge-best';
-                    badgeLabel = 'Melhor custo-benefício';
-                }
-
-                const card = document.createElement('button');
-                card.type = 'button';
-                card.className = 'plan-card' + (isBestValue ? ' best-value' : '');
-                card.dataset.value = plan.id;
-                card.innerHTML = `
-                    <div class="card-head">
-                        <span class="card-icon"><i class="fas fa-microchip"></i></span>
-                        <span class="card-badge ${badgeClass}">${badgeLabel}</span>
-                    </div>
-                    <div class="card-price">${hasPrice ? `US$ ${Number(plan.price).toFixed(2)}` : '--'}</div>
-                    <div class="card-title">${plan.id}</div>
-                    <div class="card-meta">${plan.cpu || '-'} vCPU • ${plan.ram || '-'}MB RAM • ${plan.disk || '-'}GB SSD</div>
-                `;
-                card.addEventListener('click', function () {
-                    cards.querySelectorAll('.plan-card').forEach(el => el.classList.remove('selected'));
-                    card.classList.add('selected');
-                    select.value = plan.id;
-                    if (typeof select.onchange === 'function') select.onchange();
-                });
-                cards.appendChild(card);
-            }
         });
 
         select.onchange = function() {
@@ -406,59 +263,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return providerProfiles[provider] || null;
     }
 
-    function getSelectedAppProfile() {
-        const app = document.getElementById('appInput')?.value || 'base-stack';
-        return appProfiles[app] || appProfiles['base-stack'];
-    }
-
-    function evaluateCompatibility() {
-        const appProfile = getSelectedAppProfile();
-        const infoEl = document.getElementById('compatibilityInfo');
-        const summaryEl = document.getElementById('summaryCompatibility');
-
-        if (!selectedPlanMeta || !selectedPlanMeta.cpu || !selectedPlanMeta.ram || !selectedPlanMeta.disk) {
-            if (infoEl) {
-                infoEl.style.display = 'block';
-                infoEl.style.background = '#f8fbff';
-                infoEl.style.borderColor = '#dbeafe';
-                infoEl.style.color = '#1e3a8a';
-                infoEl.innerHTML = '<strong>Compatibilidade:</strong> selecione um plano para validar os requisitos da instalação.';
-            }
-            if (summaryEl) summaryEl.textContent = 'Aguardando seleção de plano';
-            return { compatible: false, reason: 'Plano não selecionado' };
-        }
-
-        const req = appProfile.requirements;
-        const missing = [];
-
-        if (selectedPlanMeta.cpu < req.minCpu) missing.push(`${req.minCpu} vCPU`);
-        if (selectedPlanMeta.ram < req.minRamMB) missing.push(`${req.minRamMB}MB RAM`);
-        if (selectedPlanMeta.disk < req.minDiskGB) missing.push(`${req.minDiskGB}GB disco`);
-
-        if (missing.length > 0) {
-            const message = `Incompatível para ${appProfile.label}. Necessário: ${appProfile.message}`;
-            if (infoEl) {
-                infoEl.style.display = 'block';
-                infoEl.style.background = '#fff7ed';
-                infoEl.style.borderColor = '#fdba74';
-                infoEl.style.color = '#9a3412';
-                infoEl.innerHTML = `<strong>Plano incompatível:</strong> este servidor não atende aos requisitos de ${appProfile.label}.`;
-            }
-            if (summaryEl) summaryEl.textContent = 'Incompatível';
-            return { compatible: false, reason: message };
-        }
-
-        if (infoEl) {
-            infoEl.style.display = 'block';
-            infoEl.style.background = '#f0fdf4';
-            infoEl.style.borderColor = '#86efac';
-            infoEl.style.color = '#166534';
-            infoEl.innerHTML = `<strong>Compatível:</strong> o plano atende aos requisitos de ${appProfile.label}.`;
-        }
-        if (summaryEl) summaryEl.textContent = 'Compatível';
-        return { compatible: true, reason: '' };
-    }
-
     function updatePlanInsights() {
         const planSelect = document.getElementById('planInput');
         const costEl = document.getElementById('planCostInfo');
@@ -468,16 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selected = planSelect.options[planSelect.selectedIndex];
         if (!selected || !selected.value) {
             selectedPlanMeta = null;
-            const priced = (visiblePlans || []).filter((p) => p.price !== null && p.price !== undefined && Number.isFinite(Number(p.price)));
-            if (priced.length > 0) {
-                const min = priced.reduce((acc, item) => {
-                    const value = Number(item.price);
-                    return value < acc ? value : acc;
-                }, Number.POSITIVE_INFINITY);
-                costEl.innerHTML = `Valor mínimo nesta região: <strong>US$ ${min.toFixed(2)}/mês</strong>. Selecione um plano para ver recomendação detalhada.`;
-            } else {
-                costEl.textContent = 'Selecione um plano para ver estimativa de custo e recomendação.';
-            }
+            costEl.textContent = 'Selecione um plano para ver estimativa de custo e recomendação.';
             warningEl.style.display = 'none';
             warningEl.textContent = '';
             return;
@@ -488,34 +283,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const disk = Number(selected.dataset.disk || 0);
         const price = selected.dataset.price ? Number(selected.dataset.price) : null;
         const profile = getSelectedProviderProfile();
-        const appProfile = getSelectedAppProfile();
 
         selectedPlanMeta = { cpu, ram, disk, price };
 
         const priceText = price !== null ? `US$ ${price.toFixed(2)}/mês` : 'Preço não informado pelo provedor';
-        const req = appProfile.requirements;
-        const appCompatible = cpu >= req.minCpu && ram >= req.minRamMB && disk >= req.minDiskGB;
-        const providerRecommended = !!(profile && ram >= profile.minRamMB);
+        costEl.textContent = `Estimativa: ${priceText}. Recursos: ${cpu} vCPU, ${ram}MB RAM, ${disk}GB SSD.`;
 
-        let healthClass = 'health-bad';
-        let healthLabel = 'Não recomendado';
-
-        if (appCompatible && providerRecommended) {
-            healthClass = 'health-good';
-            healthLabel = 'Recomendado';
-        } else if (appCompatible) {
-            healthClass = 'health-warn';
-            healthLabel = 'Aceitável';
-        }
-
-        costEl.innerHTML =
-            `Estimativa: ${priceText}. Recursos: ${cpu} vCPU, ${ram}MB RAM, ${disk}GB SSD.` +
-            `<br><span class="health-chip ${healthClass}"><span class="dot"></span>${healthLabel}</span>`;
-
-        if (!appCompatible) {
-            warningEl.style.display = 'block';
-            warningEl.textContent = `Incompatível com ${appProfile.label}. Requisitos mínimos: ${req.minCpu} vCPU, ${req.minRamMB}MB RAM e ${req.minDiskGB}GB disco.`;
-        } else if (profile && ram > 0 && ram < profile.minRamMB) {
+        if (profile && ram > 0 && ram < profile.minRamMB) {
             warningEl.style.display = 'block';
             warningEl.textContent = `Atenção: este plano tem ${ram}MB de RAM. Recomendamos pelo menos ${profile.minRamMB}MB para evitar lentidão e risco de indisponibilidade em produção.`;
         } else {
@@ -529,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const regionEl = document.getElementById('summaryRegion');
         const osEl = document.getElementById('summaryOs');
         const planEl = document.getElementById('summaryPlan');
-        const appEl = document.getElementById('summaryApp');
         const costEl = document.getElementById('summaryCost');
         if (!providerEl || !regionEl || !osEl || !planEl || !costEl) return;
 
@@ -537,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const regionSelect = document.getElementById('regionInput');
         const osSelect = document.getElementById('osInput');
         const planSelect = document.getElementById('planInput');
-        const app = document.getElementById('appInput').value;
 
         const profile = providerProfiles[provider];
         providerEl.textContent = profile ? profile.label : '-';
@@ -551,15 +323,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const planText = planSelect && planSelect.selectedIndex > 0 ? planSelect.options[planSelect.selectedIndex].text : '-';
         planEl.textContent = planText;
 
-        if (appEl) {
-            appEl.textContent = app === 'n8n-stack' ? 'n8n 1-Clique' : 'Stack CloudEase';
-        }
-
         costEl.textContent = selectedPlanMeta && selectedPlanMeta.price !== null
             ? `US$ ${selectedPlanMeta.price.toFixed(2)}/mês`
             : '-';
-
-        evaluateCompatibility();
     }
 
     function validateStep(step) {
@@ -599,26 +365,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!proceed) return false;
             }
         }
-
-        if (step === 5) {
-            const compatibility = evaluateCompatibility();
-            if (!compatibility.compatible) {
-                alert('Não é possível criar este servidor para o perfil escolhido. ' + compatibility.reason);
-                return false;
-            }
-        }
         return true;
     }
 
     // Envio do Formulário
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
-
-        const compatibility = evaluateCompatibility();
-        if (!compatibility.compatible) {
-            alert('Configuração incompatível: ' + compatibility.reason);
-            return;
-        }
         
         const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
@@ -629,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
             region: document.getElementById('regionInput').value,
             plan: document.getElementById('planInput').value,
             os_id: document.getElementById('osInput').value,
-            app: document.getElementById('appInput').value || 'base-stack',
+            app: 'base-stack', // Sempre instala a base stack
             name: document.getElementById('serverName').value || 'Novo Servidor'
         };
 
@@ -654,17 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                if (data && data.access && data.access.service === 'n8n') {
-                    alert(
-                        'Servidor n8n criado!\n\n' +
-                        'Usuario: ' + data.access.user + '\n' +
-                        'Senha: ' + data.access.password + '\n\n' +
-                        'Acesse em: http://IP_DO_SERVIDOR:5678\n' +
-                        'Obs: aguarde alguns minutos para finalizacao da instalacao.'
-                    );
-                } else {
-                    alert('Servidor criado com sucesso! A instalação pode levar alguns minutos.');
-                }
+                alert('Servidor criado com sucesso! A instalação pode levar alguns minutos.');
                 window.location.href = 'servers.html';
             } else {
                 alert('Erro: ' + (data.error || 'Falha ao criar servidor'));
