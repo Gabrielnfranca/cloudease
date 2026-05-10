@@ -659,17 +659,17 @@
         }
 
         .provider-logo {
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .provider-card-meta {
             font-size: 12px;
             color: #667891;
-            line-height: 1.45;
-            min-height: 36px;
+            line-height: 1.4;
+            min-height: 34px;
         }
 
         .provider-card-actions {
@@ -703,14 +703,24 @@
             color: #ffffff;
         }
 
-        .option-card {
-            min-height: 140px;
-            padding: 16px 12px;
-            gap: 6px;
+        #step1 .options-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
         }
 
-        .option-card h3 {
-            font-size: 15px;
+        #step1 .option-card {
+            min-height: 194px;
+            padding: 16px 12px;
+            gap: 6px;
+            border-radius: 14px;
+            justify-content: flex-start;
+            background: linear-gradient(180deg, #ffffff 0%, #f9fcff 100%);
+        }
+
+        #step1 .option-card h3 {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
         }
 
         .option-card.selected,
@@ -722,26 +732,31 @@
 
         .actions {
             gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .actions #prevBtn {
+            margin-right: auto;
         }
 
         .provider-actions {
-            justify-content: center;
+            justify-content: flex-end;
         }
 
         .provider-actions .new-site-btn {
-            min-width: 180px;
+            min-width: 168px;
         }
 
         .actions .new-site-btn {
             width: auto !important;
             flex: 0 0 auto;
-            min-width: 170px;
+            min-width: 156px;
             padding: 10px 20px;
         }
 
         #nextBtn,
         #submitBtn {
-            min-width: 220px;
+            min-width: 182px;
             width: auto !important;
             border-radius: 12px;
         }
@@ -752,6 +767,40 @@
 
         .new-site-btn {
             border-radius: 12px;
+        }
+
+        #step1 .provider-select-btn {
+            width: 100%;
+            max-width: 140px;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            border: 1px solid #bfd6ef;
+            background: #f2f8ff;
+            color: #0c4a84;
+        }
+
+        #step1 .provider-select-btn:hover {
+            background: #e5f1ff;
+            border-color: #9ec3ea;
+        }
+
+        #step1 .option-card.selected .provider-select-btn {
+            background: linear-gradient(160deg, var(--ui-primary) 0%, var(--ui-primary-deep) 100%);
+            border-color: #0f6cbd;
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(15, 108, 189, 0.24);
+        }
+
+        #step1 .option-card.coming-soon .provider-select-btn {
+            opacity: 0.55;
+        }
+
+        @media (max-width: 980px) {
+            #step1 .options-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         .wizard-container {
@@ -812,15 +861,15 @@
                             <div class="option-card">
                                 <img src="https://www.vultr.com/favicon.ico" alt="Vultr" class="provider-logo">
                                 <h3>Vultr</h3>
-                                <div class="provider-card-meta">Desempenho forte e datacenters globais.</div>
+                                <div class="provider-card-meta">Desempenho forte com infraestrutura global.</div>
                                 <div class="provider-card-actions">
                                     <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'vultr')">Selecionar</button>
                                 </div>
                             </div>
                             <div class="option-card">
-                                <img src="assets/images/DigitalOcean_logo2.svg.png" alt="DigitalOcean" class="provider-logo">
+                                <img src="https://www.digitalocean.com/favicon.ico" alt="DigitalOcean" class="provider-logo">
                                 <h3>DigitalOcean</h3>
-                                <div class="provider-card-meta">Experiência simples e muito conhecida por clientes.</div>
+                                <div class="provider-card-meta">Onboarding simples e ótimo para times enxutos.</div>
                                 <div class="provider-card-actions">
                                     <button type="button" class="provider-select-btn" onclick="selectProviderCard(this, 'digitalocean')">Selecionar</button>
                                 </div>
