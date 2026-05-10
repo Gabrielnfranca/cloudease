@@ -123,10 +123,12 @@
                                 <article class="app-card is-active" data-app="base-stack">
                                     <h4>Stack CloudEase</h4>
                                     <p>Nginx, PHP e MySQL prontos para uso.</p>
+                                    <button type="button" class="app-action-btn" data-select-app="base-stack">Selecionar e criar</button>
                                 </article>
                                 <article class="app-card" data-app="n8n-stack">
                                     <h4>n8n 1-Clique</h4>
                                     <p>Automacao pronta com acesso inicial gerado.</p>
+                                    <button type="button" class="app-action-btn" data-select-app="n8n-stack">Selecionar e criar</button>
                                 </article>
                             </div>
 
@@ -155,11 +157,7 @@
                 <input type="hidden" id="planInput" required>
                 <input type="hidden" id="appInput" value="base-stack">
 
-                <footer class="wizard-actions">
-                    <button type="button" class="new-site-btn btn-secondary" id="prevBtn" hidden>Voltar</button>
-                    <button type="button" class="new-site-btn" id="nextBtn">Continuar</button>
-                    <button type="submit" class="new-site-btn" id="submitBtn" hidden>Criar servidor</button>
-                </footer>
+                <div class="flow-note">Fluxo por card: selecione provedor, plano e finalize no perfil de instalacao.</div>
             </form>
         </section>
     </main>

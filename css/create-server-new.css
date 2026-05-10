@@ -198,6 +198,21 @@
     background: #fff;
     cursor: pointer;
 }
+    .mini-card {
+        text-align: left;
+    }
+    .mini-card .inline-select,
+    .plan-card .inline-select {
+        margin-top: 8px;
+        display: inline-block;
+        border: 1px solid #c6d9ee;
+        background: #f2f8ff;
+        color: #0e4f8a;
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 800;
+    }
 
 .mini-card.is-selected,
 .plan-card.is-selected,
@@ -268,6 +283,23 @@
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
+    .app-action-btn {
+        margin-top: 10px;
+        width: 100%;
+        border: 1px solid #c1d8f0;
+        background: #f1f8ff;
+        color: #0c4a84;
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+    .app-card.is-active .app-action-btn {
+        background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
+        border-color: #0f6cbd;
+        color: #fff;
+    }
 
 .text-input {
     width: 100%;
@@ -314,6 +346,12 @@
     gap: 12px;
     justify-content: flex-end;
 }
+    .flow-note {
+        margin-top: 14px;
+        color: #667891;
+        font-size: 12px;
+        text-align: center;
+    }
 
 #prevBtn {
     margin-right: auto;

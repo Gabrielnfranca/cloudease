@@ -60,10 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
         state.step = step;
         panels.forEach((panel) => panel.classList.toggle('is-active', Number(panel.dataset.stepPanel) === step));
         chips.forEach((chip) => chip.classList.toggle('is-active', Number(chip.dataset.stepChip) === step));
-
-        prevBtn.hidden = step === 1;
-        nextBtn.hidden = step === 3;
-        submitBtn.hidden = step !== 3;
     }
 
     function setLoadingButton(button, isLoading, loadingText) {
@@ -154,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             renderOs();
             renderPlans();
             updateSummary();
+            setStep(2);
         } catch (error) {
             alert('Erro ao carregar opcoes: ' + error.message);
         } finally {
@@ -169,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'mini-card';
-            button.innerHTML = `<strong>${region.name || region.id}</strong><br><small>${region.country || region.description || region.id}</small>`;
+            button.innerHTML = `<strong>${region.name || region.id}</strong><br><small>${region.country || region.description || region.id}</small><br><span class="inline-select">Selecionar</span>`;
             button.addEventListener('click', function () {
                 state.region = region.id;
                 regionInput.value = region.id;
@@ -201,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'mini-card' + (isDefault && !state.os ? ' is-selected' : '');
-            button.innerHTML = `<strong>${os.name}</strong><br><small>${os.family || 'linux'}</small>`;
+            button.innerHTML = `<strong>${os.name}</strong><br><small>${os.family || 'linux'}</small><br><span class="inline-select">Selecionar</span>`;
 
             if (isDefault && !state.os) {
                 state.os = os.id;
@@ -307,6 +304,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <small>${plan.cpu || '-'} vCPU | ${plan.ram || '-'}MB RAM | ${plan.disk || '-'}GB SSD</small>
                 <br>
                 <span class="plan-badge ${isBest ? 'best' : badge.cls}">${isBest ? 'Melhor custo-beneficio' : badge.label}</span>
+                <br>
+                <span class="inline-select">Selecionar</span>
             `;
 
             card.addEventListener('click', function () {
@@ -322,6 +321,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 renderPlans();
                 evaluateCompatibility();
                 updateSummary();
+                if (state.region && state.os && state.plan) {
+                    setStep(3);
+                }
             });
 
             planCards.appendChild(card);
@@ -409,44 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
-    nextBtn.addEventListener('click', function () {
-        if (!canAdvance(state.step)) return;
-        setStep(Math.min(3, state.step + 1));
-    });
-
-    prevBtn.addEventListener('click', function () {
-        setStep(Math.max(1, state.step - 1));
-    });
-
-    chips.forEach((chip) => {
-        chip.addEventListener('click', function () {
-            const target = Number(chip.dataset.stepChip);
-            if (target <= state.step) {
-                setStep(target);
-            }
-        });
-    });
-
-    document.querySelectorAll('[data-select-provider]').forEach((button) => {
-        button.addEventListener('click', function () {
-            selectProvider(button.dataset.selectProvider);
-        });
-    });
-
-    document.querySelectorAll('.app-card').forEach((card) => {
-        card.addEventListener('click', function () {
-            document.querySelectorAll('.app-card').forEach((x) => x.classList.remove('is-active'));
-            card.classList.add('is-active');
-            state.app = card.dataset.app;
-            appInput.value = state.app;
-            renderPlans();
-            updateSummary();
-        });
-    });
-
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
+    async function createServer() {
         if (!state.provider || !state.region || !state.os || !state.plan) {
             alert('Complete os campos obrigatorios.');
             return;
@@ -458,7 +423,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        setLoadingButton(submitBtn, true, '<i class="fas fa-spinner fa-spin"></i> Criando...');
+        const submitActionBtn = document.querySelector(`.app-action-btn[data-select-app="${state.app}"]`) || document.querySelector('.app-action-btn');
+        setLoadingButton(submitActionBtn, true, '<i class="fas fa-spinner fa-spin"></i> Criando...');
 
         try {
             const payload = {
@@ -491,8 +457,53 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             alert('Erro ao criar servidor: ' + error.message);
         } finally {
-            setLoadingButton(submitBtn, false, '');
+            setLoadingButton(submitActionBtn, false, '');
         }
+    }
+
+    chips.forEach((chip) => {
+        chip.addEventListener('click', function () {
+            const target = Number(chip.dataset.stepChip);
+            if (target <= state.step) {
+                setStep(target);
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-select-provider]').forEach((button) => {
+        button.addEventListener('click', function () {
+            selectProvider(button.dataset.selectProvider);
+        });
+    });
+
+    document.querySelectorAll('.app-card').forEach((card) => {
+        card.addEventListener('click', function () {
+            document.querySelectorAll('.app-card').forEach((x) => x.classList.remove('is-active'));
+            card.classList.add('is-active');
+            state.app = card.dataset.app;
+            appInput.value = state.app;
+            renderPlans();
+            updateSummary();
+        });
+    });
+
+    document.querySelectorAll('[data-select-app]').forEach((button) => {
+        button.addEventListener('click', async function (event) {
+            event.stopPropagation();
+            const app = button.dataset.selectApp;
+            state.app = app;
+            appInput.value = app;
+            document.querySelectorAll('.app-card').forEach((card) => {
+                card.classList.toggle('is-active', card.dataset.app === app);
+            });
+            renderPlans();
+            updateSummary();
+            await createServer();
+        });
+    });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
     });
 
     setStep(1);
