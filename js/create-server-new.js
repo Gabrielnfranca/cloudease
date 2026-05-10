@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const planStatus = document.getElementById('planStatus');
     const planWarning = document.getElementById('planWarning');
     const createServerSection = document.getElementById('createServerSection');
+    const createBasicSection = document.getElementById('createBasicSection');
     const createInstallSection = document.getElementById('createInstallSection');
     const installN8nSection = document.getElementById('installN8nSection');
     const createActions = document.getElementById('createActions');
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const createVisible = mode === 'create-server';
         const installVisible = mode === 'install-n8n';
         createServerSection.hidden = !createVisible;
+        createBasicSection.hidden = !createVisible;
         createInstallSection.hidden = !createVisible;
         createActions.hidden = !createVisible;
         installN8nSection.hidden = !installVisible;
