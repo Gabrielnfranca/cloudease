@@ -17,7 +17,7 @@
         <header class="dashboard-header new-header">
             <div class="header-title">
                 <h1>Novo Servidor</h1>
-                <p>Fluxo simples e direto para criar sua VPS com seguranca.</p>
+                <p>Fluxo simples e direto para colocar seu servidor no ar.</p>
             </div>
             <div class="header-back">
                 <button class="new-site-btn" onclick="window.location.href='servers.html'">
@@ -30,8 +30,8 @@
             <div class="builder-banner">
                 <div class="builder-banner-copy">
                     <span class="builder-kicker">Novo servidor</span>
-                    <h2>Escolha o provedor, configure o basico e conclua em uma tela unica.</h2>
-                    <p>Sem etapas artificiais e sem excesso de informacao. O fluxo fica claro para qualquer usuario.</p>
+                    <h2>Escolha a empresa, configure o basico e conclua em uma tela unica.</h2>
+                    <p>Sem passos confusos e sem informacao desnecessaria.</p>
                 </div>
                 <img src="assets/images/server-builder-illustration.svg" alt="" class="builder-banner-art">
             </div>
@@ -48,7 +48,7 @@
                     <div class="mode-grid" id="modeCards">
                         <article class="mode-card is-active" data-mode="create-server">
                             <h4>Criar novo servidor</h4>
-                            <p>Cria uma VPS nova e prepara o ambiente inicial.</p>
+                            <p>Cria um servidor novo para voce com configuracao inicial pronta.</p>
                             <button type="button" class="mode-btn" data-select-mode="create-server">Selecionar</button>
                         </article>
                         <article class="mode-card" data-mode="install-n8n">
@@ -64,8 +64,8 @@
                         <section class="panel-card" id="createServerSection">
                             <div class="panel-head">
                                 <div>
-                                    <h3>Provedor</h3>
-                                    <p>Selecione a plataforma para carregar regioes, sistemas e planos.</p>
+                                    <h3>Empresa do servidor</h3>
+                                    <p>Escolha onde seu servidor sera criado.</p>
                                 </div>
                             </div>
 
@@ -113,8 +113,8 @@
                         <section class="panel-card">
                             <div class="panel-head">
                                 <div>
-                                    <h3>Infraestrutura</h3>
-                                    <p>Regiao, sistema e plano em campos simples.</p>
+                                    <h3>Configuracao basica</h3>
+                                    <p>Escolha local, sistema e tamanho do servidor.</p>
                                 </div>
                             </div>
 
@@ -126,13 +126,13 @@
                                     </select>
                                 </div>
                                 <div class="field">
-                                    <label for="osSelect">Sistema</label>
+                                    <label for="osSelect">Sistema operacional</label>
                                     <select id="osSelect" disabled>
                                         <option value="">Selecione um provedor primeiro</option>
                                     </select>
                                 </div>
                                 <div class="field">
-                                    <label for="planSelect">Plano</label>
+                                    <label for="planSelect">Tamanho do servidor</label>
                                     <select id="planSelect" disabled>
                                         <option value="">Selecione um provedor primeiro</option>
                                     </select>
@@ -147,7 +147,7 @@
                             <div class="panel-head">
                                 <div>
                                     <h3>Nome do servidor</h3>
-                                    <p>Defina um nome simples para identificar sua VPS.</p>
+                                    <p>Defina um nome facil para identificar seu servidor.</p>
                                 </div>
                             </div>
 
@@ -190,10 +190,10 @@
                     <aside class="summary-card">
                         <h3>Resumo</h3>
                         <div class="summary-row"><span>Acao</span><strong id="summaryMode">Criar servidor</strong></div>
-                        <div class="summary-row"><span>Provedor</span><strong id="summaryProvider">-</strong></div>
+                        <div class="summary-row"><span>Empresa</span><strong id="summaryProvider">-</strong></div>
                         <div class="summary-row"><span>Regiao</span><strong id="summaryRegion">-</strong></div>
                         <div class="summary-row"><span>Sistema</span><strong id="summaryOs">-</strong></div>
-                        <div class="summary-row"><span>Plano</span><strong id="summaryPlan">-</strong></div>
+                        <div class="summary-row"><span>Tamanho</span><strong id="summaryPlan">-</strong></div>
                         <div class="summary-row"><span>Perfil</span><strong id="summaryApp">Stack CloudEase</strong></div>
                         <div class="summary-row"><span>Custo</span><strong id="summaryCost">-</strong></div>
                         <div class="summary-row"><span>Compatibilidade</span><strong id="summaryCompatibility">Aguardando</strong></div>

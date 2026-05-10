@@ -17,17 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const providerProfiles = {
         vultr: {
             label: 'Vultr',
-            guidance: 'Boa escolha para custo previsivel e deploy rapido.',
+            guidance: 'Boa opcao com preco previsivel e configuracao rapida.',
             minRamMB: 2048
         },
         digitalocean: {
             label: 'DigitalOcean',
-            guidance: 'Opção simples e amigavel para times pequenos.',
+            guidance: 'Opcao simples e amigavel para quem esta comecando.',
             minRamMB: 2048
         },
         linode: {
             label: 'Linode',
-            guidance: 'Boa relacao custo-beneficio em workloads Linux.',
+            guidance: 'Boa relacao custo-beneficio para uso geral.',
             minRamMB: 2048
         },
         aws: {
@@ -136,12 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function setActiveApp(app) {
-        appCards.forEach((card) => {
-            card.classList.toggle('is-active', card.dataset.app === app);
-        });
-    }
-
     function updateSummary() {
         summaryProvider.textContent = state.provider ? (providerProfiles[state.provider]?.label || state.provider) : '-';
 
@@ -173,8 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
             planWarning.hidden = true;
             planWarning.textContent = '';
             planStatus.textContent = state.provider
-                ? 'Selecione regiao, sistema e plano para validar o servidor.'
-                : 'Selecione um provedor para começar.';
+                ? 'Escolha regiao, sistema e tamanho para continuar.'
+                : 'Escolha uma empresa para comecar.';
             return { ok: false, message: 'Selecione um plano.' };
         }
 
@@ -183,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             && state.selectedPlanMeta.disk >= app.requirements.minDiskGB;
 
         if (!ok) {
-            const message = `Plano incompativel para ${app.label}. Minimo: ${app.requirements.minCpu} vCPU, ${app.requirements.minRamMB}MB RAM e ${app.requirements.minDiskGB}GB disco.`;
+            const message = `Este tamanho nao atende os requisitos minimos. Recomendado: ${app.requirements.minCpu} vCPU, ${app.requirements.minRamMB}MB RAM e ${app.requirements.minDiskGB}GB disco.`;
             summaryCompatibility.textContent = 'Incompativel';
             planStatus.textContent = message;
             planWarning.hidden = false;
@@ -192,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         summaryCompatibility.textContent = 'Compativel';
-        planStatus.textContent = `Plano pronto para ${app.label}.`;
+        planStatus.textContent = 'Configuracao pronta para criar o servidor.';
         planWarning.hidden = true;
         planWarning.textContent = '';
         return { ok: true, message: '' };
@@ -232,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderOs() {
-        osSelect.innerHTML = '<option value="">Selecione um sistema</option>';
+        osSelect.innerHTML = '<option value="">Selecione um sistema operacional</option>';
         const osList = state.allOs.length > 0 ? state.allOs : [
             { id: '1743', name: 'Ubuntu 22.04 x64' },
             { id: '477', name: 'Debian 11 x64' }
@@ -267,12 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPlans() {
-        planSelect.innerHTML = '<option value="">Selecione um plano</option>';
+        planSelect.innerHTML = '<option value="">Selecione um tamanho</option>';
 
         const plans = getFilteredPlans().slice().sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
         if (!state.provider) {
             planSelect.disabled = true;
-            planStatus.textContent = 'Selecione um provedor para começar.';
+            planStatus.textContent = 'Escolha uma empresa para comecar.';
             state.selectedPlanMeta = null;
             evaluateCompatibility();
             updateSummary();
@@ -283,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (plans.length === 0) {
             planStatus.textContent = state.region
-                ? 'Nenhum plano encontrado nesta regiao.'
-                : 'Selecione uma regiao para ver os planos disponíveis.';
+                ? 'Nenhum tamanho encontrado nesta regiao.'
+                : 'Escolha uma regiao para ver os tamanhos disponiveis.';
             state.selectedPlanMeta = null;
             evaluateCompatibility();
             updateSummary();
@@ -372,12 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
         providerInput.value = provider;
         setActiveProvider(provider);
         renderProviderGuidance();
-        planStatus.textContent = 'Carregando opcoes do provedor...';
+        planStatus.textContent = 'Carregando opcoes...';
 
         try {
             await loadProviderOptions(provider);
         } catch (error) {
-            alert('Erro ao carregar opcoes: ' + error.message);
+            alert('Nao foi possivel carregar as opcoes: ' + error.message);
         }
     }
 
@@ -427,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const target = state.existingServers.find((server) => String(server.id) === String(state.selectedN8nServer));
         if (!target) {
-            alert('Servidor selecionado inválido. Atualize a lista e tente novamente.');
+            alert('Servidor selecionado invalido. Atualize a lista e tente novamente.');
             return;
         }
 
@@ -469,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function createServer() {
         if (!state.provider || !state.region || !state.os || !state.plan) {
-            alert('Complete provedor, regiao, sistema e plano.');
+            alert('Preencha empresa, regiao, sistema e tamanho do servidor.');
             return;
         }
 
