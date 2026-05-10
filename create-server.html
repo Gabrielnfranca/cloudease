@@ -103,6 +103,20 @@
             gap: 12px;
         }
 
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .cards-grid.compact {
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        }
+
+        .cards-grid.plans {
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        }
+
         .option-card {
             border: 1px solid #dbe4ef;
             border-radius: 8px;
@@ -136,6 +150,131 @@
 
         .option-card.selected i {
             color: #4299e1;
+        }
+
+        .select-hidden {
+            display: none;
+        }
+
+        .region-card,
+        .os-card,
+        .plan-card {
+            border: 1px solid #dbe4ef;
+            border-radius: 12px;
+            padding: 13px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.03);
+            text-align: left;
+            position: relative;
+        }
+
+        .region-card:hover,
+        .os-card:hover,
+        .plan-card:hover {
+            border-color: #93c5fd;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .region-card.selected,
+        .os-card.selected,
+        .plan-card.selected {
+            border-color: #4299e1;
+            background: linear-gradient(180deg, #f6fbff 0%, #ebf8ff 100%);
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .card-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .card-subtitle {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .badge-good {
+            color: #166534;
+            background: #ecfdf3;
+            border-color: #86efac;
+        }
+
+        .badge-warn {
+            color: #92400e;
+            background: #fffbeb;
+            border-color: #fcd34d;
+        }
+
+        .badge-bad {
+            color: #9f1239;
+            background: #fff1f2;
+            border-color: #fda4af;
+        }
+
+        .badge-info {
+            color: #1e3a8a;
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .badge-best {
+            color: #0f4f46;
+            background: #ecfeff;
+            border-color: #99f6e4;
+        }
+
+        .plan-card.best-value {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.18), 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .card-price {
+            color: #0f6cbd;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .card-meta {
+            color: #334155;
+            font-size: 12px;
+            line-height: 1.45;
         }
 
         .option-card.coming-soon {
@@ -364,7 +503,8 @@
                 <div class="wizard-step" id="step2" style="display: none;">
                     <div class="form-group">
                         <label for="regionInput">Escolha a Região</label>
-                        <select id="regionInput" name="region" class="form-control">
+                        <div id="regionCards" class="cards-grid compact"></div>
+                        <select id="regionInput" name="region" class="form-control select-hidden">
                             <option value="">Selecione uma região...</option>
                         </select>
                         <p class="helper-text" id="regionHint" style="margin-top: 10px; color: #718096; font-size: 14px;">Escolha a região mais próxima dos seus visitantes para reduzir latência.</p>
@@ -375,7 +515,8 @@
                 <div class="wizard-step" id="step3" style="display: none;">
                     <div class="form-group">
                         <label for="osInput">Escolha o Sistema Operacional</label>
-                        <select id="osInput" name="os" class="form-control">
+                        <div id="osCards" class="cards-grid compact"></div>
+                        <select id="osInput" name="os" class="form-control select-hidden">
                             <option value="">Selecione um sistema...</option>
                         </select>
                         <p class="helper-text" style="margin-top: 10px; color: #718096; font-size: 14px;">Recomendamos <strong>Ubuntu 22.04</strong> para melhor compatibilidade.</p>
@@ -386,7 +527,8 @@
                 <div class="wizard-step" id="step4" style="display: none;">
                     <div class="form-group">
                         <label for="planInput">Escolha o Tamanho</label>
-                        <select id="planInput" name="plan" class="form-control">
+                        <div id="planCards" class="cards-grid plans"></div>
+                        <select id="planInput" name="plan" class="form-control select-hidden">
                             <option value="">Selecione um plano...</option>
                         </select>
                         <div id="planCostInfo" class="cost-card">Selecione um plano para ver estimativa de custo e recomendação.</div>
