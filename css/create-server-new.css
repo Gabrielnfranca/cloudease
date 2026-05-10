@@ -105,14 +105,15 @@
 }
 
 .provider-badge {
-    border: 1px solid #bdddff;
-    background: #ecf6ff;
-    color: #0f4f8a;
+    border: 1px solid #0f6cbd;
+    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
+    color: #ffffff;
     border-radius: 999px;
     padding: 4px 8px;
     font-size: 11px;
     font-weight: 700;
 }
+    box-shadow: 0 10px 20px rgba(15, 108, 189, 0.22);
 
 .provider-badge.is-disabled {
     background: #fff5e8;
@@ -140,18 +141,32 @@
     background: #f1f8ff;
     color: #0c4a84;
     border-radius: 10px;
+.inline-select {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #0f6cbd;
+    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 800;
+}
     padding: 9px 12px;
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
-}
-
-.provider-card.is-selected .provider-btn {
+    border: 1px solid #0f6cbd;
+    background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
+    color: #ffffff;
     background: linear-gradient(160deg, #0f6cbd 0%, #0b4f8a 100%);
     border-color: #0f6cbd;
     color: #fff;
 }
 
+    box-shadow: 0 10px 20px rgba(15, 108, 189, 0.22);
 .hint-card {
     margin-top: 12px;
     border: 1px solid #cfe0f3;
