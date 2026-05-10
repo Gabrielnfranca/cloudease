@@ -205,6 +205,53 @@
             font-size: 13px;
         }
 
+        .health-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .health-chip .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+        }
+
+        .health-good {
+            background: #ecfdf3;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .health-good .dot {
+            background: #22c55e;
+        }
+
+        .health-warn {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        .health-warn .dot {
+            background: #f59e0b;
+        }
+
+        .health-bad {
+            background: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fda4af;
+        }
+
+        .health-bad .dot {
+            background: #ef4444;
+        }
+
         .summary-row {
             margin-bottom: 8px;
         }
@@ -350,10 +397,28 @@
                 <!-- Passo 5: Nome (Finalização) -->
                 <div class="wizard-step" id="step5" style="display: none;">
                     <div class="form-group">
+                        <label>Perfil de instalacao</label>
+                        <p class="helper-text">Escolha o que sera instalado automaticamente no servidor.</p>
+                        <div class="options-grid" id="appOptions">
+                            <div class="option-card selected" onclick="selectOption(this, 'app', 'base-stack')">
+                                <i class="fas fa-layer-group"></i>
+                                <h3>Stack CloudEase</h3>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'app', 'n8n-stack')">
+                                <i class="fas fa-diagram-project"></i>
+                                <h3>n8n 1-Clique</h3>
+                            </div>
+                        </div>
+                        <input type="hidden" name="app" id="appInput" value="base-stack">
+                    </div>
+
+                    <div class="form-group">
                         <label for="serverName">Nome do Servidor</label>
                         <p class="helper-text">Dê um nome para identificar este servidor no painel.</p>
                         <input type="text" id="serverName" name="name" placeholder="Ex: Servidor Principal" class="form-control">
                     </div>
+
+                    <div id="compatibilityInfo" class="guidance-card" style="display:none"></div>
                     
                     <div class="summary-card" style="background: #f7fafc; padding: 14px; border-radius: 8px; margin-top: 14px; border:1px solid #e2e8f0;">
                         <h3>Resumo</h3>
@@ -374,8 +439,16 @@
                             <div class="summary-value" id="summaryPlan">-</div>
                         </div>
                         <div class="summary-row">
+                            <div class="summary-label">Perfil de Instalação</div>
+                            <div class="summary-value" id="summaryApp">Stack CloudEase</div>
+                        </div>
+                        <div class="summary-row">
                             <div class="summary-label">Custo estimado</div>
                             <div class="summary-value" id="summaryCost">-</div>
+                        </div>
+                        <div class="summary-row">
+                            <div class="summary-label">Compatibilidade</div>
+                            <div class="summary-value" id="summaryCompatibility">-</div>
                         </div>
                         <ul style="list-style: none; padding: 0; margin-top: 14px;">
                             <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Stack CloudEase (Nginx, PHP, MySQL) será instalada automaticamente.</li>

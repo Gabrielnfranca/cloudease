@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Instalacao Assistida</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/shared/styles.css">
+    <link rel="stylesheet" href="css/shared/dashboard.css">
+    <link rel="stylesheet" href="css/assisted-install.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div id="sidebar-include"></div>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Instalacao Assistida</h1>
+                <p class="subtitle">Conecte o provedor, escolha o servidor e receba o link com usuario e senha.</p>
+            </div>
+            <div class="header-back">
+                <button class="new-site-btn" onclick="window.location.href='connect-host.html'">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+            </div>
+        </header>
+
+        <section class="wizard-shell">
+            <div class="steps" aria-label="Etapas da instalacao">
+                <div class="step is-active" data-step="1"><span>1</span> Provedor</div>
+                <div class="step" data-step="2"><span>2</span> Servidor</div>
+                <div class="step" data-step="3"><span>3</span> Site</div>
+                <div class="step" data-step="4"><span>4</span> Entrega</div>
+            </div>
+
+            <section class="panel is-active" data-panel="1">
+                <h2>Passo 1: Conectar o provedor</h2>
+                <p class="panel-hint">Para cliente leigo: basta selecionar o provedor e colar o token da conta.</p>
+
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="provider">Provedor</label>
+                        <select id="provider">
+                            <option value="">Selecione...</option>
+                            <option value="digitalocean">DigitalOcean</option>
+                            <option value="vultr">Vultr</option>
+                            <option value="linode">Linode</option>
+                            <option value="aws">AWS</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="connectionName">Nome da conexao</label>
+                        <input id="connectionName" type="text" placeholder="Ex: Produção Cliente X">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="providerToken">Token de API</label>
+                    <input id="providerToken" type="password" placeholder="Cole o token aqui">
+                    <p class="mini-help">AWS: suporte visual pronto, integracao automatica completa em fase final. Para AWS, use fluxo manual por enquanto.</p>
+                </div>
+
+                <div class="actions">
+                    <button id="btnConnectProvider" class="primary-btn"><i class="fas fa-plug"></i> Conectar e Buscar Servidores</button>
+                    <button id="btnSkipProvider" class="secondary-btn"><i class="fas fa-cloud"></i> Ja conectei antes</button>
+                </div>
+                <div id="providerFeedback" class="feedback"></div>
+            </section>
+
+            <section class="panel" data-panel="2">
+                <h2>Passo 2: Escolher servidor</h2>
+                <p class="panel-hint">Selecione o servidor onde o site sera instalado.</p>
+
+                <div class="field">
+                    <label for="serverSelect">Servidor</label>
+                    <select id="serverSelect">
+                        <option value="">Carregando...</option>
+                    </select>
+                </div>
+
+                <div class="actions">
+                    <button id="btnRefreshServers" class="secondary-btn"><i class="fas fa-rotate"></i> Atualizar lista</button>
+                    <button id="btnGoToSiteStep" class="primary-btn">Continuar</button>
+                </div>
+                <div id="serverFeedback" class="feedback"></div>
+            </section>
+
+            <section class="panel" data-panel="3">
+                <h2>Passo 3: Configurar site</h2>
+                <p class="panel-hint">Preencha o dominio e tipo de site. O restante e automatico.</p>
+
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="domain">Dominio</label>
+                        <input id="domain" type="text" placeholder="exemplo.com">
+                    </div>
+                    <div class="field">
+                        <label for="platform">Plataforma</label>
+                        <select id="platform">
+                            <option value="wordpress">WordPress</option>
+                            <option value="php-mysql">PHP + MySQL</option>
+                            <option value="php">PHP</option>
+                            <option value="html">HTML</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="wpFields" class="wp-box">
+                    <div class="grid-3">
+                        <div class="field">
+                            <label for="wpAdminUser">Usuario WP</label>
+                            <input id="wpAdminUser" type="text" placeholder="admin">
+                        </div>
+                        <div class="field">
+                            <label for="wpAdminPass">Senha WP</label>
+                            <input id="wpAdminPass" type="text" placeholder="Gerada automaticamente se vazio">
+                        </div>
+                        <div class="field">
+                            <label for="wpAdminEmail">Email WP</label>
+                            <input id="wpAdminEmail" type="email" placeholder="admin@exemplo.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btnInstallSite" class="primary-btn"><i class="fas fa-rocket"></i> Instalar Agora</button>
+                </div>
+                <div id="siteFeedback" class="feedback"></div>
+            </section>
+
+            <section class="panel" data-panel="4">
+                <h2>Passo 4: Entrega para o cliente</h2>
+                <p class="panel-hint">Envie esses dados para o cliente acessar imediatamente.</p>
+
+                <div class="delivery-card">
+                    <div class="delivery-row"><span>Link temporario</span><a id="deliveryUrl" href="#" target="_blank">-</a></div>
+                    <div class="delivery-row"><span>Dominio</span><strong id="deliveryDomain">-</strong></div>
+                    <div class="delivery-row"><span>Usuario do sistema</span><strong id="deliverySystemUser">-</strong></div>
+                    <div class="delivery-row"><span>Senha do sistema</span><strong id="deliverySystemPass">-</strong></div>
+                    <div class="delivery-row"><span>Usuario WordPress</span><strong id="deliveryWpUser">-</strong></div>
+                    <div class="delivery-row"><span>Senha WordPress</span><strong id="deliveryWpPass">-</strong></div>
+                </div>
+
+                <div class="actions">
+                    <button id="btnCopyDelivery" class="primary-btn"><i class="fas fa-copy"></i> Copiar dados</button>
+                    <button id="btnNewInstall" class="secondary-btn"><i class="fas fa-plus"></i> Nova instalacao</button>
+                </div>
+                <div id="deliveryFeedback" class="feedback"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="js/sidebar.js"></script>
+    <script src="js/assisted-install.js"></script>
+</body>
+</html>

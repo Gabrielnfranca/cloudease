@@ -33,6 +33,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    const appProfiles = {
+        'base-stack': {
+            label: 'Stack CloudEase',
+            requirements: { minCpu: 1, minRamMB: 1024, minDiskGB: 20 },
+            message: 'Requer no minimo 1 vCPU, 1 GB de RAM e 20 GB de disco.'
+        },
+        'n8n-stack': {
+            label: 'n8n 1-Clique',
+            requirements: { minCpu: 1, minRamMB: 2048, minDiskGB: 25 },
+            message: 'Requer no minimo 1 vCPU, 2 GB de RAM e 25 GB de disco para operar com estabilidade.'
+        }
+    };
+
     // Navegação do Wizard
     function updateWizard() {
         // Esconde todos os passos
@@ -263,6 +276,59 @@ document.addEventListener('DOMContentLoaded', function() {
         return providerProfiles[provider] || null;
     }
 
+    function getSelectedAppProfile() {
+        const app = document.getElementById('appInput')?.value || 'base-stack';
+        return appProfiles[app] || appProfiles['base-stack'];
+    }
+
+    function evaluateCompatibility() {
+        const appProfile = getSelectedAppProfile();
+        const infoEl = document.getElementById('compatibilityInfo');
+        const summaryEl = document.getElementById('summaryCompatibility');
+
+        if (!selectedPlanMeta || !selectedPlanMeta.cpu || !selectedPlanMeta.ram || !selectedPlanMeta.disk) {
+            if (infoEl) {
+                infoEl.style.display = 'block';
+                infoEl.style.background = '#f8fbff';
+                infoEl.style.borderColor = '#dbeafe';
+                infoEl.style.color = '#1e3a8a';
+                infoEl.innerHTML = '<strong>Compatibilidade:</strong> selecione um plano para validar os requisitos da instalação.';
+            }
+            if (summaryEl) summaryEl.textContent = 'Aguardando seleção de plano';
+            return { compatible: false, reason: 'Plano não selecionado' };
+        }
+
+        const req = appProfile.requirements;
+        const missing = [];
+
+        if (selectedPlanMeta.cpu < req.minCpu) missing.push(`${req.minCpu} vCPU`);
+        if (selectedPlanMeta.ram < req.minRamMB) missing.push(`${req.minRamMB}MB RAM`);
+        if (selectedPlanMeta.disk < req.minDiskGB) missing.push(`${req.minDiskGB}GB disco`);
+
+        if (missing.length > 0) {
+            const message = `Incompatível para ${appProfile.label}. Necessário: ${appProfile.message}`;
+            if (infoEl) {
+                infoEl.style.display = 'block';
+                infoEl.style.background = '#fff7ed';
+                infoEl.style.borderColor = '#fdba74';
+                infoEl.style.color = '#9a3412';
+                infoEl.innerHTML = `<strong>Plano incompatível:</strong> este servidor não atende aos requisitos de ${appProfile.label}.`;
+            }
+            if (summaryEl) summaryEl.textContent = 'Incompatível';
+            return { compatible: false, reason: message };
+        }
+
+        if (infoEl) {
+            infoEl.style.display = 'block';
+            infoEl.style.background = '#f0fdf4';
+            infoEl.style.borderColor = '#86efac';
+            infoEl.style.color = '#166534';
+            infoEl.innerHTML = `<strong>Compatível:</strong> o plano atende aos requisitos de ${appProfile.label}.`;
+        }
+        if (summaryEl) summaryEl.textContent = 'Compatível';
+        return { compatible: true, reason: '' };
+    }
+
     function updatePlanInsights() {
         const planSelect = document.getElementById('planInput');
         const costEl = document.getElementById('planCostInfo');
@@ -283,13 +349,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const disk = Number(selected.dataset.disk || 0);
         const price = selected.dataset.price ? Number(selected.dataset.price) : null;
         const profile = getSelectedProviderProfile();
+        const appProfile = getSelectedAppProfile();
 
         selectedPlanMeta = { cpu, ram, disk, price };
 
         const priceText = price !== null ? `US$ ${price.toFixed(2)}/mês` : 'Preço não informado pelo provedor';
-        costEl.textContent = `Estimativa: ${priceText}. Recursos: ${cpu} vCPU, ${ram}MB RAM, ${disk}GB SSD.`;
+        const req = appProfile.requirements;
+        const appCompatible = cpu >= req.minCpu && ram >= req.minRamMB && disk >= req.minDiskGB;
+        const providerRecommended = !!(profile && ram >= profile.minRamMB);
 
-        if (profile && ram > 0 && ram < profile.minRamMB) {
+        let healthClass = 'health-bad';
+        let healthLabel = 'Não recomendado';
+
+        if (appCompatible && providerRecommended) {
+            healthClass = 'health-good';
+            healthLabel = 'Recomendado';
+        } else if (appCompatible) {
+            healthClass = 'health-warn';
+            healthLabel = 'Aceitável';
+        }
+
+        costEl.innerHTML =
+            `Estimativa: ${priceText}. Recursos: ${cpu} vCPU, ${ram}MB RAM, ${disk}GB SSD.` +
+            `<br><span class="health-chip ${healthClass}"><span class="dot"></span>${healthLabel}</span>`;
+
+        if (!appCompatible) {
+            warningEl.style.display = 'block';
+            warningEl.textContent = `Incompatível com ${appProfile.label}. Requisitos mínimos: ${req.minCpu} vCPU, ${req.minRamMB}MB RAM e ${req.minDiskGB}GB disco.`;
+        } else if (profile && ram > 0 && ram < profile.minRamMB) {
             warningEl.style.display = 'block';
             warningEl.textContent = `Atenção: este plano tem ${ram}MB de RAM. Recomendamos pelo menos ${profile.minRamMB}MB para evitar lentidão e risco de indisponibilidade em produção.`;
         } else {
@@ -303,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const regionEl = document.getElementById('summaryRegion');
         const osEl = document.getElementById('summaryOs');
         const planEl = document.getElementById('summaryPlan');
+        const appEl = document.getElementById('summaryApp');
         const costEl = document.getElementById('summaryCost');
         if (!providerEl || !regionEl || !osEl || !planEl || !costEl) return;
 
@@ -310,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const regionSelect = document.getElementById('regionInput');
         const osSelect = document.getElementById('osInput');
         const planSelect = document.getElementById('planInput');
+        const app = document.getElementById('appInput').value;
 
         const profile = providerProfiles[provider];
         providerEl.textContent = profile ? profile.label : '-';
@@ -323,9 +412,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const planText = planSelect && planSelect.selectedIndex > 0 ? planSelect.options[planSelect.selectedIndex].text : '-';
         planEl.textContent = planText;
 
+        if (appEl) {
+            appEl.textContent = app === 'n8n-stack' ? 'n8n 1-Clique' : 'Stack CloudEase';
+        }
+
         costEl.textContent = selectedPlanMeta && selectedPlanMeta.price !== null
             ? `US$ ${selectedPlanMeta.price.toFixed(2)}/mês`
             : '-';
+
+        evaluateCompatibility();
     }
 
     function validateStep(step) {
@@ -365,12 +460,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!proceed) return false;
             }
         }
+
+        if (step === 5) {
+            const compatibility = evaluateCompatibility();
+            if (!compatibility.compatible) {
+                alert('Não é possível criar este servidor para o perfil escolhido. ' + compatibility.reason);
+                return false;
+            }
+        }
         return true;
     }
 
     // Envio do Formulário
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        const compatibility = evaluateCompatibility();
+        if (!compatibility.compatible) {
+            alert('Configuração incompatível: ' + compatibility.reason);
+            return;
+        }
         
         const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
@@ -381,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
             region: document.getElementById('regionInput').value,
             plan: document.getElementById('planInput').value,
             os_id: document.getElementById('osInput').value,
-            app: 'base-stack', // Sempre instala a base stack
+            app: document.getElementById('appInput').value || 'base-stack',
             name: document.getElementById('serverName').value || 'Novo Servidor'
         };
 
@@ -406,7 +515,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Servidor criado com sucesso! A instalação pode levar alguns minutos.');
+                if (data && data.access && data.access.service === 'n8n') {
+                    alert(
+                        'Servidor n8n criado!\n\n' +
+                        'Usuario: ' + data.access.user + '\n' +
+                        'Senha: ' + data.access.password + '\n\n' +
+                        'Acesse em: http://IP_DO_SERVIDOR:5678\n' +
+                        'Obs: aguarde alguns minutos para finalizacao da instalacao.'
+                    );
+                } else {
+                    alert('Servidor criado com sucesso! A instalação pode levar alguns minutos.');
+                }
                 window.location.href = 'servers.html';
             } else {
                 alert('Erro: ' + (data.error || 'Falha ao criar servidor'));
