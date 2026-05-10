@@ -641,6 +641,74 @@
             }
         }
     </style>
+    <style>
+        .dashboard-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .wizard-section-title h2 {
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .wizard-section-title p {
+            max-width: 720px;
+        }
+
+        .provider-logo {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            margin-bottom: 2px;
+        }
+
+        .provider-card-meta {
+            font-size: 12px;
+            color: #667891;
+            line-height: 1.45;
+            min-height: 36px;
+        }
+
+        .option-card {
+            min-height: 140px;
+            padding: 16px 12px;
+            gap: 6px;
+        }
+
+        .option-card h3 {
+            font-size: 15px;
+        }
+
+        .option-card.selected,
+        .region-card.selected,
+        .os-card.selected,
+        .plan-card.selected {
+            box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.10), 0 14px 30px rgba(15, 23, 42, 0.10);
+        }
+
+        .actions {
+            gap: 12px;
+        }
+
+        .provider-actions {
+            justify-content: center;
+        }
+
+        .provider-actions .new-site-btn {
+            min-width: 180px;
+        }
+
+        .new-site-btn {
+            border-radius: 12px;
+        }
+
+        .wizard-container {
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body class="dashboard-body">
     <div id="sidebar-include"></div>
@@ -686,23 +754,29 @@
                 <!-- Passo 1: Provedor -->
                 <div class="wizard-step active" id="step1">
                     <div class="form-group">
-                        <label>Escolha o Provedor</label>
+                        <div class="wizard-section-title">
+                            <h2>Escolha o provedor</h2>
+                            <p>Selecione a VPS que vai hospedar o projeto. Cada card mostra a identidade visual da plataforma.</p>
+                        </div>
                         <div class="options-grid" id="providerOptions">
                             <!-- Preenchido via JS -->
                             <div class="option-card" onclick="selectOption(this, 'provider', 'vultr')">
-                                <i class="fas fa-server"></i>
+                                <img src="https://www.vultr.com/favicon.ico" alt="Vultr" class="provider-logo">
                                 <h3>Vultr</h3>
+                                <div class="provider-card-meta">Desempenho forte e datacenters globais.</div>
                             </div>
                             <div class="option-card" onclick="selectOption(this, 'provider', 'digitalocean')">
-                                <i class="fas fa-cloud"></i>
+                                <img src="https://www.digitalocean.com/favicon.ico" alt="DigitalOcean" class="provider-logo">
                                 <h3>DigitalOcean</h3>
+                                <div class="provider-card-meta">Experiência simples e muito conhecida por clientes.</div>
                             </div>
                             <div class="option-card" onclick="selectOption(this, 'provider', 'linode')">
-                                <i class="fas fa-server"></i>
+                                <img src="https://www.linode.com/favicon.ico" alt="Linode" class="provider-logo">
                                 <h3>Linode</h3>
+                                <div class="provider-card-meta">Custo previsível para workloads Linux.</div>
                             </div>
                             <div class="option-card coming-soon" data-disabled="1" onclick="selectOption(this, 'provider', 'aws')">
-                                <i class="fab fa-aws"></i>
+                                <img src="assets/images/aws-logo.svg" alt="AWS" class="provider-logo">
                                 <h3>AWS</h3>
                                 <span class="soon-badge">Em breve</span>
                             </div>
@@ -812,7 +886,7 @@
                     </div>
                 </div>
 
-                <div class="actions">
+                <div class="actions provider-actions">
                     <button type="button" class="new-site-btn btn-secondary" id="prevBtn" style="display: none;">Voltar</button>
                     <button type="button" class="new-site-btn" id="nextBtn">Próximo</button>
                     <button type="submit" class="new-site-btn" id="submitBtn" style="display: none;">Criar Servidor</button>
