@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const state = {
-        mode: 'create-server',
+        mode: '',
         provider: '',
         region: '',
         os: '',
@@ -82,22 +82,33 @@ document.addEventListener('DOMContentLoaded', () => {
         modeCards.forEach((card) => card.classList.toggle('is-active', card.dataset.mode === mode));
 
         const createVisible = mode === 'create-server';
+        const installVisible = mode === 'install-n8n';
         createServerSection.hidden = !createVisible;
         createInstallSection.hidden = !createVisible;
         createActions.hidden = !createVisible;
-        installN8nSection.hidden = createVisible;
+        installN8nSection.hidden = !installVisible;
 
-        summaryMode.textContent = createVisible ? 'Criar servidor' : 'Instalar n8n';
-        if (!createVisible) {
+        if (createVisible) {
+            summaryMode.textContent = 'Criar servidor';
+            summaryApp.textContent = 'Servidor base';
+        } else if (installVisible) {
+            summaryMode.textContent = 'Instalar n8n';
+            summaryApp.textContent = 'n8n';
             summaryProvider.textContent = '-';
             summaryRegion.textContent = '-';
             summaryOs.textContent = '-';
             summaryPlan.textContent = '-';
-            summaryApp.textContent = 'n8n';
             summaryCost.textContent = 'Nao se aplica';
             summaryCompatibility.textContent = 'Nao se aplica';
         } else {
-            summaryApp.textContent = 'Servidor base';
+            summaryMode.textContent = 'Escolha acima';
+            summaryProvider.textContent = '-';
+            summaryRegion.textContent = '-';
+            summaryOs.textContent = '-';
+            summaryPlan.textContent = '-';
+            summaryApp.textContent = '-';
+            summaryCost.textContent = '-';
+            summaryCompatibility.textContent = 'Aguardando';
         }
     }
 
@@ -392,20 +403,21 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const servers = await authFetch('/api/servers', { method: 'GET' });
             state.existingServers = Array.isArray(servers) ? servers : [];
-            const activeServers = state.existingServers.filter((server) => String(server.status || '').toLowerCase() === 'active');
+            const existingWithIp = state.existingServers.filter((server) => server.ip_address && server.ip_address !== '0.0.0.0');
 
             n8nServerSelect.innerHTML = '<option value="">Selecione um servidor</option>';
-            activeServers.forEach((server) => {
+            existingWithIp.forEach((server) => {
                 const option = document.createElement('option');
                 option.value = server.id;
-                option.textContent = `${server.name} (${server.ip_address || 'sem IP'})`;
+                const status = String(server.status || 'desconhecido').toLowerCase();
+                option.textContent = `${server.name} (${server.ip_address}) - ${status}`;
                 n8nServerSelect.appendChild(option);
             });
 
-            n8nServerSelect.disabled = activeServers.length === 0;
-            n8nStatus.textContent = activeServers.length > 0
-                ? 'Selecione um servidor ativo para iniciar a instalacao do n8n.'
-                : 'Nenhum servidor ativo encontrado. Crie um servidor primeiro.';
+            n8nServerSelect.disabled = existingWithIp.length === 0;
+            n8nStatus.textContent = existingWithIp.length > 0
+                ? 'Selecione um servidor da sua lista para iniciar a instalacao do n8n.'
+                : 'Nenhum servidor encontrado. Crie um servidor primeiro.';
         } catch (error) {
             n8nServerSelect.innerHTML = '<option value="">Erro ao carregar</option>';
             n8nServerSelect.disabled = true;
@@ -422,6 +434,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = state.existingServers.find((server) => String(server.id) === String(state.selectedN8nServer));
         if (!target) {
             alert('Servidor selecionado invalido. Atualize a lista e tente novamente.');
+            return;
+        }
+
+        const status = String(target.status || '').toLowerCase();
+        const activeStatuses = ['active', 'running', 'online', 'ready'];
+        if (!activeStatuses.includes(status)) {
+            alert('Esse servidor nao esta ativo ainda. Aguarde ficar ativo para instalar o n8n.');
             return;
         }
 
