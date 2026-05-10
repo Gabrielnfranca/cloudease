@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudEase - Novo Servidor</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/shared/styles.css">
+    <link rel="stylesheet" href="css/shared/dashboard.css">
+    <link rel="stylesheet" href="css/create-server-new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body create-server-new-body">
+    <div id="sidebar-include"></div>
+
+    <main class="main-content">
+        <header class="dashboard-header new-header">
+            <div class="header-title">
+                <h1>Novo Servidor</h1>
+                <p>Fluxo simples e direto para criar sua VPS com seguranca.</p>
+            </div>
+            <div class="header-back">
+                <button class="new-site-btn" onclick="window.location.href='servers.html'">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </button>
+            </div>
+        </header>
+
+        <section class="builder-shell">
+            <div class="builder-banner">
+                <div class="builder-banner-copy">
+                    <span class="builder-kicker">Novo servidor</span>
+                    <h2>Escolha o provedor, configure o basico e conclua em uma tela unica.</h2>
+                    <p>Sem etapas artificiais e sem excesso de informacao. O fluxo fica claro para qualquer usuario.</p>
+                </div>
+                <img src="assets/images/server-builder-illustration.svg" alt="" class="builder-banner-art">
+            </div>
+
+            <form id="createServerFormNew" class="builder-form" novalidate>
+                <div class="builder-layout">
+                    <div class="builder-main">
+                        <section class="panel-card">
+                            <div class="panel-head">
+                                <div>
+                                    <h3>Provedor</h3>
+                                    <p>Selecione a plataforma para carregar regioes, sistemas e planos.</p>
+                                </div>
+                            </div>
+
+                            <div class="provider-grid" id="providerGrid">
+                                <article class="provider-card" data-provider="vultr">
+                                    <div class="provider-top">
+                                        <img src="assets/images/Logo%20Vultr.webp" alt="Vultr" class="provider-logo">
+                                    </div>
+                                    <h3>Vultr</h3>
+                                    <p>Boa opcao para performance com custo previsivel.</p>
+                                    <button type="button" class="provider-btn" data-select-provider="vultr">Selecionar Vultr</button>
+                                </article>
+
+                                <article class="provider-card" data-provider="digitalocean">
+                                    <div class="provider-top">
+                                        <img src="assets/images/digitalocean-mark.svg" alt="DigitalOcean" class="provider-logo digitalocean-logo">
+                                    </div>
+                                    <h3>DigitalOcean</h3>
+                                    <p>Onboarding simples e excelente para times pequenos.</p>
+                                    <button type="button" class="provider-btn" data-select-provider="digitalocean">Selecionar DigitalOcean</button>
+                                </article>
+
+                                <article class="provider-card" data-provider="linode">
+                                    <div class="provider-top">
+                                        <img src="assets/images/Linode-Logo-Black.svg" alt="Linode" class="provider-logo">
+                                    </div>
+                                    <h3>Linode</h3>
+                                    <p>Forte para workloads Linux e stacks customizadas.</p>
+                                    <button type="button" class="provider-btn" data-select-provider="linode">Selecionar Linode</button>
+                                </article>
+
+                                <article class="provider-card is-disabled" data-provider="aws">
+                                    <div class="provider-top">
+                                        <img src="assets/images/aws-logo.svg" alt="AWS" class="provider-logo">
+                                    </div>
+                                    <h3>AWS</h3>
+                                    <p>Integracao visual pronta. Ativacao completa em breve.</p>
+                                    <button type="button" class="provider-btn" disabled>Em breve</button>
+                                </article>
+                            </div>
+
+                            <div id="providerGuidance" class="hint-card" hidden></div>
+                        </section>
+
+                        <section class="panel-card">
+                            <div class="panel-head">
+                                <div>
+                                    <h3>Infraestrutura</h3>
+                                    <p>Regiao, sistema e plano em campos simples.</p>
+                                </div>
+                            </div>
+
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="regionSelect">Regiao</label>
+                                    <select id="regionSelect">
+                                        <option value="">Selecione um provedor primeiro</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label for="osSelect">Sistema</label>
+                                    <select id="osSelect" disabled>
+                                        <option value="">Selecione um provedor primeiro</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label for="planSelect">Plano</label>
+                                    <select id="planSelect" disabled>
+                                        <option value="">Selecione um provedor primeiro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="planStatus" class="hint-card">Selecione um provedor para começar.</div>
+                            <div id="planWarning" class="warn-card" hidden></div>
+                        </section>
+
+                        <section class="panel-card">
+                            <div class="panel-head">
+                                <div>
+                                    <h3>Instalação</h3>
+                                    <p>Escolha o perfil e defina o nome do servidor.</p>
+                                </div>
+                            </div>
+
+                            <div class="app-grid" id="appCards">
+                                <article class="app-card is-active" data-app="base-stack">
+                                    <h4>Stack CloudEase</h4>
+                                    <p>Nginx, PHP e MySQL prontos para uso.</p>
+                                    <button type="button" class="app-action-btn" data-select-app="base-stack">Selecionar</button>
+                                </article>
+                                <article class="app-card" data-app="n8n-stack">
+                                    <h4>n8n 1-Clique</h4>
+                                    <p>Automacao pronta com acesso inicial gerado.</p>
+                                    <button type="button" class="app-action-btn" data-select-app="n8n-stack">Selecionar</button>
+                                </article>
+                            </div>
+
+                            <div class="field">
+                                <label for="serverName">Nome do servidor</label>
+                                <input id="serverName" type="text" placeholder="Ex: Servidor Producao">
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="summary-card">
+                        <h3>Resumo</h3>
+                        <div class="summary-row"><span>Provedor</span><strong id="summaryProvider">-</strong></div>
+                        <div class="summary-row"><span>Regiao</span><strong id="summaryRegion">-</strong></div>
+                        <div class="summary-row"><span>Sistema</span><strong id="summaryOs">-</strong></div>
+                        <div class="summary-row"><span>Plano</span><strong id="summaryPlan">-</strong></div>
+                        <div class="summary-row"><span>Perfil</span><strong id="summaryApp">Stack CloudEase</strong></div>
+                        <div class="summary-row"><span>Custo</span><strong id="summaryCost">-</strong></div>
+                        <div class="summary-row"><span>Compatibilidade</span><strong id="summaryCompatibility">Aguardando</strong></div>
+                    </aside>
+                </div>
+
+                <input type="hidden" id="providerInput" required>
+                <input type="hidden" id="regionInput" required>
+                <input type="hidden" id="osInput" required>
+                <input type="hidden" id="planInput" required>
+                <input type="hidden" id="appInput" value="base-stack">
+
+                <div class="builder-actions">
+                    <button type="submit" class="primary-btn" id="createServerBtn"><i class="fas fa-rocket"></i> Criar servidor</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="js/create-server-new.js"></script>
+    <script src="js/sidebar.js"></script>
+</body>
+</html>
