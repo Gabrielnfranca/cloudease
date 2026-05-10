@@ -1,9 +1,9 @@
-// Inclui a sidebar.html em todas as páginas que tenham <div id="sidebar-include"></div>
+// Inclui o template da sidebar em páginas que usam #sidebar-include.
 document.addEventListener('DOMContentLoaded', async function() {
     const sidebarDiv = document.getElementById('sidebar-include');
     if (sidebarDiv) {
         try {
-            const resp = await fetch('sidebar.html');
+            const resp = await fetch('partials/sidebar.html');
             const html = await resp.text();
             sidebarDiv.innerHTML = html;
         } catch (e) {
