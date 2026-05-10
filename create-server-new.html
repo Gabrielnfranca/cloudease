@@ -37,9 +37,31 @@
             </div>
 
             <form id="createServerFormNew" class="builder-form" novalidate>
+                <section class="panel-card">
+                    <div class="panel-head">
+                        <div>
+                            <h3>O que voce quer fazer?</h3>
+                            <p>Escolha um caminho simples para continuar.</p>
+                        </div>
+                    </div>
+
+                    <div class="mode-grid" id="modeCards">
+                        <article class="mode-card is-active" data-mode="create-server">
+                            <h4>Criar novo servidor</h4>
+                            <p>Cria uma VPS nova e prepara o ambiente inicial.</p>
+                            <button type="button" class="mode-btn" data-select-mode="create-server">Selecionar</button>
+                        </article>
+                        <article class="mode-card" data-mode="install-n8n">
+                            <h4>Instalar n8n em servidor existente</h4>
+                            <p>Use um servidor que voce ja criou para instalar o n8n.</p>
+                            <button type="button" class="mode-btn" data-select-mode="install-n8n">Selecionar</button>
+                        </article>
+                    </div>
+                </section>
+
                 <div class="builder-layout">
                     <div class="builder-main">
-                        <section class="panel-card">
+                        <section class="panel-card" id="createServerSection">
                             <div class="panel-head">
                                 <div>
                                     <h3>Provedor</h3>
@@ -121,25 +143,12 @@
                             <div id="planWarning" class="warn-card" hidden></div>
                         </section>
 
-                        <section class="panel-card">
+                        <section class="panel-card" id="createInstallSection">
                             <div class="panel-head">
                                 <div>
-                                    <h3>Instalação</h3>
-                                    <p>Escolha o perfil e defina o nome do servidor.</p>
+                                    <h3>Nome do servidor</h3>
+                                    <p>Defina um nome simples para identificar sua VPS.</p>
                                 </div>
-                            </div>
-
-                            <div class="app-grid" id="appCards">
-                                <article class="app-card is-active" data-app="base-stack">
-                                    <h4>Stack CloudEase</h4>
-                                    <p>Nginx, PHP e MySQL prontos para uso.</p>
-                                    <button type="button" class="app-action-btn" data-select-app="base-stack">Selecionar</button>
-                                </article>
-                                <article class="app-card" data-app="n8n-stack">
-                                    <h4>n8n 1-Clique</h4>
-                                    <p>Automacao pronta com acesso inicial gerado.</p>
-                                    <button type="button" class="app-action-btn" data-select-app="n8n-stack">Selecionar</button>
-                                </article>
                             </div>
 
                             <div class="field">
@@ -147,10 +156,40 @@
                                 <input id="serverName" type="text" placeholder="Ex: Servidor Producao">
                             </div>
                         </section>
+
+                        <section class="panel-card" id="installN8nSection" hidden>
+                            <div class="panel-head">
+                                <div>
+                                    <h3>Instalar n8n</h3>
+                                    <p>Selecione um servidor ja existente para instalar o n8n.</p>
+                                </div>
+                            </div>
+
+                            <div class="n8n-card">
+                                <img src="assets/images/n8n-logo.svg" alt="n8n" class="n8n-logo">
+                                <div>
+                                    <strong>n8n Automacao</strong>
+                                    <p>Instalacao guiada para clientes sem experiencia tecnica.</p>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="n8nServerSelect">Servidor para instalar n8n</label>
+                                <select id="n8nServerSelect">
+                                    <option value="">Carregando servidores...</option>
+                                </select>
+                            </div>
+
+                            <div class="builder-actions inline-actions">
+                                <button type="button" class="primary-btn" id="installN8nBtn"><i class="fas fa-wand-magic-sparkles"></i> Instalar n8n</button>
+                            </div>
+                            <div id="n8nStatus" class="hint-card">Selecione um servidor ativo para continuar.</div>
+                        </section>
                     </div>
 
                     <aside class="summary-card">
                         <h3>Resumo</h3>
+                        <div class="summary-row"><span>Acao</span><strong id="summaryMode">Criar servidor</strong></div>
                         <div class="summary-row"><span>Provedor</span><strong id="summaryProvider">-</strong></div>
                         <div class="summary-row"><span>Regiao</span><strong id="summaryRegion">-</strong></div>
                         <div class="summary-row"><span>Sistema</span><strong id="summaryOs">-</strong></div>
@@ -167,7 +206,7 @@
                 <input type="hidden" id="planInput" required>
                 <input type="hidden" id="appInput" value="base-stack">
 
-                <div class="builder-actions">
+                <div class="builder-actions" id="createActions">
                     <button type="submit" class="primary-btn" id="createServerBtn"><i class="fas fa-rocket"></i> Criar servidor</button>
                 </div>
             </form>

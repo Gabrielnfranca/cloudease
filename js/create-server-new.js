@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const state = {
+        mode: 'create-server',
         provider: '',
         region: '',
         os: '',
@@ -8,7 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
         allPlans: [],
         allRegions: [],
         allOs: [],
-        selectedPlanMeta: null
+        selectedPlanMeta: null,
+        existingServers: [],
+        selectedN8nServer: ''
     };
 
     const providerProfiles = {
@@ -40,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const providerCards = Array.from(document.querySelectorAll('.provider-card'));
-    const appCards = Array.from(document.querySelectorAll('.app-card'));
+    const modeCards = Array.from(document.querySelectorAll('.mode-card'));
 
     const providerInput = document.getElementById('providerInput');
     const regionInput = document.getElementById('regionInput');
@@ -54,8 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const providerGuidance = document.getElementById('providerGuidance');
     const planStatus = document.getElementById('planStatus');
     const planWarning = document.getElementById('planWarning');
+    const createServerSection = document.getElementById('createServerSection');
+    const createInstallSection = document.getElementById('createInstallSection');
+    const installN8nSection = document.getElementById('installN8nSection');
+    const createActions = document.getElementById('createActions');
+    const n8nServerSelect = document.getElementById('n8nServerSelect');
+    const installN8nBtn = document.getElementById('installN8nBtn');
+    const n8nStatus = document.getElementById('n8nStatus');
 
     const summaryProvider = document.getElementById('summaryProvider');
+    const summaryMode = document.getElementById('summaryMode');
     const summaryRegion = document.getElementById('summaryRegion');
     const summaryOs = document.getElementById('summaryOs');
     const summaryPlan = document.getElementById('summaryPlan');
@@ -65,6 +76,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const form = document.getElementById('createServerFormNew');
     const createServerBtn = document.getElementById('createServerBtn');
+
+    function setMode(mode) {
+        state.mode = mode;
+        modeCards.forEach((card) => card.classList.toggle('is-active', card.dataset.mode === mode));
+
+        const createVisible = mode === 'create-server';
+        createServerSection.hidden = !createVisible;
+        createInstallSection.hidden = !createVisible;
+        createActions.hidden = !createVisible;
+        installN8nSection.hidden = createVisible;
+
+        summaryMode.textContent = createVisible ? 'Criar servidor' : 'Instalar n8n';
+        if (!createVisible) {
+            summaryProvider.textContent = '-';
+            summaryRegion.textContent = '-';
+            summaryOs.textContent = '-';
+            summaryPlan.textContent = '-';
+            summaryApp.textContent = 'n8n';
+            summaryCost.textContent = 'Nao se aplica';
+            summaryCompatibility.textContent = 'Nao se aplica';
+        } else {
+            summaryApp.textContent = 'Servidor base';
+        }
+    }
 
     function getToken() {
         const token = localStorage.getItem('authToken');
@@ -125,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         summaryPlan.textContent = state.selectedPlanMeta ? state.selectedPlanMeta.label : '-';
-        summaryApp.textContent = appProfiles[state.app]?.label || 'Stack CloudEase';
+        summaryApp.textContent = 'Servidor base';
         summaryCost.textContent = state.selectedPlanMeta && state.selectedPlanMeta.price !== null
             ? `US$ ${state.selectedPlanMeta.price.toFixed(2)}/mes`
             : '-';
@@ -352,9 +387,84 @@ document.addEventListener('DOMContentLoaded', () => {
             region: state.region,
             plan: state.plan,
             os_id: state.os,
-            app: state.app,
+            app: 'base-stack',
             name: (document.getElementById('serverName').value || '').trim() || 'Novo Servidor'
         };
+    }
+
+    async function loadExistingServers() {
+        n8nServerSelect.innerHTML = '<option value="">Carregando servidores...</option>';
+        n8nServerSelect.disabled = true;
+        try {
+            const servers = await authFetch('/api/servers', { method: 'GET' });
+            state.existingServers = Array.isArray(servers) ? servers : [];
+            const activeServers = state.existingServers.filter((server) => String(server.status || '').toLowerCase() === 'active');
+
+            n8nServerSelect.innerHTML = '<option value="">Selecione um servidor</option>';
+            activeServers.forEach((server) => {
+                const option = document.createElement('option');
+                option.value = server.id;
+                option.textContent = `${server.name} (${server.ip_address || 'sem IP'})`;
+                n8nServerSelect.appendChild(option);
+            });
+
+            n8nServerSelect.disabled = activeServers.length === 0;
+            n8nStatus.textContent = activeServers.length > 0
+                ? 'Selecione um servidor ativo para iniciar a instalacao do n8n.'
+                : 'Nenhum servidor ativo encontrado. Crie um servidor primeiro.';
+        } catch (error) {
+            n8nServerSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+            n8nServerSelect.disabled = true;
+            n8nStatus.textContent = 'Nao foi possivel carregar seus servidores.';
+        }
+    }
+
+    async function installN8nOnExistingServer() {
+        if (!state.selectedN8nServer) {
+            alert('Selecione um servidor para continuar.');
+            return;
+        }
+
+        const target = state.existingServers.find((server) => String(server.id) === String(state.selectedN8nServer));
+        if (!target) {
+            alert('Servidor selecionado inválido. Atualize a lista e tente novamente.');
+            return;
+        }
+
+        const originalHtml = installN8nBtn.innerHTML;
+        installN8nBtn.disabled = true;
+        installN8nBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Instalando...';
+        n8nStatus.textContent = `Instalando n8n em ${target.name}...`;
+
+        try {
+            const result = await authFetch('/api/servers', {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'install_n8n_existing',
+                    server_id: target.id
+                })
+            });
+
+            const access = result.access || {};
+            n8nStatus.textContent = 'n8n instalado com sucesso. Acesso pronto para uso.';
+
+            if (access.url && access.user && access.password) {
+                alert(
+                    'n8n instalado com sucesso!\n\n' +
+                    'URL: ' + access.url + '\n' +
+                    'Usuario: ' + access.user + '\n' +
+                    'Senha: ' + access.password
+                );
+            } else {
+                alert('n8n instalado com sucesso.');
+            }
+        } catch (error) {
+            n8nStatus.textContent = 'Falha na instalacao do n8n.';
+            alert('Erro ao instalar n8n: ' + error.message);
+        } finally {
+            installN8nBtn.disabled = false;
+            installN8nBtn.innerHTML = originalHtml;
+        }
     }
 
     async function createServer() {
@@ -406,23 +516,36 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => selectProvider(card.dataset.provider));
     });
 
-    appCards.forEach((card) => {
-        const button = card.querySelector('[data-select-app]');
-        const activate = () => {
-            state.app = card.dataset.app;
-            appInput.value = state.app;
-            setActiveApp(state.app);
-            evaluateCompatibility();
-            updateSummary();
+    modeCards.forEach((card) => {
+        const button = card.querySelector('[data-select-mode]');
+        const activateMode = async () => {
+            setMode(card.dataset.mode);
+            if (card.dataset.mode === 'install-n8n') {
+                await loadExistingServers();
+            }
+            if (card.dataset.mode === 'create-server') {
+                updateSummary();
+            }
         };
 
-        card.addEventListener('click', activate);
+        card.addEventListener('click', activateMode);
         if (button) {
             button.addEventListener('click', (event) => {
                 event.stopPropagation();
-                activate();
+                activateMode();
             });
         }
+    });
+
+    n8nServerSelect.addEventListener('change', () => {
+        state.selectedN8nServer = n8nServerSelect.value;
+        const target = state.existingServers.find((server) => String(server.id) === String(state.selectedN8nServer));
+        summaryPlan.textContent = target ? target.name : '-';
+        summaryProvider.textContent = target ? (target.provider || '-') : '-';
+    });
+
+    installN8nBtn.addEventListener('click', () => {
+        installN8nOnExistingServer();
     });
 
     regionSelect.addEventListener('change', () => {
@@ -447,6 +570,6 @@ document.addEventListener('DOMContentLoaded', () => {
         createServer();
     });
 
-    setActiveApp(state.app);
+    setMode(state.mode);
     updateSummary();
 });
