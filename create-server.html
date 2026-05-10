@@ -7,6 +7,9 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/shared/styles.css">
     <link rel="stylesheet" href="css/shared/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .wizard-container {
@@ -429,6 +432,215 @@
             }
         }
     </style>
+    <style>
+        :root {
+            --ui-text: #0f172a;
+            --ui-soft: #4b5f78;
+            --ui-primary: #0f6cbd;
+            --ui-primary-deep: #0b4f8a;
+            --ui-border: #d9e3f0;
+        }
+
+        .dashboard-body {
+            font-family: 'Manrope', 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 12% 10%, rgba(15, 108, 189, 0.1), transparent 26%),
+                radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.08), transparent 24%),
+                linear-gradient(180deg, #f3f7fc 0%, #eaf0f7 100%);
+        }
+
+        .main-content {
+            padding-top: 22px;
+        }
+
+        .dashboard-header {
+            border: 1px solid var(--ui-border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+            margin-bottom: 18px;
+        }
+
+        .dashboard-header .header-title h1 {
+            margin: 0;
+            color: var(--ui-text);
+            font-size: 30px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            margin-top: 6px;
+            color: var(--ui-soft);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .wizard-container {
+            max-width: 1020px;
+            border-radius: 18px;
+            border: 1px solid var(--ui-border);
+            box-shadow: 0 16px 44px rgba(15, 23, 42, 0.11);
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+        }
+
+        .wizard-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--ui-primary) 0%, #0ea5a4 100%);
+        }
+
+        .wizard-steps::before {
+            top: 19px;
+            left: 7%;
+            right: 7%;
+            height: 3px;
+            border-radius: 999px;
+            background: #e1ebf7;
+        }
+
+        .step {
+            color: #60738b;
+            font-weight: 700;
+        }
+
+        .step-number {
+            width: 38px;
+            height: 38px;
+            margin-bottom: 8px;
+            background: #edf2f9;
+            border: 1px solid #d7e2f0;
+        }
+
+        .step.active {
+            color: var(--ui-primary);
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(160deg, var(--ui-primary) 0%, var(--ui-primary-deep) 100%);
+            box-shadow: 0 0 0 4px rgba(15, 108, 189, 0.16);
+            border-color: transparent;
+        }
+
+        .options-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .cards-grid.plans {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        .option-card,
+        .region-card,
+        .os-card,
+        .plan-card {
+            border-radius: 12px;
+            border-color: var(--ui-border);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .option-card {
+            padding: 14px 10px;
+        }
+
+        .option-card h3 {
+            color: #0f2239;
+            font-size: 15px;
+        }
+
+        .option-card:hover,
+        .region-card:hover,
+        .os-card:hover,
+        .plan-card:hover {
+            border-color: #9ec3ea;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+        }
+
+        .option-card.selected,
+        .region-card.selected,
+        .os-card.selected,
+        .plan-card.selected {
+            border-color: var(--ui-primary);
+            background: linear-gradient(180deg, #f5faff 0%, #ebf4ff 100%);
+            box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.12);
+        }
+
+        .card-icon {
+            background: #eff4fa;
+            border-color: #dde7f4;
+        }
+
+        .actions {
+            border-top-color: #e2ebf6;
+        }
+
+        .new-site-btn {
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        #nextBtn,
+        #submitBtn {
+            background: linear-gradient(160deg, var(--ui-primary) 0%, var(--ui-primary-deep) 100%);
+            box-shadow: 0 10px 24px rgba(15, 108, 189, 0.24);
+        }
+
+        .summary-card {
+            background: linear-gradient(180deg, #f8fbff 0%, #f2f7fe 100%);
+            border: 1px solid #dbe7f4;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .summary-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #102a43;
+            font-size: 18px;
+        }
+
+        .summary-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 14px;
+        }
+
+        .summary-list li {
+            margin-bottom: 10px;
+            color: #3b4f67;
+        }
+
+        .helper-text {
+            color: #607086;
+            font-size: 13px;
+            margin-top: 8px;
+            line-height: 1.45;
+        }
+
+        @media (max-width: 760px) {
+            .wizard-container {
+                padding: 16px;
+            }
+
+            .cards-grid,
+            .cards-grid.compact,
+            .cards-grid.plans {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header .header-title h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
     <div id="sidebar-include"></div>
@@ -437,6 +649,7 @@
         <header class="dashboard-header">
             <div class="header-title">
                 <h1>Novo Servidor</h1>
+                <p class="page-subtitle">Provisionamento guiado, rápido e com validação de compatibilidade.</p>
             </div>
             <div class="header-back">
                 <button class="new-site-btn" onclick="window.location.href='servers.html'">
@@ -562,7 +775,7 @@
 
                     <div id="compatibilityInfo" class="guidance-card" style="display:none"></div>
                     
-                    <div class="summary-card" style="background: #f7fafc; padding: 14px; border-radius: 8px; margin-top: 14px; border:1px solid #e2e8f0;">
+                    <div class="summary-card" style="margin-top: 14px;">
                         <h3>Resumo</h3>
                         <div class="summary-row">
                             <div class="summary-label">Provedor</div>
@@ -592,8 +805,8 @@
                             <div class="summary-label">Compatibilidade</div>
                             <div class="summary-value" id="summaryCompatibility">-</div>
                         </div>
-                        <ul style="list-style: none; padding: 0; margin-top: 14px;">
-                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Stack CloudEase (Nginx, PHP, MySQL) será instalada automaticamente.</li>
+                        <ul class="summary-list">
+                            <li><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Stack CloudEase (Nginx, PHP, MySQL) será instalada automaticamente.</li>
                             <li><i class="fas fa-check" style="color: #48bb78; margin-right: 10px;"></i> Se o plano estiver abaixo do recomendado, você receberá um alerta antes da criação.</li>
                         </ul>
                     </div>
