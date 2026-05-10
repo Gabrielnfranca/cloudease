@@ -1,6 +1,6 @@
 import { supabaseUrl, supabaseKey } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
-import { createInstance, fetchServers, deleteInstance } from '../lib/providers.js';
+import { createInstance, fetchServers, deleteInstance, fetchPlans, fetchRegions, fetchOS } from '../lib/providers.js';
 import { discoverSites } from '../lib/provisioner.js';
 import { Client } from 'ssh2';
 import fs from 'fs';
@@ -194,6 +194,10 @@ export default async function handler(req, res) {
 
         // Create Request
         const { provider, region, plan, app, name, os_id } = req.body;
+
+        if (!provider || !region || !plan || !os_id) {
+            return res.status(400).json({ error: 'Dados obrigatórios ausentes para criar servidor' });
+        }
         
         const { data: provData } = await supabase
             .from('providers')
@@ -205,7 +209,43 @@ export default async function handler(req, res) {
         if (!provData) return res.status(400).json({ error: 'Provedor não conectado' });
 
         try {
-            const result = await createInstance(provider, provData.api_key, { region, plan, app, name, os_id });
+            const providerKey = String(provider).toLowerCase();
+            const [plans, regions, osCatalog] = await Promise.all([
+                fetchPlans(providerKey, provData.api_key),
+                fetchRegions(providerKey, provData.api_key),
+                fetchOS(providerKey, provData.api_key)
+            ]);
+
+            const selectedRegion = (regions || []).find((item) => String(item.id) === String(region));
+            if (!selectedRegion) {
+                return res.status(400).json({ error: 'Região inválida para o provedor selecionado' });
+            }
+
+            const selectedPlan = (plans || []).find((item) => String(item.id) === String(plan));
+            if (!selectedPlan) {
+                return res.status(400).json({ error: 'Plano inválido para o provedor selecionado' });
+            }
+
+            const hasLocations = Array.isArray(selectedPlan.locations) && selectedPlan.locations.length > 0;
+            if (hasLocations) {
+                const isPlanAvailableInRegion = selectedPlan.locations.some((loc) => String(loc).trim().toLowerCase() === String(region).trim().toLowerCase());
+                if (!isPlanAvailableInRegion) {
+                    return res.status(400).json({ error: 'Plano não disponível na região selecionada' });
+                }
+            }
+
+            const selectedOs = (osCatalog || []).find((item) => String(item.id) === String(os_id));
+            if (!selectedOs) {
+                return res.status(400).json({ error: 'Sistema operacional inválido para o provedor selecionado' });
+            }
+
+            const result = await createInstance(providerKey, provData.api_key, {
+                region,
+                plan,
+                app,
+                name: (name || 'Novo Servidor').trim(),
+                os_id
+            });
             
             let externalId = 'pending';
             if (result.instance?.id) externalId = result.instance.id;
@@ -216,9 +256,18 @@ export default async function handler(req, res) {
                 user_id: userId,
                 provider_id: provData.id,
                 external_id: externalId,
-                name,
+                name: (name || 'Novo Servidor').trim(),
                 status: 'creating',
-                specs: { app, plan, region }
+                specs: {
+                    app,
+                    plan: selectedPlan.id,
+                    region: selectedRegion.id,
+                    os_id: selectedOs.id,
+                    cpu: selectedPlan.cpu ? `${selectedPlan.cpu} vCPU` : undefined,
+                    ram: selectedPlan.ram ? `${selectedPlan.ram} MB` : undefined,
+                    storage: selectedPlan.disk ? `${selectedPlan.disk} GB` : undefined,
+                    monthly_price_usd: Number.isFinite(Number(selectedPlan.price)) ? Number(selectedPlan.price) : null
+                }
             }]);
 
             return res.status(201).json({ success: true, message: 'Criando servidor...' });

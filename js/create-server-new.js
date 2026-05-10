@@ -348,7 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const plans = getFilteredPlans().slice().sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
+        const plans = getFilteredPlans()
+            .slice()
+            .sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
 
         planSelect.disabled = false;
 
