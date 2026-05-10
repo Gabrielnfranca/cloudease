@@ -45,41 +45,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const providerCards = Array.from(document.querySelectorAll('.provider-card'));
     const modeCards = Array.from(document.querySelectorAll('.mode-card'));
 
-    const configModal = document.getElementById('configModal');
-    const closeConfigModal = document.getElementById('closeConfigModal');
-    const openConfigBtn = document.getElementById('openConfigBtn');
-
     const providerInput = document.getElementById('providerInput');
     const regionInput = document.getElementById('regionInput');
     const osInput = document.getElementById('osInput');
     const planInput = document.getElementById('planInput');
     const appInput = document.getElementById('appInput');
 
-    const regionSelect = document.getElementById('regionSelectModal');
-    const osSelect = document.getElementById('osSelectModal');
-    const planSelect = document.getElementById('planSelectModal');
-    const providerGuidance = document.getElementById('providerGuidanceModal');
-    const planStatus = document.getElementById('planStatusModal');
-    const planWarning = document.getElementById('planWarningModal');
-    const createServerSection = document.getElementById('createServerSectionModal');
-    const createInstallSection = document.getElementById('createInstallSectionModal');
-    const installN8nSection = document.getElementById('installN8nSectionModal');
+    const regionSelect = document.getElementById('regionSelect');
+    const osSelect = document.getElementById('osSelect');
+    const planSelect = document.getElementById('planSelect');
+    const providerGuidance = document.getElementById('providerGuidance');
+    const planStatus = document.getElementById('planStatus');
+    const planWarning = document.getElementById('planWarning');
+    const createServerSection = document.getElementById('createServerSection');
+    const createBasicSection = document.getElementById('createBasicSection');
+    const createInstallSection = document.getElementById('createInstallSection');
+    const installN8nSection = document.getElementById('installN8nSection');
     const createActions = document.getElementById('createActions');
-    const n8nServerSelect = document.getElementById('n8nServerSelectModal');
-    const installN8nBtn = document.getElementById('installN8nBtnModal');
-    const n8nStatus = document.getElementById('n8nStatusModal');
+    const n8nServerSelect = document.getElementById('n8nServerSelect');
+    const installN8nBtn = document.getElementById('installN8nBtn');
+    const n8nStatus = document.getElementById('n8nStatus');
 
-    const summaryProvider = document.getElementById('summaryProviderModal');
-    const summaryMode = document.getElementById('summaryModeModal');
-    const summaryRegion = document.getElementById('summaryRegionModal');
-    const summaryOs = document.getElementById('summaryOsModal');
-    const summaryPlan = document.getElementById('summaryPlanModal');
-    const summaryApp = document.getElementById('summaryAppModal');
-    const summaryCost = document.getElementById('summaryCostModal');
-    const summaryCompatibility = document.getElementById('summaryCompatibilityModal');
+    const summaryProvider = document.getElementById('summaryProvider');
+    const summaryMode = document.getElementById('summaryMode');
+    const summaryRegion = document.getElementById('summaryRegion');
+    const summaryOs = document.getElementById('summaryOs');
+    const summaryPlan = document.getElementById('summaryPlan');
+    const summaryApp = document.getElementById('summaryApp');
+    const summaryCost = document.getElementById('summaryCost');
+    const summaryCompatibility = document.getElementById('summaryCompatibility');
 
     const form = document.getElementById('createServerFormNew');
-    const createServerBtn = document.getElementById('createServerBtnModal');
+    const createServerBtn = document.getElementById('createServerBtn');
 
     function clearSummary() {
         summaryMode.textContent = '-';
@@ -95,32 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function setMode(mode) {
         state.mode = mode;
         modeCards.forEach((card) => card.classList.toggle('is-active', card.dataset.mode === mode));
-        document.body.classList.toggle('install-mode', mode === 'install-n8n');
 
         const createVisible = mode === 'create-server';
         const installVisible = mode === 'install-n8n';
-        if (createServerSection) createServerSection.hidden = !createVisible;
-        if (createInstallSection) createInstallSection.hidden = !createVisible;
-        if (createActions) createActions.hidden = !createVisible;
-        if (installN8nSection) installN8nSection.hidden = !installVisible;
+        createServerSection.hidden = !createVisible;
+        createBasicSection.hidden = !createVisible;
+        createInstallSection.hidden = !createVisible;
+        createActions.hidden = !createVisible;
+        installN8nSection.hidden = !installVisible;
 
         clearSummary();
-    }
-
-    function openConfigModal(mode = state.mode || 'create-server') {
-        setMode(mode);
-        configModal.hidden = false;
-        document.body.classList.add('modal-open');
-        if (mode === 'install-n8n') {
-            loadExistingServers();
-        } else if (state.provider) {
-            updateSummary();
-        }
-    }
-
-    function closeModal() {
-        configModal.hidden = true;
-        document.body.classList.remove('modal-open');
     }
 
     function getToken() {
@@ -403,7 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await loadProviderOptions(provider);
-            openConfigModal('create-server');
         } catch (error) {
             alert('Nao foi possivel carregar as opcoes: ' + error.message);
         }
@@ -416,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
             plan: state.plan,
             os_id: state.os,
             app: 'base-stack',
-            name: (document.getElementById('serverNameModal').value || '').trim() || 'Novo Servidor'
+            name: (document.getElementById('serverName').value || '').trim() || 'Novo Servidor'
         };
     }
 
@@ -555,12 +535,12 @@ document.addEventListener('DOMContentLoaded', () => {
     modeCards.forEach((card) => {
         const button = card.querySelector('[data-select-mode]');
         const activateMode = async () => {
+            setMode(card.dataset.mode);
             if (card.dataset.mode === 'install-n8n') {
-                openConfigModal('install-n8n');
+                await loadExistingServers();
             }
             if (card.dataset.mode === 'create-server') {
-                setMode('create-server');
-                clearSummary();
+                updateSummary();
             }
         };
 
@@ -583,20 +563,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     installN8nBtn.addEventListener('click', () => {
         installN8nOnExistingServer();
-    });
-
-    openConfigBtn.addEventListener('click', () => {
-        if (!state.provider && state.mode === 'create-server') {
-            alert('Selecione uma empresa antes de continuar.');
-            return;
-        }
-        openConfigModal(state.mode || 'create-server');
-    });
-
-    closeConfigModal.addEventListener('click', closeModal);
-
-    configModal.addEventListener('click', (event) => {
-        if (event.target === configModal) closeModal();
     });
 
     regionSelect.addEventListener('change', () => {
@@ -622,6 +588,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     setMode(state.mode);
-    clearSummary();
-    configModal.hidden = true;
 });
