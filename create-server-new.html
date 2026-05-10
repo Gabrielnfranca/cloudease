@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="mode-grid" id="modeCards">
-                        <article class="mode-card" data-mode="create-server">
+                        <article class="mode-card is-active" data-mode="create-server">
                             <h4>Criar novo servidor</h4>
                             <p>Cria um servidor novo para voce com configuracao inicial pronta.</p>
                             <button type="button" class="mode-btn" data-select-mode="create-server">Selecionar</button>
@@ -59,146 +59,52 @@
                     </div>
                 </section>
 
-                <div class="builder-layout">
-                    <div class="builder-main">
-                        <section class="panel-card" id="createServerSection">
-                            <div class="panel-head">
-                                <div>
-                                    <h3>Empresa do servidor</h3>
-                                    <p>Escolha onde seu servidor sera criado.</p>
-                                </div>
-                            </div>
-
-                            <div class="provider-grid" id="providerGrid">
-                                <article class="provider-card" data-provider="vultr">
-                                    <div class="provider-top">
-                                        <img src="assets/images/Logo%20Vultr.webp" alt="Vultr" class="provider-logo">
-                                    </div>
-                                    <h3>Vultr</h3>
-                                    <p>Boa opcao para performance com custo previsivel.</p>
-                                    <button type="button" class="provider-btn" data-select-provider="vultr">Selecionar Vultr</button>
-                                </article>
-
-                                <article class="provider-card" data-provider="digitalocean">
-                                    <div class="provider-top">
-                                        <img src="assets/images/digitalocean-mark.svg" alt="DigitalOcean" class="provider-logo digitalocean-logo">
-                                    </div>
-                                    <h3>DigitalOcean</h3>
-                                    <p>Onboarding simples e excelente para times pequenos.</p>
-                                    <button type="button" class="provider-btn" data-select-provider="digitalocean">Selecionar DigitalOcean</button>
-                                </article>
-
-                                <article class="provider-card" data-provider="linode">
-                                    <div class="provider-top">
-                                        <img src="assets/images/Linode-Logo-Black.svg" alt="Linode" class="provider-logo">
-                                    </div>
-                                    <h3>Linode</h3>
-                                    <p>Forte para workloads Linux e stacks customizadas.</p>
-                                    <button type="button" class="provider-btn" data-select-provider="linode">Selecionar Linode</button>
-                                </article>
-
-                                <article class="provider-card is-disabled" data-provider="aws">
-                                    <div class="provider-top">
-                                        <img src="assets/images/aws-logo.svg" alt="AWS" class="provider-logo">
-                                    </div>
-                                    <h3>AWS</h3>
-                                    <p>Integracao visual pronta. Ativacao completa em breve.</p>
-                                    <button type="button" class="provider-btn" disabled>Em breve</button>
-                                </article>
-                            </div>
-
-                            <div id="providerGuidance" class="hint-card" hidden></div>
-                        </section>
-
-                        <section class="panel-card" id="createBasicSection">
-                            <div class="panel-head">
-                                <div>
-                                    <h3>Configuracao basica</h3>
-                                    <p>Escolha local, sistema e tamanho do servidor.</p>
-                                </div>
-                            </div>
-
-                            <div class="field-grid">
-                                <div class="field">
-                                    <label for="regionSelect">Regiao</label>
-                                    <select id="regionSelect">
-                                        <option value="">Selecione um provedor primeiro</option>
-                                    </select>
-                                </div>
-                                <div class="field">
-                                    <label for="osSelect">Sistema operacional</label>
-                                    <select id="osSelect" disabled>
-                                        <option value="">Selecione um provedor primeiro</option>
-                                    </select>
-                                </div>
-                                <div class="field">
-                                    <label for="planSelect">Tamanho do servidor</label>
-                                    <select id="planSelect" disabled>
-                                        <option value="">Selecione um provedor primeiro</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div id="planStatus" class="hint-card">Selecione um provedor para começar.</div>
-                            <div id="planWarning" class="warn-card" hidden></div>
-                        </section>
-
-                        <section class="panel-card" id="createInstallSection">
-                            <div class="panel-head">
-                                <div>
-                                    <h3>Nome do servidor</h3>
-                                    <p>Defina um nome facil para identificar seu servidor.</p>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label for="serverName">Nome do servidor</label>
-                                <input id="serverName" type="text" placeholder="Ex: Servidor Producao">
-                            </div>
-                        </section>
-
-                        <section class="panel-card" id="installN8nSection" hidden>
-                            <div class="panel-head">
-                                <div>
-                                    <h3>Instalar n8n</h3>
-                                    <p>Selecione um servidor ja existente para instalar o n8n.</p>
-                                </div>
-                            </div>
-
-                            <div class="n8n-card">
-                                <img src="assets/images/n8n-logo.svg" alt="n8n" class="n8n-logo">
-                                <div>
-                                    <strong>n8n Automacao</strong>
-                                    <p>Instalacao guiada para clientes sem experiencia tecnica.</p>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label for="n8nServerSelect">Servidor para instalar n8n</label>
-                                <select id="n8nServerSelect">
-                                    <option value="">Carregando servidores...</option>
-                                </select>
-                            </div>
-
-                            <div class="builder-actions inline-actions">
-                                <button type="button" class="primary-btn" id="installN8nBtn"><i class="fas fa-wand-magic-sparkles"></i> Instalar n8n</button>
-                            </div>
-                            <div id="n8nStatus" class="hint-card">Selecione um servidor ativo para continuar.</div>
-                        </section>
+                <section class="panel-card">
+                    <div class="panel-head">
+                        <div>
+                            <h3>Escolha a empresa</h3>
+                            <p>Clique na empresa para abrir a configuracao guiada.</p>
+                        </div>
                     </div>
 
-                    <aside class="summary-card">
-                        <h3>Resumo</h3>
-                        <div class="summary-row"><span>Acao</span><strong id="summaryMode">-</strong></div>
-                        <div class="summary-row"><span>Empresa</span><strong id="summaryProvider">-</strong></div>
-                        <div class="summary-row"><span>Regiao</span><strong id="summaryRegion">-</strong></div>
-                        <div class="summary-row"><span>Sistema</span><strong id="summaryOs">-</strong></div>
-                        <div class="summary-row"><span>Tamanho</span><strong id="summaryPlan">-</strong></div>
-                        <div class="summary-row"><span>Perfil</span><strong id="summaryApp">-</strong></div>
-                        <div class="summary-row"><span>Custo</span><strong id="summaryCost">-</strong></div>
-                        <div class="summary-row"><span>Compatibilidade</span><strong id="summaryCompatibility">-</strong></div>
-                    </aside>
-                </div>
+                    <div class="provider-grid" id="providerGrid">
+                        <article class="provider-card" data-provider="vultr">
+                            <div class="provider-top">
+                                <img src="assets/images/Logo%20Vultr.webp" alt="Vultr" class="provider-logo">
+                            </div>
+                            <h3>Vultr</h3>
+                            <p>Boa opcao para performance com custo previsivel.</p>
+                            <button type="button" class="provider-btn" data-select-provider="vultr">Selecionar</button>
+                        </article>
+
+                        <article class="provider-card" data-provider="digitalocean">
+                            <div class="provider-top">
+                                <img src="assets/images/digitalocean-mark.svg" alt="DigitalOcean" class="provider-logo digitalocean-logo">
+                            </div>
+                            <h3>DigitalOcean</h3>
+                            <p>Onboarding simples e excelente para times pequenos.</p>
+                            <button type="button" class="provider-btn" data-select-provider="digitalocean">Selecionar</button>
+                        </article>
+
+                        <article class="provider-card" data-provider="linode">
+                            <div class="provider-top">
+                                <img src="assets/images/Linode-Logo-Black.svg" alt="Linode" class="provider-logo">
+                            </div>
+                            <h3>Linode</h3>
+                            <p>Forte para workloads Linux e stacks customizadas.</p>
+                            <button type="button" class="provider-btn" data-select-provider="linode">Selecionar</button>
+                        </article>
+
+                        <article class="provider-card is-disabled" data-provider="aws">
+                            <div class="provider-top">
+                                <img src="assets/images/aws-logo.svg" alt="AWS" class="provider-logo">
+                            </div>
+                            <h3>AWS</h3>
+                            <p>Integracao visual pronta. Ativacao completa em breve.</p>
+                            <button type="button" class="provider-btn" disabled>Em breve</button>
+                        </article>
+                    </div>
+                </section>
 
                 <input type="hidden" id="providerInput" required>
                 <input type="hidden" id="regionInput" required>
@@ -206,12 +112,124 @@
                 <input type="hidden" id="planInput" required>
                 <input type="hidden" id="appInput" value="base-stack">
 
-                <div class="builder-actions" id="createActions">
-                    <button type="submit" class="primary-btn" id="createServerBtn"><i class="fas fa-rocket"></i> Criar servidor</button>
+                <div class="builder-actions">
+                    <button type="button" class="primary-btn" id="openConfigBtn"><i class="fas fa-sliders"></i> Continuar</button>
                 </div>
             </form>
         </section>
     </main>
+
+    <div class="modal-backdrop" id="configModal" hidden>
+        <div class="config-modal" role="dialog" aria-modal="true" aria-labelledby="configModalTitle">
+            <div class="config-modal-header">
+                <div>
+                    <span class="builder-kicker" id="configModalKicker">Configurar servidor</span>
+                    <h2 id="configModalTitle">Configure seu servidor</h2>
+                    <p id="configModalSubtitle">Vamos concluir com poucos passos e sem complicacao.</p>
+                </div>
+                <button type="button" class="icon-btn" id="closeConfigModal" aria-label="Fechar"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="config-modal-body">
+                <div class="config-main">
+                    <section class="panel-card" id="createServerSectionModal">
+                        <div class="panel-head">
+                            <div>
+                                <h3>Configuracao basica</h3>
+                                <p>Escolha regiao, sistema e tamanho do servidor.</p>
+                            </div>
+                        </div>
+
+                        <div id="providerGuidanceModal" class="hint-card" hidden></div>
+
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="regionSelectModal">Regiao</label>
+                                <select id="regionSelectModal">
+                                    <option value="">Selecione um provedor primeiro</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="osSelectModal">Sistema operacional</label>
+                                <select id="osSelectModal" disabled>
+                                    <option value="">Selecione um provedor primeiro</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="planSelectModal">Tamanho do servidor</label>
+                                <select id="planSelectModal" disabled>
+                                    <option value="">Selecione um provedor primeiro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="planStatusModal" class="hint-card">Selecione um provedor para comecar.</div>
+                        <div id="planFilterInfoModal" class="hint-card" hidden>Filtro ativo: exibindo planos acima de US$ 5 nesta regiao.</div>
+                        <div id="planWarningModal" class="warn-card" hidden></div>
+                    </section>
+
+                    <section class="panel-card" id="createInstallSectionModal">
+                        <div class="panel-head">
+                            <div>
+                                <h3>Nome do servidor</h3>
+                                <p>Defina um nome simples para identificar seu servidor.</p>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="serverNameModal">Nome do servidor</label>
+                            <input id="serverNameModal" type="text" placeholder="Ex: Servidor Producao">
+                        </div>
+
+                        <div class="builder-actions inline-actions">
+                            <button type="button" class="primary-btn" id="createServerBtnModal"><i class="fas fa-server"></i> Criar servidor</button>
+                        </div>
+                    </section>
+
+                    <section class="panel-card" id="installN8nSectionModal" hidden>
+                        <div class="panel-head">
+                            <div>
+                                <h3>Instalar n8n</h3>
+                                <p>Escolha um servidor ja existente e inicie a instalacao.</p>
+                            </div>
+                        </div>
+
+                        <div class="n8n-card">
+                            <img src="assets/images/n8n-logo.svg" alt="n8n" class="n8n-logo">
+                            <div>
+                                <strong>n8n Automacao</strong>
+                                <p>Instalacao guiada para clientes sem experiencia tecnica.</p>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="n8nServerSelectModal">Servidor para instalar n8n</label>
+                            <select id="n8nServerSelectModal">
+                                <option value="">Carregando servidores...</option>
+                            </select>
+                        </div>
+
+                        <div class="builder-actions inline-actions">
+                            <button type="button" class="primary-btn" id="installN8nBtnModal"><i class="fas fa-wand-magic-sparkles"></i> Instalar n8n</button>
+                        </div>
+                        <div id="n8nStatusModal" class="hint-card">Selecione um servidor ativo para continuar.</div>
+                    </section>
+                </div>
+
+                <aside class="summary-card">
+                    <h3>Resumo</h3>
+                    <div class="summary-row"><span>Acao</span><strong id="summaryModeModal">-</strong></div>
+                    <div class="summary-row"><span>Empresa</span><strong id="summaryProviderModal">-</strong></div>
+                    <div class="summary-row"><span>Regiao</span><strong id="summaryRegionModal">-</strong></div>
+                    <div class="summary-row"><span>Sistema</span><strong id="summaryOsModal">-</strong></div>
+                    <div class="summary-row"><span>Tamanho</span><strong id="summaryPlanModal">-</strong></div>
+                    <div class="summary-row"><span>Perfil</span><strong id="summaryAppModal">-</strong></div>
+                    <div class="summary-row"><span>Custo</span><strong id="summaryCostModal">-</strong></div>
+                    <div class="summary-row"><span>Compatibilidade</span><strong id="summaryCompatibilityModal">-</strong></div>
+                </aside>
+            </div>
+        </div>
+    </div>
 
     <script src="js/create-server-new.js"></script>
     <script src="js/sidebar.js"></script>

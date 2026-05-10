@@ -24,6 +24,82 @@
     padding: 18px;
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
+body.install-mode #openConfigBtn {
+    display: none;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 70;
+}
+
+.config-modal {
+    width: min(1120px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow: auto;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #dbe7f4;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    padding: 18px;
+}
+
+.config-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.config-modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #0f172a;
+}
+
+.config-modal-header p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.icon-btn {
+    border: 1px solid #dbe4ef;
+    background: #fff;
+    color: #334e68;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    background: #f8fbff;
+}
+
+.config-modal-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+    align-items: start;
+}
+
+.config-main {
+    display: grid;
+    gap: 16px;
+}
+
 .builder-banner {
     display: grid;
     grid-template-columns: 1fr 220px;
@@ -447,6 +523,10 @@
         grid-template-columns: 1fr;
     }
 
+    .config-modal-body {
+        grid-template-columns: 1fr;
+    }
+
     .summary-card {
         position: static;
         top: auto;
@@ -471,5 +551,14 @@
 
     .primary-btn {
         width: 100%;
+    }
+
+    .modal-backdrop {
+        padding: 10px;
+    }
+
+    .config-modal {
+        padding: 14px;
+        border-radius: 14px;
     }
 }

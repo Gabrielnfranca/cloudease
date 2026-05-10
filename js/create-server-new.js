@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
         allOs: [],
         selectedPlanMeta: null,
         existingServers: [],
-        selectedN8nServer: ''
+        selectedN8nServer: '',
+        minPlanPriceUsd: 5
     };
 
     const providerProfiles = {
@@ -38,12 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const appProfiles = {
-        'base-stack': { label: 'Stack CloudEase', requirements: { minCpu: 1, minRamMB: 1024, minDiskGB: 20 } },
+        'base-stack': { label: 'Servidor base', requirements: { minCpu: 1, minRamMB: 1024, minDiskGB: 20 } },
         'n8n-stack': { label: 'n8n 1-Clique', requirements: { minCpu: 1, minRamMB: 2048, minDiskGB: 25 } }
     };
 
     const providerCards = Array.from(document.querySelectorAll('.provider-card'));
     const modeCards = Array.from(document.querySelectorAll('.mode-card'));
+
+    const configModal = document.getElementById('configModal');
+    const closeConfigModal = document.getElementById('closeConfigModal');
+    const openConfigBtn = document.getElementById('openConfigBtn');
+    const configModalKicker = document.getElementById('configModalKicker');
+    const configModalTitle = document.getElementById('configModalTitle');
+    const configModalSubtitle = document.getElementById('configModalSubtitle');
 
     const providerInput = document.getElementById('providerInput');
     const regionInput = document.getElementById('regionInput');
@@ -51,32 +59,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const planInput = document.getElementById('planInput');
     const appInput = document.getElementById('appInput');
 
-    const regionSelect = document.getElementById('regionSelect');
-    const osSelect = document.getElementById('osSelect');
-    const planSelect = document.getElementById('planSelect');
-    const providerGuidance = document.getElementById('providerGuidance');
-    const planStatus = document.getElementById('planStatus');
-    const planWarning = document.getElementById('planWarning');
-    const createServerSection = document.getElementById('createServerSection');
-    const createBasicSection = document.getElementById('createBasicSection');
-    const createInstallSection = document.getElementById('createInstallSection');
-    const installN8nSection = document.getElementById('installN8nSection');
-    const createActions = document.getElementById('createActions');
-    const n8nServerSelect = document.getElementById('n8nServerSelect');
-    const installN8nBtn = document.getElementById('installN8nBtn');
-    const n8nStatus = document.getElementById('n8nStatus');
+    const regionSelect = document.getElementById('regionSelectModal');
+    const osSelect = document.getElementById('osSelectModal');
+    const planSelect = document.getElementById('planSelectModal');
+    const providerGuidance = document.getElementById('providerGuidanceModal');
+    const planStatus = document.getElementById('planStatusModal');
+    const planWarning = document.getElementById('planWarningModal');
+    const planFilterInfo = document.getElementById('planFilterInfoModal');
 
-    const summaryProvider = document.getElementById('summaryProvider');
-    const summaryMode = document.getElementById('summaryMode');
-    const summaryRegion = document.getElementById('summaryRegion');
-    const summaryOs = document.getElementById('summaryOs');
-    const summaryPlan = document.getElementById('summaryPlan');
-    const summaryApp = document.getElementById('summaryApp');
-    const summaryCost = document.getElementById('summaryCost');
-    const summaryCompatibility = document.getElementById('summaryCompatibility');
+    const createServerSection = document.getElementById('createServerSectionModal');
+    const createInstallSection = document.getElementById('createInstallSectionModal');
+    const installN8nSection = document.getElementById('installN8nSectionModal');
+
+    const n8nServerSelect = document.getElementById('n8nServerSelectModal');
+    const installN8nBtn = document.getElementById('installN8nBtnModal');
+    const n8nStatus = document.getElementById('n8nStatusModal');
+
+    const summaryProvider = document.getElementById('summaryProviderModal');
+    const summaryMode = document.getElementById('summaryModeModal');
+    const summaryRegion = document.getElementById('summaryRegionModal');
+    const summaryOs = document.getElementById('summaryOsModal');
+    const summaryPlan = document.getElementById('summaryPlanModal');
+    const summaryApp = document.getElementById('summaryAppModal');
+    const summaryCost = document.getElementById('summaryCostModal');
+    const summaryCompatibility = document.getElementById('summaryCompatibilityModal');
 
     const form = document.getElementById('createServerFormNew');
-    const createServerBtn = document.getElementById('createServerBtn');
+    const createServerBtn = document.getElementById('createServerBtnModal');
 
     function clearSummary() {
         summaryMode.textContent = '-';
@@ -89,19 +98,61 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryCompatibility.textContent = '-';
     }
 
+    function isFinitePrice(value) {
+        return value !== null && value !== undefined && Number.isFinite(Number(value));
+    }
+
+    function updateModalCopy(mode) {
+        if (mode === 'install-n8n') {
+            configModalKicker.textContent = 'Instalar n8n';
+            configModalTitle.textContent = 'Instale o n8n em servidor existente';
+            configModalSubtitle.textContent = 'Escolha um servidor ja ativo e finalize em um clique.';
+            return;
+        }
+
+        configModalKicker.textContent = 'Configurar servidor';
+        configModalTitle.textContent = 'Configure seu servidor';
+        configModalSubtitle.textContent = 'Vamos concluir com poucos passos e sem complicacao.';
+    }
+
     function setMode(mode) {
         state.mode = mode;
         modeCards.forEach((card) => card.classList.toggle('is-active', card.dataset.mode === mode));
+        document.body.classList.toggle('install-mode', mode === 'install-n8n');
 
         const createVisible = mode === 'create-server';
         const installVisible = mode === 'install-n8n';
-        createServerSection.hidden = !createVisible;
-        createBasicSection.hidden = !createVisible;
-        createInstallSection.hidden = !createVisible;
-        createActions.hidden = !createVisible;
-        installN8nSection.hidden = !installVisible;
+
+        if (createServerSection) createServerSection.hidden = !createVisible;
+        if (createInstallSection) createInstallSection.hidden = !createVisible;
+        if (installN8nSection) installN8nSection.hidden = !installVisible;
 
         clearSummary();
+        updateModalCopy(mode);
+    }
+
+    function openConfigModal(mode = state.mode || 'create-server') {
+        setMode(mode);
+        if (!configModal) return;
+
+        configModal.hidden = false;
+        document.body.classList.add('modal-open');
+
+        if (mode === 'install-n8n') {
+            loadExistingServers();
+            updateSummary();
+            return;
+        }
+
+        if (state.provider) {
+            updateSummary();
+        }
+    }
+
+    function closeModal() {
+        if (!configModal) return;
+        configModal.hidden = true;
+        document.body.classList.remove('modal-open');
     }
 
     function getToken() {
@@ -168,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         summaryPlan.textContent = state.selectedPlanMeta ? state.selectedPlanMeta.label : '-';
-        summaryApp.textContent = (state.provider || state.region || state.os || state.plan) ? 'Servidor base' : '-';
+        summaryApp.textContent = (state.provider || state.region || state.os || state.plan) ? appProfiles[state.app].label : '-';
         summaryCost.textContent = state.selectedPlanMeta && state.selectedPlanMeta.price !== null
             ? `US$ ${state.selectedPlanMeta.price.toFixed(2)}/mes`
             : '-';
@@ -232,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         regionSelect.disabled = state.allRegions.length === 0;
         if (state.region) regionSelect.value = state.region;
+
         if (!regionSelect.value && regionSelect.options.length > 1) {
             regionSelect.value = regionSelect.options[1].value;
             state.region = regionSelect.value;
@@ -255,15 +307,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         osSelect.disabled = false;
         if (state.os) osSelect.value = state.os;
+
         if (!osSelect.value && osSelect.options.length > 1) {
-            const defaultOption = Array.from(osSelect.options).find((option) => option.textContent.toLowerCase().includes('ubuntu 22.04') || option.textContent.toLowerCase().includes('ubuntu 24.04'));
+            const defaultOption = Array.from(osSelect.options).find((option) => {
+                const text = option.textContent.toLowerCase();
+                return text.includes('ubuntu 22.04') || text.includes('ubuntu 24.04');
+            });
+
             osSelect.value = defaultOption ? defaultOption.value : osSelect.options[1].value;
             state.os = osSelect.value;
             osInput.value = state.os;
         }
     }
 
-    function getFilteredPlans() {
+    function getPlansByRegion() {
         if (!state.region) return [];
 
         const plans = state.allPlans || [];
@@ -271,28 +328,62 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!hasLocations) return plans;
 
         const normalizedRegion = String(state.region).trim().toLowerCase();
-        return plans.filter((plan) => Array.isArray(plan.locations) && plan.locations.some((location) => String(location).trim().toLowerCase() === normalizedRegion));
+        return plans.filter((plan) => {
+            if (!Array.isArray(plan.locations)) return false;
+            return plan.locations.some((location) => String(location).trim().toLowerCase() === normalizedRegion);
+        });
+    }
+
+    function getFilteredPlans() {
+        const regionPlans = getPlansByRegion();
+        if (regionPlans.length === 0) return { plans: [], filterApplied: false, hadPricedPlans: false };
+
+        const pricedPlans = regionPlans.filter((plan) => isFinitePrice(plan.price));
+        if (pricedPlans.length === 0) {
+            return { plans: regionPlans, filterApplied: false, hadPricedPlans: false };
+        }
+
+        const filtered = pricedPlans.filter((plan) => Number(plan.price) > state.minPlanPriceUsd);
+        return {
+            plans: filtered,
+            filterApplied: true,
+            hadPricedPlans: true
+        };
     }
 
     function renderPlans() {
         planSelect.innerHTML = '<option value="">Selecione um tamanho</option>';
 
-        const plans = getFilteredPlans().slice().sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
         if (!state.provider) {
             planSelect.disabled = true;
             planStatus.textContent = 'Escolha uma empresa para comecar.';
+            planFilterInfo.hidden = true;
             state.selectedPlanMeta = null;
             evaluateCompatibility();
             updateSummary();
             return;
         }
 
+        const filtered = getFilteredPlans();
+        const plans = filtered.plans.slice().sort((a, b) => Number(a.price ?? Number.POSITIVE_INFINITY) - Number(b.price ?? Number.POSITIVE_INFINITY));
+
         planSelect.disabled = false;
 
+        if (state.region && filtered.filterApplied) {
+            planFilterInfo.hidden = false;
+            planFilterInfo.textContent = `Filtro ativo: exibindo planos acima de US$ ${state.minPlanPriceUsd.toFixed(0)} nesta regiao.`;
+        } else {
+            planFilterInfo.hidden = true;
+        }
+
         if (plans.length === 0) {
-            planStatus.textContent = state.region
-                ? 'Nenhum tamanho encontrado nesta regiao.'
-                : 'Escolha uma regiao para ver os tamanhos disponiveis.';
+            if (state.region && filtered.hadPricedPlans) {
+                planStatus.textContent = `Nenhum plano acima de US$ ${state.minPlanPriceUsd.toFixed(0)} encontrado nesta regiao.`;
+            } else {
+                planStatus.textContent = state.region
+                    ? 'Nenhum tamanho encontrado nesta regiao.'
+                    : 'Escolha uma regiao para ver os tamanhos disponiveis.';
+            }
             state.selectedPlanMeta = null;
             evaluateCompatibility();
             updateSummary();
@@ -302,8 +393,8 @@ document.addEventListener('DOMContentLoaded', () => {
         plans.forEach((plan) => {
             const option = document.createElement('option');
             option.value = plan.id;
-            const hasPrice = plan.price !== null && plan.price !== undefined && Number.isFinite(Number(plan.price));
-            const priceLabel = hasPrice ? `US$ ${Number(plan.price).toFixed(2)}/mês` : 'Preço indisponível';
+            const hasPrice = isFinitePrice(plan.price);
+            const priceLabel = hasPrice ? `US$ ${Number(plan.price).toFixed(2)}/mes` : 'Preco indisponivel';
             option.textContent = `${priceLabel} - ${plan.cpu} vCPU, ${plan.ram}MB RAM, ${plan.disk}GB SSD`;
             option.dataset.cpu = plan.cpu || '';
             option.dataset.ram = plan.ram || '';
@@ -341,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             price: selectedOption.dataset.price ? Number(selectedOption.dataset.price) : null,
             label: selectedOption.textContent.split(' - ').pop() || selectedOption.value
         };
+
         evaluateCompatibility();
         updateSummary();
     }
@@ -384,6 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await loadProviderOptions(provider);
+            openConfigModal('create-server');
         } catch (error) {
             alert('Nao foi possivel carregar as opcoes: ' + error.message);
         }
@@ -396,13 +489,14 @@ document.addEventListener('DOMContentLoaded', () => {
             plan: state.plan,
             os_id: state.os,
             app: 'base-stack',
-            name: (document.getElementById('serverName').value || '').trim() || 'Novo Servidor'
+            name: (document.getElementById('serverNameModal').value || '').trim() || 'Novo Servidor'
         };
     }
 
     async function loadExistingServers() {
         n8nServerSelect.innerHTML = '<option value="">Carregando servidores...</option>';
         n8nServerSelect.disabled = true;
+
         try {
             const servers = await authFetch('/api/servers', { method: 'GET' });
             state.existingServers = Array.isArray(servers) ? servers : [];
@@ -534,13 +628,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modeCards.forEach((card) => {
         const button = card.querySelector('[data-select-mode]');
+
         const activateMode = async () => {
-            setMode(card.dataset.mode);
-            if (card.dataset.mode === 'install-n8n') {
-                await loadExistingServers();
-            }
-            if (card.dataset.mode === 'create-server') {
-                updateSummary();
+            const mode = card.dataset.mode;
+            if (mode === 'install-n8n') {
+                openConfigModal('install-n8n');
+            } else {
+                setMode('create-server');
+                clearSummary();
             }
         };
 
@@ -565,6 +660,21 @@ document.addEventListener('DOMContentLoaded', () => {
         installN8nOnExistingServer();
     });
 
+    openConfigBtn.addEventListener('click', () => {
+        if (state.mode === 'create-server' && !state.provider) {
+            alert('Selecione uma empresa antes de continuar.');
+            return;
+        }
+
+        openConfigModal(state.mode || 'create-server');
+    });
+
+    closeConfigModal.addEventListener('click', closeModal);
+
+    configModal.addEventListener('click', (event) => {
+        if (event.target === configModal) closeModal();
+    });
+
     regionSelect.addEventListener('change', () => {
         state.region = regionSelect.value;
         regionInput.value = state.region;
@@ -582,10 +692,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSelectedPlanMeta();
     });
 
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
+    createServerBtn.addEventListener('click', () => {
         createServer();
     });
 
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+    });
+
+    appInput.value = state.app;
     setMode(state.mode);
+    clearSummary();
+    if (configModal) configModal.hidden = true;
 });
