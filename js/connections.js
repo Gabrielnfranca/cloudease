@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const providerBranding = {
+        vultr: { label: 'Vultr', logo: 'assets/images/Logo%20Vultr.webp' },
+        digitalocean: { label: 'DigitalOcean', logo: 'assets/images/digitalocean-mark.svg' },
+        linode: { label: 'Linode', logo: 'assets/images/Linode-Logo-Black.svg' },
+        aws: { label: 'AWS', logo: 'assets/images/aws-logo.svg' }
+    };
+
     // Elementos do DOM
     const newConnectionBtn = document.querySelector('.new-site-btn');
     const searchInput = document.querySelector('.search-bar input');
@@ -10,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadConnections() {
         try {
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Carregando...</td></tr>';
             
             const authToken = localStorage.getItem('authToken');
             if (!authToken) {
@@ -48,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tableBody.innerHTML = '';
         
         if (connections.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma conexão encontrada.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma conexão encontrada.</td></tr>';
             return;
         }
 
@@ -56,14 +63,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             const date = new Date(conn.created_at).toLocaleDateString('pt-BR');
             
-            // Formatar nome do provedor
-            const providerName = conn.provider.charAt(0).toUpperCase() + conn.provider.slice(1);
-            let providerIcon = 'fa-server';
-            if (conn.provider === 'vultr') providerIcon = 'fa-server'; // Pode adicionar ícones específicos se tiver
-            if (conn.provider === 'digitalocean') providerIcon = 'fa-cloud';
+            const providerKey = String(conn.provider || '').toLowerCase();
+            const branding = providerBranding[providerKey] || {
+                label: conn.provider || 'Provedor',
+                logo: 'assets/images/server-builder-illustration.svg'
+            };
 
             row.innerHTML = `
-                <td><i class="fas ${providerIcon}"></i> ${providerName}</td>
+                <td>
+                    <div class="provider-cell">
+                        <img src="${branding.logo}" alt="${branding.label}" class="provider-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <i class="fas fa-server provider-fallback" style="display:none;"></i>
+                        <span>${branding.label}</span>
+                    </div>
+                </td>
                 <td>${conn.name}</td>
                 <td>${conn.total_servers || 0}</td>
                 <td>${date}</td>
@@ -145,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 row.remove();
                                 // Verifica se a tabela ficou vazia
                                 if (document.querySelectorAll('.connections-table tbody tr').length === 0) {
-                                    document.querySelector('.connections-table tbody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma conexão encontrada.</td></tr>';
+                                    document.querySelector('.connections-table tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma conexão encontrada.</td></tr>';
                                 }
                             } else {
                                 const data = await response.json();
