@@ -337,6 +337,36 @@ td {
 
 .action-button:hover {
     background: #f8f9fa;
+}
+
+/* ============================================
+   Provider Badge — padrão global de logos
+   Usado em: Conexões, Servidores, Dashboard
+   ============================================ */
+.provider-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 92px;
+    height: 40px;
+    padding: 0 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.provider-badge img {
+    max-width: 76px;
+    max-height: 22px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.provider-badge i {
+    color: #64748b;
+    font-size: 18px;
     color: #1e3c72;
     border-color: #1e3c72;
 }

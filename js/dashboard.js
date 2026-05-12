@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 const PROVIDER_LOGOS = {
-    vultr: 'https://www.vultr.com/favicon.ico',
-    digitalocean: 'https://www.digitalocean.com/favicon.ico',
-    linode: 'https://www.linode.com/favicon.ico',
+    vultr: 'assets/images/Logo%20Vultr.webp',
+    digitalocean: 'assets/images/digitalocean-mark.svg',
+    linode: 'assets/images/Linode-Logo-Black.svg',
     aws: 'assets/images/aws-logo.svg'
 };
 
@@ -168,7 +168,7 @@ function renderProviderCosts(data) {
             <div style="border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:12px; background:#fff;">
                 <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
                     <div style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#0f172a;">
-                        ${logo ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(provider.providerLabel)}" style="width:20px; height:20px; object-fit:contain; border-radius:4px;">` : ''}
+                        ${logo ? `<span class="provider-badge" style="min-width:0; height:28px; padding:0 8px; margin-right:4px;"><img src="${escapeHtml(logo)}" alt="${escapeHtml(provider.providerLabel)}"></span>` : ''}
                         <span>${escapeHtml(provider.providerLabel)}</span>
                     </div>
                     <div style="text-align:right;">

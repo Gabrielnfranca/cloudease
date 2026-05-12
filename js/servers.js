@@ -1,3 +1,10 @@
+const PROVIDER_LOGOS = {
+    vultr: 'assets/images/Logo%20Vultr.webp',
+    digitalocean: 'assets/images/digitalocean-mark.svg',
+    linode: 'assets/images/Linode-Logo-Black.svg',
+    aws: 'assets/images/aws-logo.svg'
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     let pollingInterval = null;
 
@@ -153,10 +160,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
             }
 
+            const provKey = String(server.provider || '').toLowerCase();
+            const provLogo = PROVIDER_LOGOS[provKey] || server.logo || '';
+            const provLogoHtml = provLogo
+                ? `<img src="${provLogo}" alt="${server.provider}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                   <i class="fas fa-server" style="display:none;"></i>`
+                : `<i class="fas fa-server"></i>`;
+
             tr.innerHTML = `
                 <td>
                     <div class="server-info">
-                        <img src="${server.logo}" alt="${server.provider}" class="provider-icon" style="width: 24px; height: 24px; margin-right: 10px;">
+                        <div class="provider-badge" style="margin-right: 12px;">${provLogoHtml}</div>
                         <div>
                             <div class="server-name" style="font-weight: bold;">${server.name}</div>
                             <div class="server-provider" style="font-size: 12px; color: #718096;">${server.provider}</div>
