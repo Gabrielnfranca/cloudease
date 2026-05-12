@@ -71,10 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             row.innerHTML = `
                 <td>
-                    <div class="provider-cell">
+                    <div class="provider-cell" title="${branding.label}" aria-label="${branding.label}">
                         <img src="${branding.logo}" alt="${branding.label}" class="provider-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                         <i class="fas fa-server provider-fallback" style="display:none;"></i>
-                        <span>${branding.label}</span>
                     </div>
                 </td>
                 <td>${conn.name}</td>
