@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const configModal = document.getElementById('configModal');
     const closeConfigModal = document.getElementById('closeConfigModal');
-    const openConfigBtn = document.getElementById('openConfigBtn');
     const configModalKicker = document.getElementById('configModalKicker');
     const configModalTitle = document.getElementById('configModalTitle');
     const configModalSubtitle = document.getElementById('configModalSubtitle');
@@ -643,15 +642,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     installN8nBtn.addEventListener('click', () => {
         installN8nOnExistingServer();
-    });
-
-    openConfigBtn.addEventListener('click', () => {
-        if (state.mode === 'create-server' && !state.provider) {
-            alert('Selecione uma empresa antes de continuar.');
-            return;
-        }
-
-        openConfigModal(state.mode || 'create-server');
     });
 
     closeConfigModal.addEventListener('click', closeModal);
