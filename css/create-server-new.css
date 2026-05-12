@@ -8,6 +8,12 @@
     color: #0f172a;
 }
 
+.new-header .header-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .new-header p {
     margin: 6px 0 0;
     color: #64748b;
