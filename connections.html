@@ -72,21 +72,27 @@
         .provider-cell {
             display: inline-flex;
             align-items: center;
-            justify-content: flex-start;
-            width: 32px;
-            height: 32px;
+            justify-content: center;
+            min-width: 92px;
+            height: 40px;
+            padding: 0 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
         }
 
         .provider-logo {
-            width: 32px;
-            height: 32px;
+            max-width: 76px;
+            max-height: 22px;
+            width: auto;
+            height: auto;
             object-fit: contain;
-            border-radius: 0;
+            display: block;
         }
 
         .provider-fallback {
             color: #64748b;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         /* Action Buttons */
